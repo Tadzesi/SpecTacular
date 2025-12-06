@@ -64,6 +64,34 @@ specs/<###-feature-name>/    # Per-feature artifacts
 .claude/tasks/               # Task notes (wikilink graph)
 ```
 
+## Markdown Features
+
+### Status Tags
+The markdown renderer supports visual status tags that display as icons:
+
+| Tag | Icon | Description |
+|-----|------|-------------|
+| `#status/done` | ✓ (green) | Task completed |
+| `#status/complete` | ✓ (green) | Feature/phase complete |
+| `#status/pending` | ○ (gray) | Not yet started |
+| `#status/in-progress` | ◐ (blue) | Currently in progress |
+| `#status/blocked` | ⊘ (red) | Blocked by dependency |
+| `#status/skipped` | → (gray) | Intentionally skipped |
+
+Usage in tasks.md tables:
+```markdown
+| Task | Description | Status |
+|------|-------------|--------|
+| [[task-01]] | Setup project | #status/done |
+| [[task-02]] | Implement feature | #status/in-progress |
+```
+
+### Wikilinks
+The renderer supports `[[wikilink]]` syntax for navigation between markdown files.
+
+### Task Links
+Links matching `task-\d+` pattern show a copy button on hover.
+
 ## Core Principles (from Constitution)
 
 1. **Task Completion is Non-Negotiable** - Build must pass, tests must pass

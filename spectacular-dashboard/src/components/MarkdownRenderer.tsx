@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -34,6 +34,107 @@ function CheckIcon({ className }: { className?: string }) {
       <polyline points="20 6 9 17 4 12" />
     </svg>
   );
+}
+
+// Status icons for #status/* tags
+function StatusDoneIcon() {
+  return (
+    <svg className="inline-block w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function StatusPendingIcon() {
+  return (
+    <svg className="inline-block w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+    </svg>
+  );
+}
+
+function StatusInProgressIcon() {
+  return (
+    <svg className="inline-block w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 2 A10 10 0 0 1 12 22" fill="none" stroke="white" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function StatusBlockedIcon() {
+  return (
+    <svg className="inline-block w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M6 6l12 12M6 18L18 6" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function StatusSkippedIcon() {
+  return (
+    <svg className="inline-block w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 12h8M15 9l3 3-3 3" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Status tag configuration
+const STATUS_CONFIG: Record<string, { icon: React.FC; label: string; className: string }> = {
+  'done': { icon: StatusDoneIcon, label: 'Done', className: 'text-green-600 dark:text-green-400' },
+  'complete': { icon: StatusDoneIcon, label: 'Complete', className: 'text-green-600 dark:text-green-400' },
+  'pending': { icon: StatusPendingIcon, label: 'Pending', className: 'text-gray-500 dark:text-gray-400' },
+  'in-progress': { icon: StatusInProgressIcon, label: 'In Progress', className: 'text-blue-600 dark:text-blue-400' },
+  'blocked': { icon: StatusBlockedIcon, label: 'Blocked', className: 'text-red-600 dark:text-red-400' },
+  'skipped': { icon: StatusSkippedIcon, label: 'Skipped', className: 'text-gray-500 dark:text-gray-400' },
+};
+
+// Render a status tag with icon
+function StatusTag({ status }: { status: string }) {
+  const config = STATUS_CONFIG[status.toLowerCase()];
+  if (!config) {
+    // Unknown status, render as plain text
+    return <span className="text-gray-500">#{`status/${status}`}</span>;
+  }
+  const Icon = config.icon;
+  return (
+    <span className={`inline-flex items-center gap-1 ${config.className}`} title={config.label}>
+      <Icon />
+      <span className="text-xs font-medium">{config.label}</span>
+    </span>
+  );
+}
+
+// Parse text to find and replace #status/* tags
+const STATUS_TAG_REGEX = /#status\/([a-zA-Z-]+)/g;
+
+function parseTextWithStatusTags(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+
+  // Reset regex lastIndex
+  STATUS_TAG_REGEX.lastIndex = 0;
+
+  while ((match = STATUS_TAG_REGEX.exec(text)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    // Add the status tag component
+    parts.push(<StatusTag key={key++} status={match[1]} />);
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text after last match
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : [text];
 }
 
 export function MarkdownRenderer({ content, currentFilePath, onNavigate }: MarkdownRendererProps) {
@@ -149,6 +250,36 @@ export function MarkdownRenderer({ content, currentFilePath, onNavigate }: Markd
                 <table>{children}</table>
               </div>
             );
+          },
+          // Custom paragraph renderer that handles status tags
+          p({ children }) {
+            if (typeof children === 'string') {
+              return <p>{parseTextWithStatusTags(children)}</p>;
+            }
+            // Handle array of children (mixed content)
+            const processedChildren = React.Children.map(children, (child) => {
+              if (typeof child === 'string') {
+                const parsed = parseTextWithStatusTags(child);
+                return parsed.length === 1 && typeof parsed[0] === 'string' ? child : parsed;
+              }
+              return child;
+            });
+            return <p>{processedChildren}</p>;
+          },
+          // Custom table cell renderer that handles status tags
+          td({ children }) {
+            if (typeof children === 'string') {
+              return <td>{parseTextWithStatusTags(children)}</td>;
+            }
+            // Handle array of children (mixed content)
+            const processedChildren = React.Children.map(children, (child) => {
+              if (typeof child === 'string') {
+                const parsed = parseTextWithStatusTags(child);
+                return parsed.length === 1 && typeof parsed[0] === 'string' ? child : parsed;
+              }
+              return child;
+            });
+            return <td>{processedChildren}</td>;
           },
           a({ href, children }) {
             const isMarkdownLink = href?.endsWith('.md') && !href?.startsWith('http');
