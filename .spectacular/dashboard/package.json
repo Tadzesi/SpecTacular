@@ -1,0 +1,12 @@
+{
+  "name": "spectacular-dashboard",
+  "version": "1.0.0",
+  "description": "SpecTacular Dashboard - Preview and monitor markdown specification files",
+  "main": "dist-electron/main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "chokidar": "^3.5.3"
+  }
+}
