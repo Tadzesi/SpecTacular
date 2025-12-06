@@ -122,6 +122,96 @@ specs/
 │   └── ...
 ```
 
+## AI-Assisted Workflow Commands
+
+SpecTacular includes workflow commands for AI coding assistants (Claude Code, Cursor) that automate the spec-to-implementation pipeline.
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `0-quick` | Full pipeline: spec → plan → tasks → implement → validate |
+| `1-spec` | Create feature branch and specification document |
+| `2-plan` | Generate technical implementation plan |
+| `3-tasks` | Create actionable task list from spec and plan |
+| `4-implement` | Execute tasks one by one |
+| `5-validate` | Verify build passes and all tasks complete |
+
+### Using with Claude Code
+
+Commands are stored in `.claude/commands/` and invoked with slash commands:
+
+```bash
+# Run the full pipeline
+/spectacular.0-quick Add user authentication with OAuth
+
+# Or run individual steps
+/spectacular.1-spec Add dark mode toggle
+/spectacular.2-plan
+/spectacular.3-tasks
+/spectacular.4-implement
+/spectacular.5-validate
+```
+
+### Using with Cursor
+
+Commands are stored in `.cursor/rules/` as `.mdc` files. Reference them in chat:
+
+```
+@spectacular-0-quick Add user authentication with OAuth
+
+# Or individual steps
+@spectacular-1-spec Add dark mode toggle
+@spectacular-2-plan
+```
+
+### Pipeline Flow
+
+```
+┌─────────┐     ┌─────────┐     ┌─────────┐     ┌───────────┐     ┌──────────┐
+│ 1-spec  │ ──► │ 2-plan  │ ──► │ 3-tasks │ ──► │4-implement│ ──► │5-validate│
+└─────────┘     └─────────┘     └─────────┘     └───────────┘     └──────────┘
+     │               │               │                │                 │
+     ▼               ▼               ▼                ▼                 ▼
+  spec.md        plan.md        tasks.md         Code changes      Build + Tests
+  + branch                      + status tags
+```
+
+### Command Files Location
+
+```
+.claude/commands/           # Claude Code slash commands
+├── spectacular.0-quick.md
+├── spectacular.1-spec.md
+├── spectacular.2-plan.md
+├── spectacular.3-tasks.md
+├── spectacular.4-implement.md
+└── spectacular.5-validate.md
+
+.cursor/rules/              # Cursor rule files
+├── spectacular-0-quick.mdc
+├── spectacular-1-spec.mdc
+├── spectacular-2-plan.mdc
+├── spectacular-3-tasks.mdc
+├── spectacular-4-implement.mdc
+└── spectacular-5-validate.mdc
+
+.spectacular/prompts/       # Source prompts (used to generate above)
+├── 0-quick.md
+├── 1-spec.md
+└── ...
+```
+
+### Generating Commands
+
+Use the PowerShell script to regenerate commands from source prompts:
+
+```powershell
+.spectacular/scripts/powershell/generate-commands.ps1
+```
+
+This copies prompts to both `.claude/commands/` and `.cursor/rules/` with appropriate formatting.
+
 ## Tech Stack
 
 - **Frontend**: React 18 + TypeScript + Vite
