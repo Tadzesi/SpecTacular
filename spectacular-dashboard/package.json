@@ -1,6 +1,6 @@
 {
   "name": "spectacular",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Spec Viewer Dashboard - Preview and monitor markdown specification files",
   "type": "module",
   "main": "dist-electron/main.cjs",

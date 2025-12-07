@@ -59,7 +59,7 @@ After installation, open a new terminal and run:
 
 ```bash
 spectacular --version
-# Expected output: spectacular 1.1.0
+# Expected output: spectacular 1.1.1
 ```
 
 ### Initialize a Project
@@ -137,7 +137,7 @@ npm run dev
 npm run build
 
 # The installer will be created at:
-# release/SpecTacular Setup 1.1.0.exe (Windows)
+# release/SpecTacular Setup 1.1.1.exe (Windows)
 ```
 
 ## Usage

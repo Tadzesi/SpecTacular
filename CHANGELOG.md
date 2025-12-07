@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-12-07
+
+### Changed
+
+- **Task Generation Structure** - `3-tasks` command now creates individual task files:
+  - Creates `tasks/` subfolder with separate `.md` files for each task
+  - `tasks.md` serves as overview with status table and links to individual tasks
+  - Tasks numbered with 2-digit prefix (01-setup.md, 02-models.md, etc.)
+- **Fixed Installer** - Corrected GitHub repository configuration (`Tadzesi/SpecTacular`)
+- **Fixed Remote Execution** - Installer now properly handles `irm | iex` piped execution
+
 ## [1.1.0] - 2025-12-07
 
 ### Added
@@ -88,7 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Tadzesi/SpecTacular/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/Tadzesi/SpecTacular/releases/tag/v0.1.0
