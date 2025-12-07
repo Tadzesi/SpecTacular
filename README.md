@@ -29,7 +29,7 @@ SpecTacular solves these problems by providing:
 **Option 1: One-liner installation (PowerShell)**
 
 ```powershell
-irm https://raw.githubusercontent.com/user/spectacular/main/spectacular-cli/installer/install.ps1 | iex
+irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/master/spectacular-cli/installer/install.ps1 | iex
 ```
 
 This will:
@@ -42,8 +42,8 @@ This will:
 
 ```powershell
 # Clone the repository
-git clone https://github.com/user/spectacular.git
-cd spectacular/spectacular-cli/Spectacular.Cli
+git clone https://github.com/Tadzesi/SpecTacular.git
+cd SpecTacular/spectacular-cli/Spectacular.Cli
 
 # Build and publish
 dotnet publish -c Release -r win-x64 -o ../publish/win-x64
@@ -119,8 +119,8 @@ For the SpecTacular Dashboard viewer application:
 
 ```bash
 # Clone the repository
-git clone https://github.com/user/spectacular.git
-cd spectacular
+git clone https://github.com/Tadzesi/SpecTacular.git
+cd SpecTacular
 
 # Install dependencies
 cd spectacular-dashboard

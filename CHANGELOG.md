@@ -88,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/user/spectacular/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/user/spectacular/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/user/spectacular/compare/v0.1.0...v1.0.0
-[0.1.0]: https://github.com/user/spectacular/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/Tadzesi/SpecTacular/compare/v0.1.0...v1.0.0
+[0.1.0]: https://github.com/Tadzesi/SpecTacular/releases/tag/v0.1.0
