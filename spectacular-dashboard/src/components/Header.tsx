@@ -8,6 +8,7 @@ interface HeaderProps {
   canGoForward: boolean;
   onGoBack: () => void;
   onGoForward: () => void;
+  currentPath: string;
 }
 
 export function Header({
@@ -18,6 +19,7 @@ export function Header({
   canGoForward,
   onGoBack,
   onGoForward,
+  currentPath,
 }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-light-bg-secondary dark:bg-dark-bg-secondary border-b border-light-border dark:border-dark-border">
@@ -68,6 +70,13 @@ export function Header({
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
             </svg>
           </button>
+        </div>
+
+        {/* Current Path Display */}
+        <div className="ml-4 px-3 py-1 bg-light-bg-tertiary dark:bg-dark-bg-tertiary rounded-md max-w-md truncate">
+          <span className="text-xs text-light-text-muted dark:text-dark-text-muted" title={currentPath}>
+            {currentPath}
+          </span>
         </div>
       </div>
 
