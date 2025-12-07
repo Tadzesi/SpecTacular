@@ -49,8 +49,8 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # Configuration
-$RepoOwner = "spectacular"
-$RepoName = "spectacular-cli"
+$RepoOwner = "Tadzesi"
+$RepoName = "SpecTacular"
 $ExeName = "spectacular.exe"
 $DefaultInstallDir = Join-Path $env:USERPROFILE ".spectacular\bin"
 
