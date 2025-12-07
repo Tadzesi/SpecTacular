@@ -96,11 +96,26 @@ if (Test-Path $existingExe) {
 }
 
 # Determine script location for local install
-$ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Definition }
+# When run via 'irm | iex', $PSScriptRoot is empty and $MyInvocation.MyCommand.Definition contains the URL
+$ScriptDir = $null
+$isRemoteExecution = $false
 
-# Auto-detect local mode if running from repository
+if ($PSScriptRoot) {
+    $ScriptDir = $PSScriptRoot
+} else {
+    $cmdDef = $MyInvocation.MyCommand.Definition
+    # Check if this looks like a valid local path (not a URL or piped content)
+    if ($cmdDef -and (Test-Path $cmdDef -ErrorAction SilentlyContinue)) {
+        $ScriptDir = Split-Path -Parent $cmdDef
+    } else {
+        # Running via irm | iex or other remote execution
+        $isRemoteExecution = $true
+    }
+}
+
+# Auto-detect local mode if running from repository (skip for remote execution)
 $LocalSourcePath = $null
-if (-not $Local) {
+if (-not $Local -and -not $isRemoteExecution -and $ScriptDir) {
     # Check if we're in the installer folder of the repository
     $possiblePublishPath = Join-Path (Split-Path $ScriptDir -Parent) "publish\$arch\$ExeName"
     if (Test-Path $possiblePublishPath) {
@@ -119,14 +134,20 @@ if ($Local) {
     if (-not $LocalSourcePath) {
         # Try to find the local build
         $searchPaths = @(
-            (Join-Path (Split-Path $ScriptDir -Parent) "publish\$arch\$ExeName"),
-            (Join-Path $ScriptDir "..\publish\$arch\$ExeName"),
             ".\publish\$arch\$ExeName",
             ".\$ExeName"
         )
 
+        # Add script-relative paths only if we have a valid ScriptDir
+        if ($ScriptDir) {
+            $searchPaths = @(
+                (Join-Path (Split-Path $ScriptDir -Parent) "publish\$arch\$ExeName"),
+                (Join-Path $ScriptDir "..\publish\$arch\$ExeName")
+            ) + $searchPaths
+        }
+
         foreach ($path in $searchPaths) {
-            if (Test-Path $path) {
+            if (Test-Path $path -ErrorAction SilentlyContinue) {
                 $LocalSourcePath = (Resolve-Path $path).Path
                 break
             }
