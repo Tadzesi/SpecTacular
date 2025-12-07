@@ -1,0 +1,94 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.1.0] - 2025-12-07
+
+### Added
+
+- **Environment Variable Broadcast** - Installer now broadcasts `WM_SETTINGCHANGE` to notify other applications of PATH changes, so new terminals pick up the CLI immediately without requiring a system restart
+- **Improved Installation Documentation** - README includes comprehensive installation guide with:
+  - One-liner PowerShell installation
+  - Local build and install instructions
+  - Verification steps
+  - Uninstall instructions
+
+### Changed
+
+- Version bump to 1.1.0 for both CLI and Dashboard
+- Updated development commands in CLAUDE.md with correct paths
+
+## [1.0.0] - 2025-12-07
+
+### Added
+
+- **SpecTacular CLI** - .NET 8 command-line tool for scaffolding projects:
+  - `spectacular init` - Initialize SpecTacular workflow in any directory
+  - `spectacular --version` - Display version information
+  - `spectacular update` - Self-update to latest version
+  - Options: `--name`, `--tech`, `--path`, `--force`
+- **PowerShell One-Liner Installer** - Install CLI with single command
+- **Uninstaller Script** - Clean removal of CLI and PATH entries
+- **Template Variable Substitution** - Dynamic placeholders in scaffolded files:
+  - `{{PROJECT_NAME}}` - Project name
+  - `{{TECH_STACK}}` - Technology stack
+  - `{{DATE}}` - Current date
+  - `{{TECH_STACK_LIST}}` - Formatted bullet list
+- **Embedded Resources** - All templates bundled in single executable
+- **Proxy Support** - Installer respects `HTTP_PROXY`/`HTTPS_PROXY` environment variables
+- **User-Level PATH** - No admin privileges required for installation
+
+## [0.1.0] - 2025-12-06
+
+### Added
+
+- Initial release of SpecTacular markdown specification viewer
+- Electron desktop application with React 18 + TypeScript + Vite
+- Real-time filesystem watching with chokidar
+- Markdown rendering with react-markdown and remark-gfm
+- Syntax highlighting for code blocks
+- Dark/light theme support with localStorage persistence
+- File tree navigation with expand/collapse functionality
+- Breadcrumb navigation
+- Navigation history (back/forward)
+- Wikilink support (`[[link]]` syntax)
+- Status tag visualization with icons:
+  - `#status/done` - checkmark (green)
+  - `#status/complete` - checkmark (green)
+  - `#status/pending` - circle (gray)
+  - `#status/in-progress` - half-circle (blue)
+  - `#status/blocked` - blocked icon (red)
+  - `#status/skipped` - arrow (gray)
+- Task link copy button on hover for `task-\d+` patterns
+- Resizable sidebar panel
+- Cross-platform support (Windows, macOS, Linux)
+- **AI-Assisted Specification Pipeline** - Automated workflow for generating specs, plans, and tasks:
+  - `0-quick` - Full pipeline orchestration (spec → plan → tasks → implement → validate)
+  - `1-spec` - Create feature branch and specification document
+  - `2-plan` - Generate technical implementation plan from spec
+  - `3-tasks` - Create actionable task list with status tracking
+  - `4-implement` - Execute tasks one by one with progress tracking
+  - `5-validate` - Verify build passes and all tasks complete
+- **Specification Document Templates**:
+  - `spec.md` - Feature specification with user stories and acceptance criteria
+  - `plan.md` - Technical implementation plan with tech stack and architecture
+  - `tasks.md` - Task checklist with phases, status tags, and progress summary
+  - Individual task files with detailed implementation notes
+- **Claude Code Integration** - Slash commands in `.claude/commands/`
+- **Cursor Integration** - Rule files in `.cursor/rules/`
+- PowerShell automation scripts:
+  - `create-new-feature.ps1` - Initialize feature directory structure
+  - `setup-plan.ps1` - Generate plan file scaffolding
+  - `validate-implementation.ps1` - Verify tasks, build, and tests pass
+  - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
+- Example healthcheck specification template
+
+[Unreleased]: https://github.com/user/spectacular/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/user/spectacular/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/user/spectacular/compare/v0.1.0...v1.0.0
+[0.1.0]: https://github.com/user/spectacular/releases/tag/v0.1.0

@@ -89,6 +89,14 @@ function App() {
     setSidebarWidth(width);
   }, []);
 
+  // Listen for folder selection from native menu
+  useEffect(() => {
+    const unsubscribe = window.electronAPI.onFolderSelected((path: string) => {
+      setRootPath(path);
+    });
+    return unsubscribe;
+  }, []);
+
   // Keyboard shortcuts for navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -138,6 +146,7 @@ function App() {
         canGoForward={canGoForward}
         onGoBack={handleGoBack}
         onGoForward={handleGoForward}
+        currentPath={rootPath}
       />
 
       <div className="flex flex-1 overflow-hidden">

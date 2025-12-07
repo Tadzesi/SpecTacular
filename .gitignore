@@ -6,6 +6,14 @@ dist/
 dist-electron/
 release/
 
+# .NET build outputs
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.nupkg
+
 # IDE
 .idea/
 *.swp

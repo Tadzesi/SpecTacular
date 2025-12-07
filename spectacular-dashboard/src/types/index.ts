@@ -41,6 +41,7 @@ export interface ElectronAPI {
   selectDirectory: () => Promise<string | null>;
   onNavigateBack: (callback: () => void) => () => void;
   onNavigateForward: (callback: () => void) => () => void;
+  onFolderSelected: (callback: (path: string) => void) => () => void;
 }
 
 declare global {

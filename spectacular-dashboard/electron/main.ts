@@ -1,16 +1,112 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { FileWatcher } from './fileWatcher';
 
 // Fix GPU cache errors on Windows
 app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-gpu-compositing');
 app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
 
 let mainWindow: BrowserWindow | null = null;
 let fileWatcher: FileWatcher | null = null;
 
-const DEFAULT_SPECS_PATH = path.join(process.cwd(), '..', '..', 'specs');
+// Parse --path argument from command line
+function getInitialPath(): string {
+  const args = process.argv.slice(1);
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--path' && args[i + 1]) {
+      return args[i + 1];
+    }
+  }
+  // Default to specs subfolder of current working directory
+  return path.join(process.cwd(), 'specs');
+}
+
+let currentRootPath = getInitialPath();
+
+function createMenu() {
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Select Folder...',
+          accelerator: 'CmdOrCtrl+O',
+          click: async () => {
+            const result = await dialog.showOpenDialog(mainWindow!, {
+              properties: ['openDirectory'],
+              title: 'Select Specs Directory',
+            });
+            if (!result.canceled && result.filePaths[0]) {
+              currentRootPath = result.filePaths[0];
+              mainWindow?.webContents.send('folder-selected', result.filePaths[0]);
+            }
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Exit',
+          accelerator: 'Alt+F4',
+          click: () => app.quit(),
+        },
+      ],
+    },
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectAll' },
+      ],
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' },
+      ],
+    },
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'close' },
+      ],
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'About SpecTacular',
+          click: () => {
+            dialog.showMessageBox(mainWindow!, {
+              type: 'info',
+              title: 'About SpecTacular',
+              message: 'SpecTacular Dashboard',
+              detail: 'Version 1.0.0\nA specification viewer and task tracker.',
+            });
+          },
+        },
+      ],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
 
 interface FileNode {
   name: string;
@@ -32,11 +128,7 @@ function createWindow() {
       contextIsolation: true,
     },
     titleBarStyle: 'default',
-    show: false,
-  });
-
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
+    show: true,  // Show window immediately
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -109,7 +201,7 @@ function buildFileTree(dirPath: string, rootPath: string): FileNode[] {
 }
 
 ipcMain.handle('get-file-tree', async (_event, rootPath: string): Promise<FileNode[]> => {
-  const targetPath = rootPath || DEFAULT_SPECS_PATH;
+  const targetPath = rootPath || currentRootPath;
 
   if (!fs.existsSync(targetPath)) {
     return [];
@@ -141,7 +233,7 @@ ipcMain.handle('select-directory', async (): Promise<string | null> => {
 
 ipcMain.handle('get-config', async () => {
   return {
-    rootPath: DEFAULT_SPECS_PATH,
+    rootPath: currentRootPath,
     watchEnabled: fileWatcher?.isWatching() ?? false,
   };
 });
@@ -171,6 +263,7 @@ ipcMain.on('set-watching', (_event, enabled: boolean) => {
 });
 
 app.whenReady().then(() => {
+  createMenu();
   createWindow();
 
   app.on('activate', () => {

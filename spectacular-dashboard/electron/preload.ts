@@ -52,4 +52,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.removeListener('navigate-forward', handler);
     };
   },
+
+  onFolderSelected: (callback: (path: string) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, path: string) => {
+      callback(path);
+    };
+    ipcRenderer.on('folder-selected', handler);
+    return () => {
+      ipcRenderer.removeListener('folder-selected', handler);
+    };
+  },
 });

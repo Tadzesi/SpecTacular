@@ -24,16 +24,102 @@ SpecTacular solves these problems by providing:
 
 ## Quick Start
 
-### Prerequisites
+### Install SpecTacular CLI (Recommended)
+
+**Option 1: One-liner installation (PowerShell)**
+
+```powershell
+irm https://raw.githubusercontent.com/user/spectacular/main/spectacular-cli/installer/install.ps1 | iex
+```
+
+This will:
+- Download the latest SpecTacular CLI
+- Install to `~/.spectacular/bin/`
+- Add to your PATH automatically
+- Broadcast environment changes so new terminals pick up the PATH immediately
+
+**Option 2: Local installation from source**
+
+```powershell
+# Clone the repository
+git clone https://github.com/user/spectacular.git
+cd spectacular/spectacular-cli/Spectacular.Cli
+
+# Build and publish
+dotnet publish -c Release -r win-x64 -o ../publish/win-x64
+
+# Run the installer
+cd ../installer
+.\install.ps1 -Local
+```
+
+### Verify Installation
+
+After installation, open a new terminal and run:
+
+```bash
+spectacular --version
+# Expected output: spectacular 1.1.0
+```
+
+### Initialize a Project
+
+```bash
+cd your-project
+spectacular init --name "MyProject" --tech "Node.js, TypeScript"
+```
+
+This creates:
+- `.spectacular/` - Templates, scripts, and configuration
+- `.claude/commands/` - AI workflow slash commands
+- `specs/` - Directory for feature specifications
+- `CLAUDE.md` - Project instructions for Claude Code
+
+### CLI Commands
+
+```bash
+spectacular init      # Initialize SpecTacular in current directory
+spectacular --version # Show version
+spectacular --help    # Show help
+spectacular update    # Update to latest version
+```
+
+### CLI Options
+
+```bash
+spectacular init --name "ProjectName"     # Set project name
+spectacular init --tech "Python, FastAPI" # Set tech stack
+spectacular init --path /other/folder     # Initialize different directory
+spectacular init --force                  # Overwrite existing files
+```
+
+### Uninstall
+
+To remove SpecTacular CLI:
+
+```powershell
+# Run the uninstaller
+~/.spectacular/bin/uninstall.ps1
+
+# Or manually:
+# 1. Delete ~/.spectacular/bin/
+# 2. Remove from PATH (System Properties > Environment Variables)
+```
+
+### Manual Installation (Dashboard Only)
+
+For the SpecTacular Dashboard viewer application:
+
+#### Prerequisites
 
 - Node.js 18+
 - npm or yarn
 
-### Installation
+#### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/spectacular.git
+git clone https://github.com/user/spectacular.git
 cd spectacular
 
 # Install dependencies
@@ -44,14 +130,14 @@ npm install
 npm run dev
 ```
 
-### Build for Production
+#### Build for Production
 
 ```bash
 # Full build with installer
 npm run build
 
 # The installer will be created at:
-# release/SpecTacular Setup 1.0.0.exe (Windows)
+# release/SpecTacular Setup 1.1.0.exe (Windows)
 ```
 
 ## Usage
@@ -117,9 +203,119 @@ specs/
 │   ├── spec.md              # Feature specification
 │   ├── plan.md              # Implementation plan
 │   ├── tasks.md             # Task checklist with status
-│   └── task-01-setup.md     # Individual task details
+│   └── tasks/
+│       ├── 01-setup.md      # Individual task details
+│       └── 02-implement.md
 ├── 002-dashboard-ui/
 │   └── ...
+```
+
+## Specification Documents
+
+The pipeline generates structured markdown documents that work together:
+
+### spec.md - Feature Specification
+
+Defines **what** to build:
+
+```markdown
+# Feature Specification: User Authentication
+
+## Summary
+One paragraph describing the feature and its purpose.
+
+## User Story
+**As a** user
+**I want** to log in with my credentials
+**So that** I can access my personal dashboard
+
+### Acceptance Criteria
+1. Given valid credentials, when I submit, then I am logged in
+2. Given invalid credentials, when I submit, then I see an error
+
+## Requirements
+- REQ-1: Support email/password authentication
+- REQ-2: Passwords must be hashed with bcrypt
+- REQ-3: Session expires after 24 hours
+
+## Success Criteria
+- All acceptance criteria pass
+- No security vulnerabilities
+```
+
+### plan.md - Implementation Plan
+
+Defines **how** to build it:
+
+```markdown
+# Implementation Plan: User Authentication
+
+## Technical Context
+**Language**: TypeScript 5.0
+**Framework**: Express.js
+**Database**: PostgreSQL
+**Testing**: Jest
+
+## Project Structure
+src/
+├── models/User.ts
+├── services/AuthService.ts
+├── controllers/AuthController.ts
+└── middleware/authMiddleware.ts
+
+## Key Components
+- **AuthService**: Handles credential validation and session management
+- **AuthController**: Express route handlers for /login, /logout
+- **authMiddleware**: JWT token verification
+```
+
+### tasks.md - Task Checklist
+
+Tracks **progress** with status tags:
+
+```markdown
+# Tasks: User Authentication
+
+## Phase 1: Setup
+| Task | Description | Status |
+|------|-------------|--------|
+| [[01-setup]] | Create project structure | #status/done |
+| [[02-models]] | Define User model | #status/in-progress |
+
+## Phase 2: Implementation
+| Task | Description | Status |
+|------|-------------|--------|
+| [[03-service]] | Implement AuthService | #status/pending |
+| [[04-controller]] | Add API endpoints | #status/pending |
+
+## Progress Summary
+| Phase | Total | Done | Remaining |
+|-------|-------|------|-----------|
+| Setup | 2 | 1 | 1 |
+| Implementation | 2 | 0 | 2 |
+```
+
+### Individual Task Files
+
+Detailed instructions for each task:
+
+```markdown
+# Task 01: Project Setup
+
+## Objective
+Create the initial project structure and install dependencies.
+
+## Steps
+1. Initialize npm project
+2. Install dependencies: express, bcrypt, jsonwebtoken
+3. Create directory structure
+
+## Acceptance Criteria
+- [ ] package.json exists with dependencies
+- [ ] Directory structure matches plan.md
+
+## Notes
+- Use exact versions for reproducibility
 ```
 
 ## AI-Assisted Workflow Commands

@@ -1,10 +1,13 @@
-# SpecTacular
+# SpecTacular Dashboard
 
 A professional Electron desktop application for previewing and monitoring markdown specification files with real-time filesystem watching.
 
 ## Features
 
+- **Native Menu Bar**: File, Edit, View, Window, Help menus with keyboard shortcuts
+- **Select Folder**: Choose any folder to monitor via File > Select Folder (Ctrl+O)
 - **File Tree Sidebar**: Collapsible folder structure showing markdown files
+- **Path Display**: Current monitored folder path shown in header
 - **Markdown Preview**: Full markdown rendering with syntax highlighting for code blocks
 - **Real-time Watching**: Automatic detection of file changes with visual indicators
 - **Dark/Light Theme**: Toggle with localStorage persistence
@@ -48,6 +51,32 @@ npm run build
 ```
 
 Builds the React app and Electron main/preload scripts, then packages with electron-builder.
+
+## Command Line Usage
+
+Launch the dashboard with a specific folder to monitor:
+
+```bash
+spectacular dashboard
+# or
+SpecTacular.exe --path "C:\path\to\your\specs"
+```
+
+The `--path` argument specifies the folder to monitor. If not provided, defaults to `./specs` in the current working directory.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+O | Select folder to monitor |
+| Alt+F4 | Exit application |
+| Ctrl+R | Reload |
+| Ctrl+Shift+R | Force reload |
+| Ctrl+Shift+I | Toggle developer tools |
+| Ctrl+0 | Reset zoom |
+| Ctrl++ | Zoom in |
+| Ctrl+- | Zoom out |
+| F11 | Toggle fullscreen |
 
 ## Navigation
 
@@ -101,7 +130,12 @@ spectacular-app/
 
 ## Configuration
 
-The app monitors the `specs/` directory by default. This can be changed by selecting a different directory through the app or modifying the `DEFAULT_SPECS_PATH` in `electron/main.ts`.
+The app monitors the folder specified by the `--path` command line argument, or defaults to `./specs` in the current working directory.
+
+To change the monitored folder at runtime:
+1. Use **File > Select Folder...** (Ctrl+O) from the menu bar
+2. Browse to the desired folder containing markdown files
+3. The file tree and path display will update automatically
 
 ## License
 
