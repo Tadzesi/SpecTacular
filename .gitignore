@@ -30,6 +30,7 @@ npm-debug.log*
 # Local env files
 .env.local
 .env.*.local
+.vs
 
 # Windows special files
 nul

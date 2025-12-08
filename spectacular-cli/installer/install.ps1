@@ -199,12 +199,15 @@ if ($Local) {
 }
 
 if (-not $skipDownload) {
-# Configure proxy if environment variables are set
+# Configure proxy if environment variables are set (CLM-compatible approach)
 $proxyUrl = if ($env:HTTPS_PROXY) { $env:HTTPS_PROXY } else { $env:HTTP_PROXY }
+$proxyParams = @{}
 if ($proxyUrl) {
     Write-Info "Using proxy: $proxyUrl"
-    [System.Net.WebRequest]::DefaultWebProxy = New-Object System.Net.WebProxy($proxyUrl, $true)
-    [System.Net.WebRequest]::DefaultWebProxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+    $proxyParams = @{
+        Proxy = $proxyUrl
+        ProxyUseDefaultCredentials = $true
+    }
 }
 
 # Determine download URL
@@ -223,7 +226,7 @@ try {
     }
 
     try {
-        $release = Invoke-RestMethod -Uri $releaseUrl -Headers $headers -TimeoutSec 30
+        $release = Invoke-RestMethod -Uri $releaseUrl -Headers $headers -TimeoutSec 30 @proxyParams
     } catch {
         # If GitHub API fails, try direct download URL pattern
         Write-Warn "Could not fetch from GitHub API. Trying direct download..."
@@ -277,11 +280,8 @@ $tempFile = Join-Path $env:TEMP "spectacular-download.exe"
 try {
     Write-Info "Downloading..."
 
-    $webClient = New-Object System.Net.WebClient
-    if ($proxyUrl) {
-        $webClient.Proxy = [System.Net.WebRequest]::DefaultWebProxy
-    }
-    $webClient.DownloadFile($downloadUrl, $tempFile)
+    # Use Invoke-WebRequest instead of WebClient for CLM compatibility
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $tempFile -UseBasicParsing @proxyParams
 
     Write-Success "Download complete"
 } catch {
@@ -315,6 +315,7 @@ if (-not $NoPath) {
 
             # Broadcast environment change to notify other applications (Explorer, terminals)
             # This allows new terminals to pick up PATH changes without system restart
+            # Note: This may fail in Constrained Language Mode - that's OK, PATH is still updated
             try {
                 Add-Type -Namespace Win32 -Name NativeMethods -MemberDefinition @"
                     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
