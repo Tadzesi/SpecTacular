@@ -78,9 +78,10 @@ Write-Host "  SpecTacular CLI Installer" -ForegroundColor Magenta
 Write-Host "  =========================" -ForegroundColor Magenta
 Write-Host ""
 
-# Detect architecture
-$arch = if ([Environment]::Is64BitOperatingSystem) {
-    if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "win-arm64" } else { "win-x64" }
+# Detect architecture (CLM-compatible using environment variables)
+$procArch = $env:PROCESSOR_ARCHITECTURE
+$arch = if ($procArch -eq "AMD64" -or $procArch -eq "ARM64") {
+    if ($procArch -eq "ARM64") { "win-arm64" } else { "win-x64" }
 } else {
     Write-Err "32-bit Windows is not supported."
     exit 1
@@ -180,10 +181,10 @@ if ($Local) {
         Copy-Item -Path $LocalSourcePath -Destination $targetPath -Force
         Write-Success "Installed to: $targetPath"
 
-        # Also copy PDB if exists
-        $pdbSource = [System.IO.Path]::ChangeExtension($LocalSourcePath, ".pdb")
+        # Also copy PDB if exists (use string replacement for CLM compatibility)
+        $pdbSource = $LocalSourcePath -replace '\.exe$', '.pdb'
         if (Test-Path $pdbSource) {
-            $pdbTarget = [System.IO.Path]::ChangeExtension($targetPath, ".pdb")
+            $pdbTarget = $targetPath -replace '\.exe$', '.pdb'
             Copy-Item -Path $pdbSource -Destination $pdbTarget -Force
             Write-Info "Copied debug symbols"
         }
@@ -302,12 +303,18 @@ try {
 } # End of if (-not $skipDownload)
 
 # Add to PATH if not already present (shared for both local and remote install)
+# Uses registry cmdlets for Constrained Language Mode (CLM) compatibility
 if (-not $NoPath) {
-    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    if ($userPath -notlike "*$InstallDir*") {
-        try {
-            $newPath = "$InstallDir;$userPath"
-            [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+    try {
+        # Read current user PATH from registry (CLM-compatible)
+        $regPath = "HKCU:\Environment"
+        $userPath = (Get-ItemProperty -Path $regPath -Name Path -ErrorAction SilentlyContinue).Path
+        if (-not $userPath) { $userPath = "" }
+
+        if ($userPath -notlike "*$InstallDir*") {
+            # Update PATH in registry (CLM-compatible)
+            $newPath = if ($userPath) { "$InstallDir;$userPath" } else { $InstallDir }
+            Set-ItemProperty -Path $regPath -Name Path -Value $newPath
             Write-Success "Added to PATH"
 
             # Also update current session
@@ -332,12 +339,12 @@ if (-not $NoPath) {
             } catch {
                 Write-Info "New terminals will have PATH updated automatically"
             }
-        } catch {
-            Write-Warn "Could not add to PATH automatically."
-            Write-Warn "Please add manually: $InstallDir"
+        } else {
+            Write-Info "Already in PATH"
         }
-    } else {
-        Write-Info "Already in PATH"
+    } catch {
+        Write-Warn "Could not add to PATH automatically."
+        Write-Warn "Please add manually: $InstallDir"
     }
 } else {
     Write-Info "Skipping PATH modification (-NoPath specified)"
