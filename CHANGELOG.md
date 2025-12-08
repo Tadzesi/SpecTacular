@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-12-08
+
+### Added
+
+- **Bundled Dashboard Installation** - Installer now downloads and installs both CLI and Dashboard automatically
+- **Dashboard Version Display** - Application version is now shown in the dashboard header
+- **`-NoDashboard` Flag** - New installer parameter to skip dashboard installation if desired
+
+### Changed
+
+- Dashboard executable renamed to `SpectacularDashboard.exe` for clarity
+- Dashboard installs to `~/.spectacular/dashboard/` alongside CLI
+- `spectacular dashboard --install` now provides clearer guidance when dashboard is missing
+- ConfigService updated with `GetDashboardInstallDir()` method for consistent path resolution
+
+## [1.1.4] - 2025-12-08
+
+### Fixed
+
+- **PATH Duplicate Prevention** - Fixed installer PATH handling to prevent duplicate entries:
+  - Replace `-notlike` wildcard check with accurate path entry comparison
+  - Split PATH by semicolon and use `-contains` for exact matching
+  - Check session PATH before updating to prevent duplicates in current session
+
+## [1.1.3] - 2025-12-08
+
+### Fixed
+
+- **Complete CLM Compatibility** - Additional fixes for PowerShell Constrained Language Mode:
+  - Replace `[Environment]::Is64BitOperatingSystem` with `$env:PROCESSOR_ARCHITECTURE`
+  - Replace `[System.IO.Path]::ChangeExtension()` with string `-replace` operator
+  - Replace `[Environment]::GetEnvironmentVariable/SetEnvironmentVariable` with registry cmdlets
+  - All .NET static method calls now use CLM-compatible alternatives
+
 ## [1.1.2] - 2025-12-08
 
 ### Fixed
@@ -108,7 +142,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.4...v1.2.0
+[1.1.4]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.3...v1.1.4
+[1.1.3]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.0.0...v1.1.0
