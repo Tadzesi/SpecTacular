@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-12-08
+
+### Changed
+
+- **Simplified Installation** - Both CLI and Dashboard now install to the same directory (`~/.spectacular/bin/`)
+- **Direct Dashboard Execution** - `SpectacularDashboard` can now be run directly from command line (in PATH)
+- **Optimized Installer** - Cleaner, more efficient installation script with better error handling
+- **Streamlined Downloads** - CLI exe and Dashboard zip downloaded separately for faster installation
+
+### Fixed
+
+- Fixed ConfigService to look for dashboard in correct location (`~/.spectacular/bin/`)
+
 ## [1.2.0] - 2025-12-08
 
 ### Added
@@ -142,7 +155,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.4...v1.2.0
 [1.1.4]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.2...v1.1.3

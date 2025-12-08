@@ -292,7 +292,7 @@ public static class DashboardCommand
         Console.WriteLine("    https://github.com/Tadzesi/SpecTacular/releases");
         Console.WriteLine();
         Console.WriteLine("  After installation, the dashboard will be available at:");
-        Console.WriteLine($"    {ConfigService.GetDashboardInstallDir()}");
+        Console.WriteLine($"    {ConfigService.GetInstallDir()}");
 
         await Task.CompletedTask;
     }

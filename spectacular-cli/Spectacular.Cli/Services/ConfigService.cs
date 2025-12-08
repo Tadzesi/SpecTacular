@@ -113,13 +113,13 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Gets the default dashboard install directory (~/.spectacular/dashboard)
+    /// Gets the default install directory (~/.spectacular/bin)
     /// </summary>
-    public static string GetDashboardInstallDir()
+    public static string GetInstallDir()
     {
         return Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".spectacular", "dashboard");
+            ".spectacular", "bin");
     }
 
     /// <summary>
@@ -135,14 +135,23 @@ public static class ConfigService
             return config.DashboardPath;
         }
 
-        // 2. Check default install location (~/.spectacular/dashboard)
-        var defaultPath = Path.Combine(GetDashboardInstallDir(), "SpectacularDashboard.exe");
+        // 2. Check default install location (~/.spectacular/bin)
+        var defaultPath = Path.Combine(GetInstallDir(), "SpectacularDashboard.exe");
         if (File.Exists(defaultPath))
         {
             return defaultPath;
         }
 
-        // 3. Check legacy install location (%LOCALAPPDATA%\Programs\spectacular)
+        // 3. Check legacy install location (~/.spectacular/dashboard)
+        var legacyDashboardPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".spectacular", "dashboard", "SpectacularDashboard.exe");
+        if (File.Exists(legacyDashboardPath))
+        {
+            return legacyDashboardPath;
+        }
+
+        // 4. Check legacy install location (%LOCALAPPDATA%\Programs\spectacular)
         var legacyPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Programs", "spectacular", "SpectacularDashboard.exe");
@@ -151,7 +160,7 @@ public static class ConfigService
             return legacyPath;
         }
 
-        // 4. Check common dev locations
+        // 5. Check common dev locations
         var devPaths = new[]
         {
             @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\win-unpacked\SpectacularDashboard.exe",
