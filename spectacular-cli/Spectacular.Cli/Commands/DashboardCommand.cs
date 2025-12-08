@@ -212,9 +212,20 @@ public static class DashboardCommand
         Console.WriteLine("  ===================================");
         Console.WriteLine();
 
-        // Look for installer
-        var installerPath = FindInstaller();
+        // Check if dashboard is already installed
+        var existingPath = ConfigService.ResolveDashboardPath(projectPath);
+        if (existingPath != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"  Dashboard already installed: {existingPath}");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("  Run 'spectacular dashboard' to launch it.");
+            return;
+        }
 
+        // Look for local installer (development scenario)
+        var installerPath = FindInstaller();
         if (installerPath != null)
         {
             Console.WriteLine($"  Found installer: {installerPath}");
@@ -249,7 +260,7 @@ public static class DashboardCommand
             return;
         }
 
-        // Check for unpacked version
+        // Check for unpacked version (development scenario)
         var unpackedPath = FindUnpackedDashboard();
         if (unpackedPath != null)
         {
@@ -266,21 +277,22 @@ public static class DashboardCommand
             return;
         }
 
-        // No installer found - provide download instructions
+        // Dashboard not found - provide installation instructions
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("  No installer or dashboard found locally.");
+        Console.WriteLine("  Dashboard not installed.");
         Console.ResetColor();
         Console.WriteLine();
-        Console.WriteLine("  Download the dashboard from:");
-        Console.WriteLine("    https://github.com/nicholasricci/SpecTacular/releases");
+        Console.WriteLine("  To install the dashboard, run the SpecTacular installer:");
         Console.WriteLine();
-        Console.WriteLine("  Or build from source:");
-        Console.WriteLine("    cd spectacular-dashboard");
-        Console.WriteLine("    npm install");
-        Console.WriteLine("    npm run build:win");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("    irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex");
+        Console.ResetColor();
         Console.WriteLine();
-        Console.WriteLine("  Then set the path:");
-        Console.WriteLine("    spectacular dashboard --set-exe \"C:\\path\\to\\SpecTacular.exe\"");
+        Console.WriteLine("  Or download from:");
+        Console.WriteLine("    https://github.com/Tadzesi/SpecTacular/releases");
+        Console.WriteLine();
+        Console.WriteLine("  After installation, the dashboard will be available at:");
+        Console.WriteLine($"    {ConfigService.GetDashboardInstallDir()}");
 
         await Task.CompletedTask;
     }
@@ -289,8 +301,8 @@ public static class DashboardCommand
     {
         var possiblePaths = new[]
         {
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "spectacular-dashboard", "release", "SpecTacular Setup 1.0.0.exe"),
-            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\SpecTacular Setup 1.0.0.exe"
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "spectacular-dashboard", "release", "SpectacularDashboard Setup 1.0.0.exe"),
+            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\SpectacularDashboard Setup 1.0.0.exe"
         };
 
         foreach (var possiblePath in possiblePaths)
@@ -316,8 +328,8 @@ public static class DashboardCommand
     {
         var possiblePaths = new[]
         {
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "spectacular-dashboard", "release", "win-unpacked", "SpecTacular.exe"),
-            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\win-unpacked\SpecTacular.exe"
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "spectacular-dashboard", "release", "win-unpacked", "SpectacularDashboard.exe"),
+            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\win-unpacked\SpectacularDashboard.exe"
         };
 
         foreach (var possiblePath in possiblePaths)

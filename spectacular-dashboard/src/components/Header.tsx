@@ -35,6 +35,9 @@ export function Header({
         <h1 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
           SpecTacular
         </h1>
+        <span className="text-xs text-light-text-muted dark:text-dark-text-muted">
+          v{__APP_VERSION__}
+        </span>
 
         {/* Navigation Buttons */}
         <div className="flex items-center gap-1 ml-4">

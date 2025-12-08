@@ -113,6 +113,16 @@ public static class ConfigService
     }
 
     /// <summary>
+    /// Gets the default dashboard install directory (~/.spectacular/dashboard)
+    /// </summary>
+    public static string GetDashboardInstallDir()
+    {
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".spectacular", "dashboard");
+    }
+
+    /// <summary>
     /// Resolves the dashboard executable path from config or defaults
     /// </summary>
     public static string? ResolveDashboardPath(string? projectPath = null)
@@ -125,22 +135,28 @@ public static class ConfigService
             return config.DashboardPath;
         }
 
-        // 2. Check default install location
-        var defaultPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Programs", "spectacular", "SpecTacular.exe");
-
+        // 2. Check default install location (~/.spectacular/dashboard)
+        var defaultPath = Path.Combine(GetDashboardInstallDir(), "SpectacularDashboard.exe");
         if (File.Exists(defaultPath))
         {
             return defaultPath;
         }
 
-        // 3. Check common dev locations
+        // 3. Check legacy install location (%LOCALAPPDATA%\Programs\spectacular)
+        var legacyPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Programs", "spectacular", "SpectacularDashboard.exe");
+        if (File.Exists(legacyPath))
+        {
+            return legacyPath;
+        }
+
+        // 4. Check common dev locations
         var devPaths = new[]
         {
-            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\win-unpacked\SpecTacular.exe",
+            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\win-unpacked\SpectacularDashboard.exe",
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Projects", "SpecTacular", "spectacular-dashboard", "release", "win-unpacked", "SpecTacular.exe")
+                "Projects", "SpecTacular", "spectacular-dashboard", "release", "win-unpacked", "SpectacularDashboard.exe")
         };
 
         foreach (var devPath in devPaths)

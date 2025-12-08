@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Installs SpecTacular CLI tool for Windows.
+    Installs SpecTacular CLI tool and Dashboard for Windows.
 
 .DESCRIPTION
-    Downloads and installs the SpecTacular CLI tool, adding it to the user's PATH.
+    Downloads and installs the SpecTacular CLI tool and Dashboard application, adding CLI to the user's PATH.
 
     Can install from:
     1. Local build (publish folder) - when run from repository
@@ -28,6 +28,9 @@
 .PARAMETER NoPath
     Skip adding to PATH.
 
+.PARAMETER NoDashboard
+    Skip installing the dashboard application.
+
 .EXAMPLE
     # Install from local build
     .\install.ps1 -Local
@@ -37,11 +40,15 @@
 
     # Install specific version
     $env:SPECTACULAR_VERSION = "1.0.0"; irm https://[domain]/install.ps1 | iex
+
+    # Install CLI only (skip dashboard)
+    .\install.ps1 -NoDashboard
 #>
 
 param(
     [switch]$Local,
     [switch]$NoPath,
+    [switch]$NoDashboard,
     [string]$InstallDir,
     [string]$Version
 )
@@ -52,7 +59,9 @@ $ErrorActionPreference = 'Stop'
 $RepoOwner = "Tadzesi"
 $RepoName = "SpecTacular"
 $ExeName = "spectacular.exe"
+$DashboardExeName = "SpectacularDashboard.exe"
 $DefaultInstallDir = Join-Path $env:USERPROFILE ".spectacular\bin"
+$DashboardInstallDir = Join-Path $env:USERPROFILE ".spectacular\dashboard"
 
 # Allow override via environment variables or parameters
 if (-not $InstallDir) {
@@ -65,6 +74,10 @@ if (-not $Version) {
 if ($env:SPECTACULAR_LOCAL -eq "true") {
     $Local = $true
 }
+# Check for -NoDashboard via environment variable as well
+if ($env:SPECTACULAR_NO_DASHBOARD -eq "true") {
+    $NoDashboard = $true
+}
 
 # Colors
 function Write-Success { param($msg) Write-Host "[OK] $msg" -ForegroundColor Green }
@@ -74,8 +87,8 @@ function Write-Err { param($msg) Write-Host "[ERROR] $msg" -ForegroundColor Red 
 
 # Banner
 Write-Host ""
-Write-Host "  SpecTacular CLI Installer" -ForegroundColor Magenta
-Write-Host "  =========================" -ForegroundColor Magenta
+Write-Host "  SpecTacular Installer" -ForegroundColor Magenta
+Write-Host "  =====================" -ForegroundColor Magenta
 Write-Host ""
 
 # Detect architecture (CLM-compatible using environment variables)
@@ -357,13 +370,129 @@ if (-not $NoPath) {
     Write-Info "Skipping PATH modification (-NoPath specified)"
 }
 
-# Verify installation
+# Verify CLI installation
+Write-Host ""
+Write-Host "  CLI Installation" -ForegroundColor Cyan
+Write-Host "  -----------------" -ForegroundColor Cyan
 $verifyPath = Join-Path $InstallDir $ExeName
 try {
     $installedVersion = & $verifyPath --version 2>&1
-    Write-Success "Verified: $installedVersion"
+    Write-Success "CLI verified: $installedVersion"
 } catch {
-    Write-Warn "Could not verify installation. You may need to restart your terminal."
+    Write-Warn "Could not verify CLI installation. You may need to restart your terminal."
+}
+
+# ============================================
+# Dashboard Installation
+# ============================================
+if (-not $NoDashboard) {
+    Write-Host ""
+    Write-Host "  Dashboard Installation" -ForegroundColor Cyan
+    Write-Host "  ----------------------" -ForegroundColor Cyan
+
+    $dashboardInstalled = $false
+
+    if ($Local) {
+        # Look for local dashboard build
+        $localDashboardPaths = @()
+
+        if ($ScriptDir) {
+            $repoRoot = Split-Path (Split-Path $ScriptDir -Parent) -Parent
+            $localDashboardPaths += Join-Path $repoRoot "spectacular-dashboard\release\win-unpacked"
+        }
+
+        $localDashboardPaths += @(
+            ".\spectacular-dashboard\release\win-unpacked",
+            "..\spectacular-dashboard\release\win-unpacked"
+        )
+
+        $LocalDashboardDir = $null
+        foreach ($path in $localDashboardPaths) {
+            $testExe = Join-Path $path $DashboardExeName
+            if (Test-Path $testExe -ErrorAction SilentlyContinue) {
+                $LocalDashboardDir = (Resolve-Path $path).Path
+                break
+            }
+        }
+
+        if ($LocalDashboardDir) {
+            Write-Info "Local dashboard found: $LocalDashboardDir"
+
+            # Create dashboard directory
+            if (-not (Test-Path $DashboardInstallDir)) {
+                New-Item -ItemType Directory -Path $DashboardInstallDir -Force | Out-Null
+            }
+
+            # Copy all files from win-unpacked to dashboard install dir
+            try {
+                Copy-Item -Path "$LocalDashboardDir\*" -Destination $DashboardInstallDir -Recurse -Force
+                Write-Success "Dashboard installed to: $DashboardInstallDir"
+                $dashboardInstalled = $true
+            } catch {
+                Write-Err "Failed to copy dashboard files: $_"
+            }
+        } else {
+            Write-Warn "Local dashboard build not found."
+            Write-Warn "Build it first: cd spectacular-dashboard && npm run build"
+        }
+    } else {
+        # Download dashboard from GitHub releases
+        Write-Info "Downloading dashboard..."
+
+        try {
+            # Find dashboard asset in release
+            $dashboardAssetName = "spectacular-dashboard-$arch.zip"
+            $dashboardAsset = $null
+
+            if ($release) {
+                $dashboardAsset = $release.assets | Where-Object { $_.name -eq $dashboardAssetName } | Select-Object -First 1
+            }
+
+            if (-not $dashboardAsset) {
+                # Try direct URL pattern
+                $dashboardDownloadUrl = "https://github.com/$RepoOwner/$RepoName/releases/download/$tagName/$dashboardAssetName"
+            } else {
+                $dashboardDownloadUrl = $dashboardAsset.browser_download_url
+            }
+
+            Write-Info "Dashboard URL: $dashboardDownloadUrl"
+
+            # Download dashboard zip
+            $dashboardTempFile = Join-Path $env:TEMP "spectacular-dashboard.zip"
+            Invoke-WebRequest -Uri $dashboardDownloadUrl -OutFile $dashboardTempFile -UseBasicParsing @proxyParams
+
+            Write-Success "Dashboard download complete"
+
+            # Create dashboard directory
+            if (-not (Test-Path $DashboardInstallDir)) {
+                New-Item -ItemType Directory -Path $DashboardInstallDir -Force | Out-Null
+            }
+
+            # Extract dashboard
+            Write-Info "Extracting dashboard..."
+            Expand-Archive -Path $dashboardTempFile -DestinationPath $DashboardInstallDir -Force
+
+            # Clean up temp file
+            Remove-Item -Path $dashboardTempFile -Force -ErrorAction SilentlyContinue
+
+            Write-Success "Dashboard installed to: $DashboardInstallDir"
+            $dashboardInstalled = $true
+
+        } catch {
+            Write-Warn "Could not download dashboard: $_"
+            Write-Warn "You can install it later with: spectacular dashboard --install"
+        }
+    }
+
+    # Verify dashboard installation
+    if ($dashboardInstalled) {
+        $dashboardExePath = Join-Path $DashboardInstallDir $DashboardExeName
+        if (Test-Path $dashboardExePath) {
+            Write-Success "Dashboard verified: $dashboardExePath"
+        }
+    }
+} else {
+    Write-Info "Skipping dashboard installation (-NoDashboard specified)"
 }
 
 # Done
@@ -375,5 +504,6 @@ Write-Host "    1. Open a new terminal (to refresh PATH)"
 Write-Host "    2. Navigate to your project directory"
 Write-Host "    3. Run: spectacular init"
 Write-Host ""
+Write-Host "  Launch dashboard: spectacular dashboard"
 Write-Host "  For help: spectacular --help"
 Write-Host ""
