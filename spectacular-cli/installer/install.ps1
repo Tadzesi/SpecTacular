@@ -311,14 +311,21 @@ if (-not $NoPath) {
         $userPath = (Get-ItemProperty -Path $regPath -Name Path -ErrorAction SilentlyContinue).Path
         if (-not $userPath) { $userPath = "" }
 
-        if ($userPath -notlike "*$InstallDir*") {
+        # Check if path already exists (split and compare for accurate matching)
+        $pathEntries = $userPath -split ';' | Where-Object { $_ -ne '' }
+        $alreadyInPath = $pathEntries -contains $InstallDir
+
+        if (-not $alreadyInPath) {
             # Update PATH in registry (CLM-compatible)
             $newPath = if ($userPath) { "$InstallDir;$userPath" } else { $InstallDir }
             Set-ItemProperty -Path $regPath -Name Path -Value $newPath
             Write-Success "Added to PATH"
 
-            # Also update current session
-            $env:Path = "$InstallDir;$env:Path"
+            # Also update current session (only if not already present)
+            $sessionPathEntries = $env:Path -split ';' | Where-Object { $_ -ne '' }
+            if ($sessionPathEntries -notcontains $InstallDir) {
+                $env:Path = "$InstallDir;$env:Path"
+            }
 
             # Broadcast environment change to notify other applications (Explorer, terminals)
             # This allows new terminals to pick up PATH changes without system restart
