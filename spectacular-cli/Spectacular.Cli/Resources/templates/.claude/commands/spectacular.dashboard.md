@@ -1,47 +1,49 @@
 ---
-description: Launch the SpecTacular Dashboard - task monitor and specification viewer
+description: Open the SpecTacular Dashboard - task monitor and specification viewer
 ---
 
 ## Purpose
 
-This command launches the **SpecTacular Dashboard**, an Electron-based application for:
+This command opens the **SpecTacular Dashboard** VS Code extension for:
 - Real-time monitoring of specification files
 - Visual task progress tracking
 - Markdown preview with status tags and wikilinks
 
 ## Instructions
 
-Launch the SpecTacular Dashboard using the CLI command, pointing to the `specs` folder:
+The SpecTacular Dashboard is now a VS Code extension. To open it:
 
+1. **If VS Code is open**: Press `Ctrl+Shift+P` and run:
+   ```
+   SpecTacular: Open Dashboard
+   ```
+
+2. **Or click** the SpecTacular icon in VS Code's Activity Bar (left sidebar)
+
+3. **Or from command palette**: Search for "SpecTacular" commands
+
+## Installing the Extension
+
+If the extension is not installed:
+
+1. Open VS Code Extensions (`Ctrl+Shift+X`)
+2. Search for "SpecTacular Dashboard"
+3. Click Install
+
+Or install from VSIX:
 ```bash
-spectacular dashboard --path "./specs"
-```
-
-If the user provides a specific path argument, pass it to the command instead:
-
-```bash
-spectacular dashboard --path "$ARGUMENTS"
-```
-
-The CLI will automatically find the dashboard from:
-1. Project config (`.spectacular/config.json`)
-2. Global config (`%LOCALAPPDATA%\spectacular\config.json`)
-3. Default install location
-4. Development locations
-
-If not found, guide the user to configure it:
-```bash
-spectacular dashboard --set-exe "C:\path\to\SpecTacular.exe" --global
+code --install-extension spectacular-dashboard-1.4.0.vsix
 ```
 
 ## Dashboard Features
 
-When launched, the dashboard provides:
-- **File Tree Navigation**: Browse specs/ folder structure
+When opened, the dashboard provides:
+- **File Tree Navigation**: Browse specs/ folder structure via VS Code's native explorer
 - **Live Preview**: Real-time markdown rendering with hot reload
 - **Status Tags**: Visual indicators for task status (#status/done, #status/in-progress, etc.)
 - **Wikilinks**: Navigate between linked markdown files
-- **Theme Support**: Dark/light mode toggle
+- **Theme Support**: Automatically matches VS Code's theme (dark/light)
+- **Navigation History**: Back/forward buttons, mouse button 3/4 support
 
 ## User Input
 
@@ -51,6 +53,5 @@ $ARGUMENTS
 
 ## Path Resolution
 
-- By default, use `--path "./specs"` to monitor the specs folder
-- If the user provides a specific path argument, use that path instead
-- The path is relative to the current working directory
+- The extension auto-detects `specs/` or `.spectacular/` folders in your workspace
+- Configure a custom path via VS Code settings: `spectacular.defaultRootFolder`

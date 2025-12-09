@@ -2,20 +2,22 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Current Version: 1.2.1**
+**Current Version: 1.4.0**
 
 ## Overview
 
 SpecTacular is a specification-driven development toolkit consisting of:
 - **spectacular-cli**: Command-line tool for scaffolding and managing SpecTacular projects
-- **spectacular-dashboard**: Electron desktop application for previewing and monitoring markdown specification files with real-time filesystem watching
+- **spectacular-vscode**: VS Code extension for previewing and monitoring markdown specification files with real-time file watching
+
+> **Note:** The Electron desktop dashboard (`spectacular-dashboard`) was removed in v1.4.0 to reduce distribution size. The VS Code extension now provides all dashboard functionality with better IDE integration.
 
 ## Tech Stack
 
 - **Frontend**: React 18 + TypeScript + Vite
-- **Desktop**: Electron 28
+- **VS Code Extension**: VS Code Extension API + React Webview
 - **Styling**: Tailwind CSS with dark/light theme support
-- **File Watching**: chokidar for cross-platform filesystem monitoring
+- **File Watching**: VS Code FileSystemWatcher
 - **Markdown**: react-markdown with remark-gfm and syntax highlighting
 
 ## Development Commands
@@ -32,14 +34,16 @@ cd ../installer
 .\install.ps1 -Local
 ```
 
-### Dashboard (spectacular-dashboard/)
+### VS Code Extension (spectacular-vscode/)
 ```bash
-cd spectacular-dashboard
+cd spectacular-vscode
 npm install
-npm run dev      # Development mode with hot reload
-npm run build    # Production build (creates release/win-unpacked/)
-npm run test     # Run tests with vitest
-npm run lint     # Lint TypeScript files
+npm run compile          # Build extension and webview
+npm run watch            # Development mode with hot reload
+npm run package          # Create .vsix package for distribution
+
+# Install for development (run as Administrator)
+.\install-dev.ps1        # Creates symlink to VS Code extensions folder
 ```
 
 ## Architecture
@@ -54,27 +58,37 @@ Key features:
 - Single-file executable with self-contained runtime
 - Embedded resource templates for project scaffolding
 
-### Dashboard - Electron Main Process (`spectacular-dashboard/electron/`)
-- `main.ts` - Application entry, native menu bar, IPC handlers, window management
-- `preload.ts` - Context bridge API exposure to renderer
-- `fileWatcher.ts` - chokidar-based filesystem monitoring
+### VS Code Extension (spectacular-vscode/)
+- `src/extension.ts` - Extension entry point, commands, active editor listener
+- `src/DashboardPanel.ts` - WebviewPanel manager, file operations, message handling
+- `src/SpecsTreeProvider.ts` - Custom TreeDataProvider for filtered specs tree view
+- `src/FileDecorationProvider.ts` - File decoration for modified indicators
+- `src/fileOperations.ts` - File tree building, markdown file filtering
+- `webview/` - React application (preview-only layout)
 
 Key features:
-- Native menu bar with File > Select Folder (Ctrl+O)
-- Parses `--path` argument for initial folder to monitor
-- Sends `folder-selected` IPC event when folder changes
+- **Native VS Code Integration** - Uses VS Code's explorer for primary navigation
+- **Filtered Specs Tree** - Custom tree view showing only `specs/` or `.spectacular/` folders
+- **Auto-Preview** - `onDidChangeActiveTextEditor` listener automatically previews markdown files
+- **File Decorations** - Modified files show dot indicator via FileDecorationProvider
+- Auto-reveals specs folder on startup
+- Dashboard opens in editor panel (full-width preview)
+- Auto-detects `specs` folder first, then `.spectacular` folder
+- Real-time file watching via VS Code FileSystemWatcher
+- Theme integration with VS Code (light/dark mode)
+- Navigation history with back/forward buttons
+- Recent files dropdown in header
+- Mouse back/forward button support (Mouse Button 3/4)
+- Keyboard navigation (Alt+Left/Right)
 
-### Dashboard - React Renderer (`spectacular-dashboard/src/`)
-- **Components**: File tree navigation, markdown preview, theme toggle, path display
-- **Hooks**: `useFileTree`, `useFileWatcher`, `useNavigationHistory`, `useTheme`
-- **Contexts**: Theme provider with localStorage persistence
-
-### IPC Communication
-Renderer communicates with main process via `window.electronAPI` exposed through preload script. Key events:
-- `get-config` - Returns current root path and watch status
-- `get-file-tree` - Returns file tree for specified path
-- `folder-selected` - Sent from native menu when folder is selected
-- `file-change` - Sent when monitored files change
+### VS Code Extension Message Protocol
+Webview communicates with extension via `postMessage`. Key messages:
+- `ready` - Webview signals it's ready to receive config
+- `readFile` - Request file content
+- `selectFile` - Extension tells webview to display a file (from editor change)
+- `config` - Extension sends initial configuration
+- `fileContent` - Extension sends file content
+- `fileChange` - Extension notifies of file changes
 
 ## Project Structure
 
@@ -86,15 +100,22 @@ spectacular-cli/              # .NET CLI tool
 │   └── Resources/templates/ # Embedded scaffolding templates
 └── Spectacular.Cli.Tests/   # Unit tests
 
-spectacular-dashboard/        # Electron + React application
-├── electron/                # Main process code
-├── src/                     # React renderer code
-│   ├── components/          # UI components
-│   ├── hooks/               # Custom React hooks
-│   ├── contexts/            # React context providers
-│   └── types/               # TypeScript interfaces
-└── release/                 # Built artifacts
-    └── win-unpacked/        # Unpacked Windows build
+spectacular-vscode/           # VS Code extension
+├── src/                     # Extension source code
+│   ├── extension.ts         # Entry point, commands
+│   ├── DashboardPanel.ts    # Webview panel manager
+│   ├── SpecsTreeProvider.ts # Specs tree view provider
+│   ├── FileDecorationProvider.ts # File modification indicators
+│   └── fileOperations.ts    # File tree operations
+├── webview/                 # React webview application
+│   ├── src/
+│   │   ├── components/      # UI components
+│   │   ├── hooks/           # Custom React hooks
+│   │   └── types/           # TypeScript interfaces
+│   └── dist/                # Built webview assets
+├── dist/                    # Built extension
+├── resources/               # Extension icons
+└── package.json             # Extension manifest
 
 # Scaffolded project structure (created by `spectacular init`):
 .spectacular/

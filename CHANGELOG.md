@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-12-09
+
+### Removed
+
+- **Electron Dashboard** (`spectacular-dashboard`) - Removed in favor of VS Code extension for significant size reduction:
+  - Electron app was ~200MB unpacked vs ~2MB for VS Code extension
+  - All functionality now available in VS Code extension
+  - Users with existing Electron installations can delete `~/.spectacular/dashboard/`
+
+### Changed
+
+- Project now has two components: CLI and VS Code Extension
+- Updated CLAUDE.md to remove Electron references
+
+## [1.3.0] - 2025-12-09
+
+### Added
+
+- **VS Code Extension** (`spectacular-vscode`) - Full dashboard functionality as a VS Code extension:
+  - Activity bar icon with SpecTacular branding for quick access
+  - Welcome view with buttons to open dashboard in editor panel
+  - Dashboard opens in full editor panel (not sidebar) for optimal viewing
+  - Auto-detection of project folders: tries `specs` first, then `.spectacular`
+  - Real-time file watching via VS Code FileSystemWatcher API
+  - Theme integration with VS Code (automatically matches light/dark mode)
+  - Navigation history with back/forward buttons in header
+  - Mouse back/forward button support (Mouse Button 3/4)
+  - Keyboard navigation shortcuts (Alt+Left for back, Alt+Right for forward)
+  - Folder selection dialog to change root directory
+  - All markdown features from Electron dashboard (status tags, wikilinks, syntax highlighting)
+  - Resizable sidebar panel for file tree navigation
+  - File modification indicators
+  - Configurable settings: `spectacular.autoOpenOnStartup`, `spectacular.watchDebounceMs`, `spectacular.defaultRootFolder`
+
+### Changed
+
+- Updated CLAUDE.md to document VS Code extension architecture and development commands
+- Project now has three components: CLI, Electron Dashboard, and VS Code Extension
+
 ## [1.2.1] - 2025-12-08
 
 ### Changed
@@ -155,7 +194,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.4...v1.2.0
 [1.1.4]: https://github.com/Tadzesi/SpecTacular/compare/v1.1.3...v1.1.4

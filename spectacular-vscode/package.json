@@ -1,0 +1,167 @@
+{
+  "name": "spectacular-dashboard",
+  "displayName": "SpecTacular Dashboard",
+  "description": "Markdown specification viewer with real-time file monitoring for SpecTacular projects",
+  "version": "1.4.0",
+  "publisher": "spectacular",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "specification",
+    "documentation",
+    "preview",
+    "dashboard"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "spectacular",
+          "title": "SpecTacular",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "spectacular": [
+        {
+          "id": "spectacular.specsTree",
+          "name": "Spec Files",
+          "type": "tree"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "spectacular.specsTree",
+        "contents": "No specs or .spectacular folder found in workspace.\n\n[Open Dashboard](command:spectacular.openDashboard)\n\n[Reveal Specs in Explorer](command:spectacular.revealSpecs)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "spectacular.openDashboard",
+        "title": "Open Dashboard",
+        "category": "SpecTacular",
+        "icon": "$(preview)"
+      },
+      {
+        "command": "spectacular.openDashboardToSide",
+        "title": "Open Dashboard to Side",
+        "category": "SpecTacular",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "spectacular.openSpecFile",
+        "title": "Open Spec File",
+        "category": "SpecTacular"
+      },
+      {
+        "command": "spectacular.refreshTree",
+        "title": "Refresh Specs Tree",
+        "category": "SpecTacular",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "spectacular.revealSpecs",
+        "title": "Reveal Specs in Explorer",
+        "category": "SpecTacular",
+        "icon": "$(folder-opened)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "spectacular.openDashboard",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "spectacular.openDashboard",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "spectacular.openDashboardToSide",
+          "when": "resourceLangId == markdown",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "spectacular.refreshTree",
+          "when": "view == spectacular.specsTree",
+          "group": "navigation"
+        },
+        {
+          "command": "spectacular.revealSpecs",
+          "when": "view == spectacular.specsTree",
+          "group": "navigation"
+        },
+        {
+          "command": "spectacular.openDashboard",
+          "when": "view == spectacular.specsTree",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "SpecTacular Dashboard",
+      "properties": {
+        "spectacular.autoOpenOnStartup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically open the dashboard when a SpecTacular project is detected"
+        },
+        "spectacular.watchDebounceMs": {
+          "type": "number",
+          "default": 300,
+          "description": "Debounce time in milliseconds for file watcher events"
+        },
+        "spectacular.defaultRootFolder": {
+          "type": "string",
+          "default": "",
+          "description": "Default root folder path for the dashboard (relative to workspace)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "npm run compile:extension && npm run compile:webview",
+    "compile:extension": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --minify",
+    "compile:webview": "cd webview && npm run build",
+    "watch": "concurrently \"npm run watch:extension\" \"npm run watch:webview\"",
+    "watch:extension": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --watch",
+    "watch:webview": "cd webview && npm run dev",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.22.0",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.19.8",
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.2"
+  }
+}

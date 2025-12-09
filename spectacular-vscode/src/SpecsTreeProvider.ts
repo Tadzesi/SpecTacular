@@ -1,0 +1,226 @@
+import * as vscode from 'vscode';
+import * as path from 'path';
+
+export class SpecsTreeProvider implements vscode.TreeDataProvider<SpecsTreeItem> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<SpecsTreeItem | undefined | null | void>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  private workspaceRoot: string | undefined;
+  private specsRoot: vscode.Uri | undefined;
+  private itemCache: Map<string, SpecsTreeItem> = new Map();
+
+  constructor() {
+    this.workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    this._findSpecsRoot();
+  }
+
+  private async _findSpecsRoot(): Promise<void> {
+    if (!this.workspaceRoot) return;
+
+    const workspaceUri = vscode.Uri.file(this.workspaceRoot);
+
+    // Try specs folder first
+    const specsFolder = vscode.Uri.joinPath(workspaceUri, 'specs');
+    try {
+      await vscode.workspace.fs.stat(specsFolder);
+      this.specsRoot = specsFolder;
+      this._onDidChangeTreeData.fire();
+      return;
+    } catch {
+      // specs folder doesn't exist
+    }
+
+    // Try .spectacular folder
+    const spectacularFolder = vscode.Uri.joinPath(workspaceUri, '.spectacular');
+    try {
+      await vscode.workspace.fs.stat(spectacularFolder);
+      this.specsRoot = spectacularFolder;
+      this._onDidChangeTreeData.fire();
+      return;
+    } catch {
+      // .spectacular folder doesn't exist either
+    }
+
+    this.specsRoot = undefined;
+  }
+
+  refresh(): void {
+    this.itemCache.clear();
+    this._findSpecsRoot();
+    this._onDidChangeTreeData.fire();
+  }
+
+  getTreeItem(element: SpecsTreeItem): vscode.TreeItem {
+    return element;
+  }
+
+  // Normalize path for comparison: lowercase and forward slashes
+  private _normalizePath(p: string): string {
+    return p.replace(/\\/g, '/').toLowerCase();
+  }
+
+  // Required for reveal() to work with nested items
+  getParent(element: SpecsTreeItem): SpecsTreeItem | undefined {
+    const parentPath = path.dirname(element.resourceUri.fsPath);
+    const normalizedParentPath = this._normalizePath(parentPath);
+    const normalizedSpecsRoot = this.specsRoot ? this._normalizePath(this.specsRoot.fsPath) : '';
+
+    // If parent is specs root, return undefined (top level)
+    if (normalizedParentPath === normalizedSpecsRoot) {
+      return undefined;
+    }
+
+    // Return cached parent item
+    return this.itemCache.get(normalizedParentPath);
+  }
+
+  async getChildren(element?: SpecsTreeItem): Promise<SpecsTreeItem[]> {
+    if (!this.specsRoot) {
+      return [];
+    }
+
+    const targetUri = element ? element.resourceUri : this.specsRoot;
+    if (!targetUri) return [];
+
+    try {
+      const entries = await vscode.workspace.fs.readDirectory(targetUri);
+      const items: SpecsTreeItem[] = [];
+
+      // Sort: folders first, then alphabetically
+      entries.sort((a, b) => {
+        if (a[1] === vscode.FileType.Directory && b[1] !== vscode.FileType.Directory) {
+          return -1;
+        }
+        if (a[1] !== vscode.FileType.Directory && b[1] === vscode.FileType.Directory) {
+          return 1;
+        }
+        return a[0].localeCompare(b[0]);
+      });
+
+      for (const [name, fileType] of entries) {
+        // Skip hidden files except .spectacular
+        if (name.startsWith('.') && name !== '.spectacular') {
+          continue;
+        }
+
+        // Skip common non-relevant directories
+        if (['node_modules', 'dist', 'build', 'out'].includes(name)) {
+          continue;
+        }
+
+        const entryUri = vscode.Uri.joinPath(targetUri, name);
+
+        if (fileType === vscode.FileType.Directory) {
+          // Check if folder contains markdown files
+          const hasMarkdown = await this._containsMarkdown(entryUri);
+          if (hasMarkdown) {
+            const item = new SpecsTreeItem(
+              name,
+              vscode.TreeItemCollapsibleState.Collapsed,
+              entryUri,
+              true
+            );
+            // Cache for getParent lookup
+            this.itemCache.set(this._normalizePath(entryUri.fsPath), item);
+            items.push(item);
+          }
+        } else if (fileType === vscode.FileType.File && this._isMarkdownFile(name)) {
+          const item = new SpecsTreeItem(
+            name,
+            vscode.TreeItemCollapsibleState.None,
+            entryUri,
+            false
+          );
+          // Cache for getParent lookup
+          this.itemCache.set(this._normalizePath(entryUri.fsPath), item);
+          items.push(item);
+        }
+      }
+
+      return items;
+    } catch {
+      return [];
+    }
+  }
+
+  private _isMarkdownFile(filename: string): boolean {
+    const ext = path.extname(filename).toLowerCase();
+    return ext === '.md' || ext === '.markdown';
+  }
+
+  private async _containsMarkdown(folderUri: vscode.Uri): Promise<boolean> {
+    try {
+      const entries = await vscode.workspace.fs.readDirectory(folderUri);
+      for (const [name, fileType] of entries) {
+        if (fileType === vscode.FileType.File && this._isMarkdownFile(name)) {
+          return true;
+        }
+        if (fileType === vscode.FileType.Directory && !name.startsWith('.')) {
+          const subUri = vscode.Uri.joinPath(folderUri, name);
+          if (await this._containsMarkdown(subUri)) {
+            return true;
+          }
+        }
+      }
+    } catch {
+      // Ignore errors
+    }
+    return false;
+  }
+
+  getSpecsRoot(): vscode.Uri | undefined {
+    return this.specsRoot;
+  }
+
+  // Find a tree item by file path for revealing in tree
+  async findTreeItem(filePath: string): Promise<SpecsTreeItem | undefined> {
+    const normalizedPath = this._normalizePath(filePath);
+    return this._findItemRecursive(normalizedPath, undefined);
+  }
+
+  private async _findItemRecursive(normalizedFilePath: string, parent?: SpecsTreeItem): Promise<SpecsTreeItem | undefined> {
+    const children = await this.getChildren(parent);
+    for (const child of children) {
+      const childPath = this._normalizePath(child.resourceUri.fsPath);
+      if (childPath === normalizedFilePath) {
+        return child;
+      }
+      if (child.isFolder) {
+        // Only recurse if the target path starts with this folder's path
+        if (normalizedFilePath.startsWith(childPath + '/')) {
+          const found = await this._findItemRecursive(normalizedFilePath, child);
+          if (found) return found;
+        }
+      }
+    }
+    return undefined;
+  }
+}
+
+export class SpecsTreeItem extends vscode.TreeItem {
+  constructor(
+    public readonly label: string,
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly resourceUri: vscode.Uri,
+    public readonly isFolder: boolean
+  ) {
+    super(label, collapsibleState);
+
+    this.resourceUri = resourceUri;
+    this.tooltip = resourceUri.fsPath;
+
+    if (isFolder) {
+      this.contextValue = 'folder';
+      this.iconPath = vscode.ThemeIcon.Folder;
+    } else {
+      this.contextValue = 'file';
+      this.iconPath = vscode.ThemeIcon.File;
+      // When clicked, open the file and trigger preview
+      this.command = {
+        command: 'spectacular.openSpecFile',
+        title: 'Open Spec File',
+        arguments: [resourceUri]
+      };
+    }
+  }
+}

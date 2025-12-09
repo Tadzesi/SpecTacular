@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+webview/node_modules/
+
+# Build outputs
+dist/
+out/
+webview/dist/
+
+# VS Code extension package
+*.vsix
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Test coverage
+coverage/

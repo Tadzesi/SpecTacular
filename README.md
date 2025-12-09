@@ -2,7 +2,7 @@
 
 ![SpecTacular Dashboard](images/SpecTacular.png)
 
-A markdown specification viewer - an Electron desktop application for previewing and monitoring markdown specification files with real-time filesystem watching.
+A specification-driven development toolkit with a VS Code extension for previewing and monitoring markdown specification files with real-time filesystem watching.
 
 ## Why SpecTacular?
 
@@ -24,45 +24,39 @@ SpecTacular solves these problems by providing:
 
 ## Quick Start
 
-### Install SpecTacular CLI (Recommended)
+### Step 1: Install the CLI
 
-**Option 1: One-liner installation (PowerShell)**
+**One-liner installation (PowerShell):**
 
 ```powershell
 irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/master/spectacular-cli/installer/install.ps1 | iex
 ```
 
-This will:
-- Download the latest SpecTacular CLI
-- Install to `~/.spectacular/bin/`
-- Add to your PATH automatically
-- Broadcast environment changes so new terminals pick up the PATH immediately
-
-**Option 2: Local installation from source**
-
-```powershell
-# Clone the repository
-git clone https://github.com/Tadzesi/SpecTacular.git
-cd SpecTacular/spectacular-cli/Spectacular.Cli
-
-# Build and publish
-dotnet publish -c Release -r win-x64 -o ../publish/win-x64
-
-# Run the installer
-cd ../installer
-.\install.ps1 -Local
-```
-
-### Verify Installation
-
-After installation, open a new terminal and run:
+**Verify installation:**
 
 ```bash
 spectacular --version
-# Expected output: spectacular 1.1.2
 ```
 
-### Initialize a Project
+### Step 2: Install VS Code Extension
+
+The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
+
+**Download:** [spectacular-dashboard-1.4.0.vsix](spectacular-vscode/spectacular-dashboard-1.4.0.vsix)
+
+**Installation:**
+
+1. Download the VSIX file from this repository
+2. Open VS Code and press `Ctrl+Shift+X` (Extensions)
+3. Click the `...` menu (top-right) → **Install from VSIX...**
+4. Select the downloaded `.vsix` file
+
+**Or via command line:**
+```bash
+code --install-extension spectacular-dashboard-1.4.0.vsix
+```
+
+### Step 3: Initialize Your Project
 
 ```bash
 cd your-project
@@ -75,16 +69,27 @@ This creates:
 - `specs/` - Directory for feature specifications
 - `CLAUDE.md` - Project instructions for Claude Code
 
-### CLI Commands
+### Step 4: Use the Dashboard
+
+1. Click the **SpecTacular icon** in VS Code's Activity Bar (left sidebar)
+2. Click **"Open Dashboard"** to view your specs
+3. Browse files using VS Code's explorer or the Specs Tree view
+4. Click `[[wikilinks]]` to navigate between documents
+5. View status tags like `#status/done` as visual icons
+
+## CLI Reference
+
+### Commands
 
 ```bash
 spectacular init      # Initialize SpecTacular in current directory
+spectacular dashboard # Show VS Code extension info
 spectacular --version # Show version
 spectacular --help    # Show help
 spectacular update    # Update to latest version
 ```
 
-### CLI Options
+### Options
 
 ```bash
 spectacular init --name "ProjectName"     # Set project name
@@ -93,60 +98,21 @@ spectacular init --path /other/folder     # Initialize different directory
 spectacular init --force                  # Overwrite existing files
 ```
 
-### Uninstall
-
-To remove SpecTacular CLI:
+### Build from Source
 
 ```powershell
-# Run the uninstaller
-~/.spectacular/bin/uninstall.ps1
-
-# Or manually:
-# 1. Delete ~/.spectacular/bin/
-# 2. Remove from PATH (System Properties > Environment Variables)
-```
-
-### Manual Installation (Dashboard Only)
-
-For the SpecTacular Dashboard viewer application:
-
-#### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-#### Installation
-
-```bash
-# Clone the repository
 git clone https://github.com/Tadzesi/SpecTacular.git
-cd SpecTacular
-
-# Install dependencies
-cd spectacular-dashboard
-npm install
-
-# Run in development mode
-npm run dev
+cd SpecTacular/spectacular-cli/Spectacular.Cli
+dotnet publish -c Release -r win-x64 -o ../publish/win-x64
+cd ../installer
+.\install.ps1 -Local
 ```
 
-#### Build for Production
+### Uninstall
 
-```bash
-# Full build with installer
-npm run build
-
-# The installer will be created at:
-# release/SpecTacular Setup 1.1.2.exe (Windows)
+```powershell
+~/.spectacular/bin/uninstall.ps1
 ```
-
-## Usage
-
-1. **Launch SpecTacular** - Run the application
-2. **Open a folder** - Select a directory containing your markdown specs
-3. **Browse files** - Use the sidebar file tree to navigate
-4. **Click wikilinks** - `[[document-name]]` links navigate between files
-5. **Track status** - Status tags like `#status/done` display as visual icons
 
 ## Markdown Features
 
@@ -180,17 +146,19 @@ Links matching `task-\d+` patterns show a copy button on hover for easy referenc
 
 ```
 spectacular/
-├── spectacular-dashboard/    # Main Electron + React application
-│   ├── electron/            # Main process (IPC, file watching)
-│   ├── src/                 # React renderer
-│   │   ├── components/      # UI components
-│   │   ├── hooks/           # Custom React hooks
-│   │   └── contexts/        # Theme context
-│   └── release/             # Built installers
-├── .spectacular/            # Configuration and templates
-│   ├── examples/            # Example spec files
-│   └── templates/           # Document templates
-└── images/                  # Project images
+├── spectacular-cli/          # .NET CLI tool for scaffolding
+│   ├── Spectacular.Cli/      # Main CLI project
+│   └── installer/            # Installation scripts
+├── spectacular-vscode/       # VS Code extension
+│   ├── src/                  # Extension host code
+│   └── webview/              # React webview (dashboard UI)
+│       ├── src/components/   # UI components
+│       ├── src/hooks/        # Custom React hooks
+│       └── src/contexts/     # Theme context
+├── .spectacular/             # Configuration and templates
+│   ├── examples/             # Example spec files
+│   └── templates/            # Document templates
+└── images/                   # Project images
 ```
 
 ## Recommended Spec Structure
@@ -410,26 +378,31 @@ This copies prompts to both `.claude/commands/` and `.cursor/rules/` with approp
 
 ## Tech Stack
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **Desktop**: Electron 28
+- **CLI**: .NET 8 (C#)
+- **VS Code Extension**: TypeScript + VS Code Extension API
+- **Dashboard Webview**: React 18 + TypeScript + Vite
 - **Styling**: Tailwind CSS
-- **File Watching**: chokidar
 - **Markdown**: react-markdown + remark-gfm
 
 ## Development
 
+### CLI
+
 ```bash
-# Development with hot reload
-npm run dev
+cd spectacular-cli/Spectacular.Cli
+dotnet build                    # Build CLI
+dotnet test                     # Run tests
+dotnet publish -c Release -r win-x64 -o ../publish/win-x64  # Publish
+```
 
-# Run tests
-npm run test
+### VS Code Extension
 
-# Lint code
-npm run lint
-
-# Build only Vite (no Electron)
-npm run build:vite
+```bash
+cd spectacular-vscode
+npm install
+npm run dev        # Development mode with hot reload
+npm run compile    # Build extension
+npm run package    # Create VSIX installer
 ```
 
 ## License

@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Installs SpecTacular CLI tool and Dashboard for Windows.
+    Installs SpecTacular CLI tool for Windows.
 
 .DESCRIPTION
-    Downloads and installs the SpecTacular CLI tool and Dashboard application to ~/.spectacular/bin,
+    Downloads and installs the SpecTacular CLI tool to ~/.spectacular/bin,
     adding it to the user's PATH.
 
     Can install from:
@@ -29,9 +29,6 @@
 .PARAMETER NoPath
     Skip adding to PATH.
 
-.PARAMETER NoDashboard
-    Skip installing the dashboard application.
-
 .EXAMPLE
     # Install from local build
     .\install.ps1 -Local
@@ -40,16 +37,12 @@
     irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex
 
     # Install specific version
-    $env:SPECTACULAR_VERSION = "1.2.1"; irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex
-
-    # Install CLI only (skip dashboard)
-    .\install.ps1 -NoDashboard
+    $env:SPECTACULAR_VERSION = "1.4.0"; irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex
 #>
 
 param(
     [switch]$Local,
     [switch]$NoPath,
-    [switch]$NoDashboard,
     [string]$InstallDir,
     [string]$Version
 )
@@ -60,7 +53,6 @@ $ErrorActionPreference = 'Stop'
 $RepoOwner = "Tadzesi"
 $RepoName = "SpecTacular"
 $CliExeName = "spectacular.exe"
-$DashboardExeName = "SpectacularDashboard.exe"
 $DefaultInstallDir = Join-Path $env:USERPROFILE ".spectacular\bin"
 
 # Allow override via environment variables or parameters
@@ -73,10 +65,6 @@ if (-not $Version) {
 # Check for -Local via environment variable as well
 if ($env:SPECTACULAR_LOCAL -eq "true") {
     $Local = $true
-}
-# Check for -NoDashboard via environment variable as well
-if ($env:SPECTACULAR_NO_DASHBOARD -eq "true") {
-    $NoDashboard = $true
 }
 
 # Colors
@@ -176,7 +164,7 @@ if (-not $Local) {
             Write-Warn "Could not fetch release info. Using version: $Version"
         } else {
             Write-Err "Cannot determine latest version. Please specify version:"
-            Write-Err '  $env:SPECTACULAR_VERSION = "1.2.1"; irm ... | iex'
+            Write-Err '  $env:SPECTACULAR_VERSION = "1.4.0"; irm ... | iex'
             exit 1
         }
     }
@@ -249,83 +237,6 @@ try {
 }
 
 # ============================================
-# Dashboard Installation
-# ============================================
-if (-not $NoDashboard) {
-    Write-Host ""
-    Write-Host "  Dashboard Installation" -ForegroundColor Cyan
-    Write-Host "  ----------------------" -ForegroundColor Cyan
-
-    if ($Local) {
-        # Find local dashboard build
-        $LocalDashboardDir = $null
-        $dashboardSearchPaths = @()
-
-        if ($ScriptDir) {
-            $repoRoot = Split-Path (Split-Path $ScriptDir -Parent) -Parent
-            $dashboardSearchPaths += Join-Path $repoRoot "spectacular-dashboard\release\win-unpacked"
-        }
-        $dashboardSearchPaths += @(
-            ".\spectacular-dashboard\release\win-unpacked",
-            "..\spectacular-dashboard\release\win-unpacked"
-        )
-
-        foreach ($path in $dashboardSearchPaths) {
-            $testExe = Join-Path $path $DashboardExeName
-            if (Test-Path $testExe -ErrorAction SilentlyContinue) {
-                $LocalDashboardDir = (Resolve-Path $path).Path
-                break
-            }
-        }
-
-        if ($LocalDashboardDir) {
-            Write-Info "Installing from: $LocalDashboardDir"
-            Copy-Item -Path "$LocalDashboardDir\*" -Destination $InstallDir -Recurse -Force
-            Write-Success "Dashboard installed to: $InstallDir"
-        } else {
-            Write-Warn "Local dashboard build not found."
-            Write-Warn "Build it first: cd spectacular-dashboard && npm run build"
-        }
-
-    } else {
-        # Download dashboard zip from GitHub
-        $dashboardAssetName = "spectacular-dashboard-$arch.zip"
-        $dashboardAsset = $release.assets | Where-Object { $_.name -eq $dashboardAssetName } | Select-Object -First 1
-
-        if ($dashboardAsset) {
-            $dashboardDownloadUrl = $dashboardAsset.browser_download_url
-        } else {
-            $dashboardDownloadUrl = "https://github.com/$RepoOwner/$RepoName/releases/download/$tagName/$dashboardAssetName"
-        }
-
-        Write-Info "Downloading dashboard..."
-        $dashboardTempFile = Join-Path $env:TEMP "spectacular-dashboard.zip"
-
-        try {
-            Invoke-WebRequest -Uri $dashboardDownloadUrl -OutFile $dashboardTempFile -UseBasicParsing @proxyParams
-            Write-Success "Dashboard download complete"
-
-            Write-Info "Extracting dashboard..."
-            Expand-Archive -Path $dashboardTempFile -DestinationPath $InstallDir -Force
-            Remove-Item -Path $dashboardTempFile -Force -ErrorAction SilentlyContinue
-            Write-Success "Dashboard installed to: $InstallDir"
-
-        } catch {
-            Write-Warn "Could not download dashboard: $_"
-            Write-Warn "You can install it later with: spectacular dashboard --install"
-        }
-    }
-
-    # Verify dashboard
-    $dashboardPath = Join-Path $InstallDir $DashboardExeName
-    if (Test-Path $dashboardPath) {
-        Write-Success "Dashboard verified: $dashboardPath"
-    }
-} else {
-    Write-Info "Skipping dashboard installation (-NoDashboard specified)"
-}
-
-# ============================================
 # Add to PATH
 # ============================================
 if (-not $NoPath) {
@@ -384,8 +295,12 @@ Write-Host "  Installation complete!" -ForegroundColor Green
 Write-Host ""
 Write-Host "  Quick start:" -ForegroundColor Cyan
 Write-Host "    spectacular init          - Initialize a project"
-Write-Host "    spectacular dashboard     - Launch dashboard"
-Write-Host "    SpectacularDashboard      - Launch dashboard directly"
+Write-Host "    spectacular dashboard     - VS Code extension info"
+Write-Host ""
+Write-Host "  For the Dashboard, install the VS Code extension:" -ForegroundColor Yellow
+Write-Host "    1. Open VS Code Extensions (Ctrl+Shift+X)"
+Write-Host "    2. Search for 'SpecTacular Dashboard'"
+Write-Host "    3. Click Install"
 Write-Host ""
 Write-Host "  For help: spectacular --help"
 Write-Host ""
