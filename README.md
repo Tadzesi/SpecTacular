@@ -42,18 +42,20 @@ spectacular --version
 
 The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
 
-**Download:** [spectacular-dashboard-1.4.0.vsix](spectacular-vscode/spectacular-dashboard-1.4.0.vsix)
+**Download:** [spectacular-dashboard-1.4.1.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.4.1/spectacular-dashboard-1.4.1.vsix)
 
 **Installation:**
 
-1. Download the VSIX file from this repository
+1. Download the VSIX file from the link above
 2. Open VS Code and press `Ctrl+Shift+X` (Extensions)
 3. Click the `...` menu (top-right) → **Install from VSIX...**
 4. Select the downloaded `.vsix` file
 
 **Or via command line:**
 ```bash
-code --install-extension spectacular-dashboard-1.4.0.vsix
+# Download and install
+curl -L -o spectacular-dashboard.vsix https://github.com/Tadzesi/SpecTacular/releases/download/v1.4.1/spectacular-dashboard-1.4.1.vsix
+code --install-extension spectacular-dashboard.vsix
 ```
 
 ### Step 3: Initialize Your Project
