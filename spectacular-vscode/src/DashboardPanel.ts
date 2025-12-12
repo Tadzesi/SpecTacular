@@ -129,6 +129,18 @@ export class DashboardPanel {
     this._panel.reveal(undefined, preserveFocus);
   }
 
+  public notifyFileChange(filePath: string) {
+    // Notify webview of external file change so it can refresh content
+    this._postMessage({
+      type: 'fileChange',
+      data: {
+        type: 'change',
+        path: filePath,
+        timestamp: Date.now()
+      }
+    });
+  }
+
   private async _handleMessage(message: { command: string; [key: string]: unknown }) {
     switch (message.command) {
       case 'ready':

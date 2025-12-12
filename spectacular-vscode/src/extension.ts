@@ -117,14 +117,53 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(editorChangeDisposable);
 
-  // Listen for file changes to update decorations
+  // Listen for file changes to update decorations and refresh tree
   const fileWatcher = vscode.workspace.createFileSystemWatcher('**/*.md');
+
+  // Debounce tree refresh to avoid excessive updates
+  let refreshTimeout: NodeJS.Timeout | undefined;
+  const debouncedRefresh = () => {
+    if (refreshTimeout) {
+      clearTimeout(refreshTimeout);
+    }
+    refreshTimeout = setTimeout(() => {
+      specsTreeProvider.refresh();
+    }, 300);
+  };
+
   fileWatcher.onDidChange((uri) => {
     if (isInSpecsFolder(uri.fsPath)) {
       fileDecorationProvider.markModified(uri);
+      // Also notify dashboard panel of file change
+      DashboardPanel.currentPanel?.notifyFileChange(uri.fsPath);
     }
   });
+
+  fileWatcher.onDidCreate((uri) => {
+    if (isInSpecsFolder(uri.fsPath)) {
+      debouncedRefresh();
+    }
+  });
+
+  fileWatcher.onDidDelete((uri) => {
+    if (isInSpecsFolder(uri.fsPath)) {
+      debouncedRefresh();
+      fileDecorationProvider.clearModified(uri);
+    }
+  });
+
   context.subscriptions.push(fileWatcher);
+
+  // Also watch for folder changes (for when folders are added/removed)
+  const folderWatcher = vscode.workspace.createFileSystemWatcher('**/specs/**');
+  folderWatcher.onDidCreate(() => debouncedRefresh());
+  folderWatcher.onDidDelete(() => debouncedRefresh());
+  context.subscriptions.push(folderWatcher);
+
+  const spectacularFolderWatcher = vscode.workspace.createFileSystemWatcher('**/.spectacular/**');
+  spectacularFolderWatcher.onDidCreate(() => debouncedRefresh());
+  spectacularFolderWatcher.onDidDelete(() => debouncedRefresh());
+  context.subscriptions.push(spectacularFolderWatcher);
 
   // Listen for document saves to clear modified decoration
   vscode.workspace.onDidSaveTextDocument((document) => {

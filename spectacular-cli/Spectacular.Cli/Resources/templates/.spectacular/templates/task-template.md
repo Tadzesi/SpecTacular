@@ -15,8 +15,15 @@ tags: [task]
 
 ## Acceptance Criteria
 
-- [ ] Criterion 1
-- [ ] Criterion 2
+1. [ ] Criterion 1
+2. [ ] Criterion 2
+
+## Steps
+
+1. [First step]
+   1.1. [Sub-step if needed]
+2. [Second step]
+3. [Third step]
 
 ## Technical Notes
 

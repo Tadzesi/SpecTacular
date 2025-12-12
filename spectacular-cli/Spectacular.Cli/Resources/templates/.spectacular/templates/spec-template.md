@@ -21,15 +21,17 @@
 
 ## Requirements
 
-- REQ-1: [First requirement - must be testable]
-- REQ-2: [Second requirement]
-- REQ-3: [Third requirement]
+1. [First requirement - must be testable]
+   1.1. [Sub-requirement if needed]
+   1.2. [Sub-requirement if needed]
+2. [Second requirement]
+3. [Third requirement]
 
 ## Success Criteria
 
-- [Measurable outcome 1]
-- [Measurable outcome 2]
+1. [Measurable outcome 1]
+2. [Measurable outcome 2]
 
 ## Notes
 
-- [Any assumptions or constraints]
+1. [Any assumptions or constraints]

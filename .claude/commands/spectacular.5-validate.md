@@ -8,6 +8,14 @@ description: (5/5) Validate implementation is complete - tasks, build, and tests
 $ARGUMENTS
 ```
 
+## Pre-Processing (REQUIRED)
+
+Before executing this command:
+1. **Detect Language**: Identify the language of the user's input
+2. **Fix Typos**: Correct any spelling or grammatical errors to understand intent
+3. **Clarify Intent**: If the request is ambiguous, ask for clarification
+4. **Respond in User's Language**: Use the language from CLAUDE.md preferences or the prompt language
+
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Purpose

@@ -8,6 +8,14 @@ description: (4/5) Execute all tasks defined in tasks.md one by one.
 $ARGUMENTS
 ```
 
+## Pre-Processing (REQUIRED)
+
+Before executing this command:
+1. **Detect Language**: Identify the language of the user's input
+2. **Fix Typos**: Correct any spelling or grammatical errors to understand intent
+3. **Clarify Intent**: If the request is ambiguous, ask for clarification
+4. **Respond in User's Language**: Use the language from CLAUDE.md preferences or the prompt language
+
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Purpose
@@ -58,4 +66,4 @@ After each task, report:
 When all tasks are done, output:
 - Total tasks completed
 - Files created/modified
-- Next step: `5-validate`
+- Next step: `/spectacular.5-validate`

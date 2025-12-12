@@ -8,6 +8,14 @@ description: (ALL) Orchestrates the full pipeline - spec, plan, tasks, implement
 $ARGUMENTS
 ```
 
+## Pre-Processing (REQUIRED)
+
+Before executing this command:
+1. **Detect Language**: Identify the language of the user's input
+2. **Fix Typos**: Correct any spelling or grammatical errors to understand intent
+3. **Clarify Intent**: If the request is ambiguous, ask for clarification
+4. **Respond in User's Language**: Use the language from CLAUDE.md preferences or the prompt language
+
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Purpose
@@ -70,6 +78,13 @@ Run validation checks:
 1. Tasks: All marked [x] in tasks.md
 2. Build: Run appropriate build command
 3. Tests: Run appropriate test command
+
+## Markdown Formatting
+
+When generating markdown files, use hierarchical numbering:
+- Main steps: `1.`, `2.`, `3.`
+- Sub-steps: `1.1`, `1.2`, `2.1`, `2.2`
+- Sub-sub-steps: `1.1.1`, `1.1.2` (if needed)
 
 ## Final Report
 

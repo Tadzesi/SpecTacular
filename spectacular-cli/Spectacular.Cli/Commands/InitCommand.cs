@@ -35,24 +35,29 @@ public static class InitCommand
             new[] { "--tool", "-l" },
             "AI tool to generate files for: claude, cursor, or both (interactive if not specified)");
 
+        var languageOption = new Option<string?>(
+            new[] { "--language", "-lang" },
+            "Preferred language(s) for AI responses (e.g., 'English', 'Slovak', 'English, Slovak')");
+
         var command = new Command("init", "Initialize SpecTacular workflow in current directory")
         {
             nameOption,
             techOption,
             pathOption,
             forceOption,
-            toolOption
+            toolOption,
+            languageOption
         };
 
-        command.SetHandler(async (name, tech, path, force, tool) =>
+        command.SetHandler(async (name, tech, path, force, tool, language) =>
         {
-            await ExecuteAsync(name, tech, path, force, tool);
-        }, nameOption, techOption, pathOption, forceOption, toolOption);
+            await ExecuteAsync(name, tech, path, force, tool, language);
+        }, nameOption, techOption, pathOption, forceOption, toolOption, languageOption);
 
         return command;
     }
 
-    private static async Task ExecuteAsync(string? name, string tech, string? path, bool force, string? tool)
+    private static async Task ExecuteAsync(string? name, string tech, string? path, bool force, string? tool, string? language)
     {
         var targetPath = path ?? Directory.GetCurrentDirectory();
         var projectName = name ?? Path.GetFileName(targetPath) ?? "MyProject";
@@ -67,6 +72,9 @@ public static class InitCommand
             return;
         }
 
+        // Determine language preference
+        var languagePref = PromptForLanguage(language);
+
         Console.WriteLine();
         Console.WriteLine("  SpecTacular Init");
         Console.WriteLine("  ================");
@@ -75,6 +83,7 @@ public static class InitCommand
         Console.WriteLine($"  Path:     {targetPath}");
         Console.WriteLine($"  Tech:     {tech}");
         Console.WriteLine($"  Tool:     {GetToolDisplayName(aiTool.Value)}");
+        Console.WriteLine($"  Language: {languagePref}");
         Console.WriteLine();
 
         // Check if already initialized
@@ -91,7 +100,7 @@ public static class InitCommand
         try
         {
             var scaffoldService = new ScaffoldService();
-            var createdFiles = await scaffoldService.ScaffoldAsync(targetPath, projectName, tech, aiTool.Value);
+            var createdFiles = await scaffoldService.ScaffoldAsync(targetPath, projectName, tech, aiTool.Value, languagePref);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"  [OK] Created {createdFiles.Count} files:");
@@ -140,6 +149,29 @@ public static class InitCommand
             Console.WriteLine($"  [ERROR] {ex.Message}");
             Console.ResetColor();
         }
+    }
+
+    private static string PromptForLanguage(string? languageArg)
+    {
+        // If language argument was provided, use it
+        if (!string.IsNullOrWhiteSpace(languageArg))
+        {
+            return languageArg;
+        }
+
+        // Interactive prompt
+        Console.WriteLine();
+        Console.WriteLine("  What language(s) do you prefer for AI responses?");
+        Console.WriteLine();
+        Console.WriteLine("  Examples: English, Slovak, English and Slovak, German");
+        Console.WriteLine();
+        Console.Write("  Language(s): ");
+        Console.Out.Flush();
+
+        var input = Console.ReadLine()?.Trim();
+        Console.WriteLine();
+
+        return string.IsNullOrWhiteSpace(input) ? "English" : input;
     }
 
     private static AiTool? ParseOrPromptForTool(string? toolArg)

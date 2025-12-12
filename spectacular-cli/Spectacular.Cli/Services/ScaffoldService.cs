@@ -12,7 +12,7 @@ public class ScaffoldService
         _templateService = new TemplateService();
     }
 
-    public async Task<List<string>> ScaffoldAsync(string targetPath, string projectName, string techStack, AiTool aiTool = AiTool.Both)
+    public async Task<List<string>> ScaffoldAsync(string targetPath, string projectName, string techStack, AiTool aiTool = AiTool.Both, string language = "English")
     {
         var createdFiles = new List<string>();
         var assembly = Assembly.GetExecutingAssembly();
@@ -29,7 +29,8 @@ public class ScaffoldService
             { "{{PROJECT_NAME}}", projectName },
             { "{{TECH_STACK}}", techStack },
             { "{{DATE}}", DateTime.Now.ToString("yyyy-MM-dd") },
-            { "{{TECH_STACK_LIST}}", FormatTechStackList(techStack) }
+            { "{{TECH_STACK_LIST}}", FormatTechStackList(techStack) },
+            { "{{LANGUAGE}}", language }
         };
 
         foreach (var resourceName in resourceNames)

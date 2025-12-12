@@ -8,6 +8,14 @@ description: (3/5) Generate actionable task list from spec and plan.
 $ARGUMENTS
 ```
 
+## Pre-Processing (REQUIRED)
+
+Before executing this command:
+1. **Detect Language**: Identify the language of the user's input
+2. **Fix Typos**: Correct any spelling or grammatical errors to understand intent
+3. **Clarify Intent**: If the request is ambiguous, ask for clarification
+4. **Respond in User's Language**: Use the language from CLAUDE.md preferences or the prompt language
+
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Purpose
@@ -122,10 +130,16 @@ Any implementation notes or considerations.
 - Include **setup**, **implementation**, **testing**, and **validation** phases
 - Use clear, actionable language in task titles
 
+## Markdown Formatting
+
+When generating tasks.md and individual task files, use hierarchical numbering:
+- Main steps: `1.`, `2.`, `3.`
+- Sub-steps: `1.1`, `1.2`, `2.1`, `2.2`
+
 ### 6. Report Completion
 
 Output:
 - tasks.md file path
 - List of created task files
 - Total task count
-- Next step: `4-implement`
+- Next step: `/spectacular.4-implement`
