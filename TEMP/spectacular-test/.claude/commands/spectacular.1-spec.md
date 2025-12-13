@@ -1,0 +1,155 @@
+---
+description: (1/5) Create feature branch and specification document.
+---
+
+## User Input
+
+```text
+$ARGUMENTS
+```
+
+---
+
+# Phase 1: Prompt Perfection (REQUIRED)
+
+Before creating the spec, analyze and perfect the user's prompt. Goal: transform it into an unambiguous, executable request that requires ZERO guessing.
+
+## Step 1: Initial Analysis
+
+- Detect language (respond in user's language throughout)
+- Identify request type: [New Feature | Enhancement | Bug Fix | Refactoring | Other]
+- Extract the core intent: What does the user ultimately want to build?
+
+## Step 2: Completeness Check
+
+Verify the prompt contains:
+- [ ] **Goal** - Clear desired outcome
+- [ ] **Context** - Project area, technology, environment
+- [ ] **Scope** - Which files, components, areas affected
+- [ ] **Constraints** - Performance, security, compatibility requirements (optional)
+- [ ] **Success Criteria** - How to verify it's done
+
+Mark missing items and **ASK** about them before proceeding.
+
+## Step 3: Clarification
+
+- If anything is ambiguous or unclear, **ASK** before proceeding
+- If multiple valid approaches exist:
+  - List each option with pros/cons
+  - Mark ⭐ recommended option with reasoning
+  - Wait for user selection
+
+## Step 4: Correction
+
+- Fix grammar, spelling, sentence structure
+- Preserve all technical terms, code references, variable names EXACTLY
+- Keep original intent and tone
+- Make it clear, specific, and actionable
+
+## Step 5: Output Perfected Prompt
+
+Present the analysis in this format:
+
+```
+**Detected Language:** [Language]
+**Request Type:** [New Feature | Enhancement | Bug Fix | Refactoring | Other]
+
+**Original:**
+> [user's original input]
+
+**Completeness Check:**
+- [x] Goal: [extracted or ❌ MISSING]
+- [x] Context: [extracted or ❌ MISSING]
+- [x] Scope: [extracted or ❌ MISSING]
+- [ ] Constraints: [extracted or ❌ MISSING - optional]
+- [x] Success Criteria: [extracted or ❌ MISSING]
+
+**Questions (if any):**
+> 1. [Question about missing/unclear information]
+
+**Options (if multiple approaches):**
+> 1. [Option A] - [pros/cons]
+> 2. [Option B] - [pros/cons]
+> ⭐ **Recommended:** [Option X] - [reasoning]
+
+---
+
+**Perfected Prompt:**
+> **Goal:** [one clear sentence]
+>
+> **Context:** [environment, tech stack, background]
+>
+> **Scope:** [specific files, components, areas]
+>
+> **Requirements:**
+> 1. [First specific requirement]
+> 2. [Second specific requirement]
+>
+> **Constraints:** [any limitations, or "None"]
+>
+> **Expected Result:** [what success looks like]
+
+**Changes Made:**
+- [list of corrections and improvements]
+```
+
+## Step 6: User Confirmation Gate
+
+⏸️ **Wait for user approval.** Display:
+
+```
+Ready to create specification. Reply with:
+- `y` or `yes` — proceed with spec creation
+- `n` or `no` — cancel
+- Or type modifications for adjustments
+```
+
+**STOP HERE** and wait for user response. Only proceed to Phase 2 after receiving `y` or `yes`.
+
+---
+
+# Phase 2: Spec Creation
+
+## Purpose
+
+Create a **simplified specification** for straightforward features. This is step 1 of the pipeline:
+
+```
+1-spec -> 2-plan -> 3-tasks -> 4-implement -> 5-validate
+```
+
+## Workflow
+
+### 1. Generate Branch Name
+
+- Extract 2-4 word short name from description
+- Use action-noun format (e.g., "add-health-check", "fix-login-bug")
+
+### 2. Find Next Feature Number
+
+Check specs/ directories for highest existing number. Use N + 1.
+
+### 3. Create Feature Directory
+
+Run:
+```powershell
+.spectacular/scripts/powershell/create-new-feature.ps1 -Json -Number [N] -ShortName "[name]" "[description]"
+```
+
+### 4. Write Simplified Spec
+
+Create `spec.md` with:
+- Summary (1 paragraph)
+- User story with acceptance criteria
+- 3-5 requirements
+- Success criteria
+
+## Markdown Formatting
+
+When generating spec.md, use hierarchical numbering for requirements:
+- Main items: `1.`, `2.`, `3.`
+- Sub-items: `1.1`, `1.2`, `2.1`, `2.2`
+
+### 5. Report Completion
+
+Output branch name, spec file path, and next step: `/spectacular.2-plan`

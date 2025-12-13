@@ -1,6 +1,6 @@
 # SpecTacular
 
-![SpecTacular Dashboard](images/SpecTacular.png)
+![SpecTacular Dashboard](images/ArchitectureOfSpecTacular.jpeg)
 
 A specification-driven development toolkit with a VS Code extension for previewing and monitoring markdown specification files with real-time filesystem watching.
 
