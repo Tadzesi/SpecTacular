@@ -1,12 +1,16 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { DashboardPanel } from './DashboardPanel';
-import { SpecsTreeProvider } from './SpecsTreeProvider';
+import { SpecsTreeProvider, TreeItem } from './SpecsTreeProvider';
 import { SpecsFileDecorationProvider } from './FileDecorationProvider';
+import { TaskStatusService } from './TaskStatusService';
+import { VersionCheckService } from './VersionCheckService';
 
 let specsTreeProvider: SpecsTreeProvider;
 let fileDecorationProvider: SpecsFileDecorationProvider;
-let specsTreeView: vscode.TreeView<import('./SpecsTreeProvider').SpecsTreeItem>;
+let specsTreeView: vscode.TreeView<TreeItem>;
+let taskStatusService: TaskStatusService;
+let versionCheckService: VersionCheckService;
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('SpecTacular Dashboard extension is now active');
@@ -14,6 +18,14 @@ export function activate(context: vscode.ExtensionContext) {
   // Initialize providers
   specsTreeProvider = new SpecsTreeProvider();
   fileDecorationProvider = new SpecsFileDecorationProvider();
+  taskStatusService = TaskStatusService.getInstance();
+  versionCheckService = VersionCheckService.getInstance();
+
+  // Check for updates asynchronously (don't block activation)
+  versionCheckService.checkForUpdates().then(() => {
+    // Show notification if update is available (one-time per session)
+    versionCheckService.showUpdateNotificationIfNeeded();
+  });
 
   // Register the tree view for specs files
   specsTreeView = vscode.window.createTreeView('spectacular.specsTree', {
@@ -87,13 +99,23 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // Register command to copy text to clipboard (used by tree welcome items)
+  const copyToClipboard = vscode.commands.registerCommand(
+    'spectacular.copyToClipboard',
+    async (text: string) => {
+      await vscode.env.clipboard.writeText(text);
+      vscode.window.showInformationMessage(`Copied to clipboard: ${text}`);
+    }
+  );
+
   context.subscriptions.push(
     openDashboard,
     openDashboardToSide,
     openSpecFile,
     refreshTree,
     revealSpecs,
-    revealInTree
+    revealInTree,
+    copyToClipboard
   );
 
   // Listen for active editor changes to auto-preview markdown files in specs folders
@@ -131,11 +153,16 @@ export function activate(context: vscode.ExtensionContext) {
     }, 300);
   };
 
-  fileWatcher.onDidChange((uri) => {
+  fileWatcher.onDidChange(async (uri) => {
     if (isInSpecsFolder(uri.fsPath)) {
       fileDecorationProvider.markModified(uri);
       // Also notify dashboard panel of file change
       DashboardPanel.currentPanel?.notifyFileChange(uri.fsPath);
+
+      // Process task file status changes
+      if (taskStatusService.isTaskFile(uri.fsPath)) {
+        await taskStatusService.processTaskFileChange(uri.fsPath);
+      }
     }
   });
 
@@ -165,9 +192,15 @@ export function activate(context: vscode.ExtensionContext) {
   spectacularFolderWatcher.onDidDelete(() => debouncedRefresh());
   context.subscriptions.push(spectacularFolderWatcher);
 
-  // Listen for document saves to clear modified decoration
-  vscode.workspace.onDidSaveTextDocument((document) => {
+  // Listen for document saves to clear modified decoration and process task status
+  vscode.workspace.onDidSaveTextDocument(async (document) => {
     fileDecorationProvider.clearModified(document.uri);
+
+    // Process task file status changes on save
+    if (isInSpecsFolder(document.uri.fsPath) &&
+        taskStatusService.isTaskFile(document.uri.fsPath)) {
+      await taskStatusService.processTaskFileChange(document.uri.fsPath);
+    }
   });
 
   // Auto-reveal specs folder on startup
@@ -182,6 +215,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   DashboardPanel.dispose();
+  taskStatusService?.dispose();
 }
 
 function isMarkdownFile(filePath: string): boolean {

@@ -100,7 +100,7 @@ public static class InitCommand
         try
         {
             var scaffoldService = new ScaffoldService();
-            var createdFiles = await scaffoldService.ScaffoldAsync(targetPath, projectName, tech, aiTool.Value, languagePref);
+            var (createdFiles, skippedFiles) = await scaffoldService.ScaffoldAsync(targetPath, projectName, tech, aiTool.Value, languagePref);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"  [OK] Created {createdFiles.Count} files:");
@@ -115,6 +115,19 @@ public static class InitCommand
             if (createdFiles.Count > 10)
             {
                 Console.WriteLine($"       ... and {createdFiles.Count - 10} more");
+            }
+
+            // Show skipped files
+            if (skippedFiles.Count > 0)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"  [..] Skipped {skippedFiles.Count} existing file(s):");
+                Console.ResetColor();
+                foreach (var file in skippedFiles)
+                {
+                    Console.WriteLine($"       {file}");
+                }
             }
 
             // Auto-configure dashboard if found

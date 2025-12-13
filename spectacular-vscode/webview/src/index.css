@@ -201,3 +201,319 @@ body {
 .pulse-status {
   animation: pulse-status 2s ease-in-out infinite;
 }
+
+/* WYSIWYG Editor Styles */
+.wysiwyg-editor-container {
+  background-color: var(--bg-primary);
+}
+
+.wysiwyg-editor {
+  font-family: var(--vscode-font-family, 'Inter', 'SF Pro', system-ui, -apple-system, sans-serif);
+}
+
+.wysiwyg-editor:focus {
+  outline: none;
+}
+
+/* TipTap ProseMirror styles */
+.ProseMirror {
+  min-height: 200px;
+  padding: 16px;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--text-muted);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Editor link styles */
+.ProseMirror .editor-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ProseMirror .editor-link:hover {
+  text-decoration: underline;
+}
+
+/* Editor image styles */
+.ProseMirror .editor-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 16px 0;
+}
+
+.ProseMirror .editor-image.ProseMirror-selectednode {
+  outline: 2px solid var(--accent-blue);
+}
+
+/* Editor table styles */
+.ProseMirror .editor-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  text-align: left;
+  position: relative;
+}
+
+.ProseMirror th {
+  background-color: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.ProseMirror .selectedCell {
+  background-color: var(--accent-blue);
+  background-color: rgba(var(--accent-blue), 0.1);
+}
+
+/* Task list styles */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-top: 4px;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.ProseMirror ul[data-type="taskList"] li > div {
+  flex: 1;
+}
+
+/* Code block styles */
+.ProseMirror pre {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+.ProseMirror code {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.9em;
+  background-color: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+/* Blockquote styles */
+.ProseMirror blockquote {
+  border-left: 4px solid var(--accent-blue);
+  margin: 16px 0;
+  padding: 0 16px;
+  color: var(--text-secondary);
+}
+
+/* Heading styles */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ProseMirror h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3em;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3em;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25em;
+}
+
+/* List styles */
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 2em;
+  margin: 16px 0;
+}
+
+.ProseMirror li {
+  margin: 4px 0;
+}
+
+/* Horizontal rule */
+.ProseMirror hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 24px 0;
+}
+
+/* Status tag styles */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-tag::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-done {
+  background-color: rgba(26, 127, 55, 0.15);
+  color: #1a7f37;
+}
+
+.dark .status-done {
+  background-color: rgba(126, 214, 165, 0.15);
+  color: #7ed6a5;
+}
+
+.status-done::before {
+  background-color: #1a7f37;
+}
+
+.dark .status-done::before {
+  background-color: #7ed6a5;
+}
+
+.status-pending {
+  background-color: rgba(139, 148, 158, 0.15);
+  color: #57606a;
+}
+
+.dark .status-pending {
+  background-color: rgba(139, 148, 158, 0.15);
+  color: #8b949e;
+}
+
+.status-pending::before {
+  background-color: #8b949e;
+}
+
+.status-in-progress {
+  background-color: rgba(9, 105, 218, 0.15);
+  color: #0969da;
+}
+
+.dark .status-in-progress {
+  background-color: rgba(108, 158, 255, 0.15);
+  color: #6c9eff;
+}
+
+.status-in-progress::before {
+  background-color: #0969da;
+}
+
+.dark .status-in-progress::before {
+  background-color: #6c9eff;
+}
+
+.status-blocked {
+  background-color: rgba(207, 34, 46, 0.15);
+  color: #cf222e;
+}
+
+.dark .status-blocked {
+  background-color: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+
+.status-blocked::before {
+  background-color: #cf222e;
+}
+
+.dark .status-blocked::before {
+  background-color: #f85149;
+}
+
+.status-skipped {
+  background-color: rgba(139, 148, 158, 0.15);
+  color: #57606a;
+}
+
+.dark .status-skipped {
+  background-color: rgba(110, 118, 129, 0.15);
+  color: #6e7681;
+}
+
+.status-skipped::before {
+  background-color: #6e7681;
+}
+
+/* Wikilink styles */
+.wikilink {
+  color: var(--accent-purple);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.wikilink:hover {
+  text-decoration: underline;
+}
+
+/* Selection styles */
+.ProseMirror ::selection {
+  background-color: rgba(9, 105, 218, 0.3);
+}
+
+.dark .ProseMirror ::selection {
+  background-color: rgba(108, 158, 255, 0.3);
+}

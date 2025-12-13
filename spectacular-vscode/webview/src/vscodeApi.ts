@@ -172,6 +172,20 @@ class VSCodeBridge {
   }
 
   /**
+   * Save file content
+   */
+  public saveFile(path: string, content: string): void {
+    this.postMessage({ command: 'saveFile', path, content });
+  }
+
+  /**
+   * Save multiple files at once
+   */
+  public saveAllFiles(files: Array<{ path: string; content: string }>): void {
+    this.postMessage({ command: 'saveAllFiles', files });
+  }
+
+  /**
    * Get persisted state
    */
   public getState<T>(): T | undefined {

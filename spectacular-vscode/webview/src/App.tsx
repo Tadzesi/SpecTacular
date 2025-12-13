@@ -7,10 +7,23 @@ import type { AppConfig, FileContentResponse, FileChangeEvent } from './types';
 // Recent files limit
 const MAX_RECENT_FILES = 10;
 
+interface VersionInfo {
+  currentVersion: string;
+  latestVersion: string | null;
+  updateAvailable: boolean;
+  releaseUrl: string;
+}
+
 interface RecentFile {
   path: string;
   name: string;
   timestamp: number;
+}
+
+interface ModifiedFile {
+  path: string;
+  content: string;
+  originalContent: string;
 }
 
 function App() {
@@ -23,7 +36,10 @@ function App() {
   const [isWatching, setIsWatching] = useState(false);
   const [recentFiles, setRecentFiles] = useState<RecentFile[]>([]);
   const [showRecentDropdown, setShowRecentDropdown] = useState(false);
+  const [modifiedFiles, setModifiedFiles] = useState<Map<string, ModifiedFile>>(new Map());
+  const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
   const isNavigatingRef = useRef(false);
+  const originalContentRef = useRef<string>('');
 
   const {
     canGoBack,
@@ -49,18 +65,49 @@ function App() {
 
   // Listen for messages from VS Code
   useEffect(() => {
-    const unsubConfig = vscodeApi.on('config', (config: AppConfig) => {
+    const unsubConfig = vscodeApi.on('config', (config: AppConfig & { versionInfo?: VersionInfo }) => {
       if (config.rootPath) {
         setRootPath(config.rootPath);
       }
       setIsWatching(config.isWatching);
+      if (config.versionInfo) {
+        setVersionInfo(config.versionInfo);
+      }
       setIsReady(true);
     });
 
     const unsubFileContent = vscodeApi.on('fileContent', (data: FileContentResponse) => {
       setFileContent(data.content);
+      originalContentRef.current = data.content;
       setError(null);
       setIsLoading(false);
+    });
+
+    const unsubFileSaved = vscodeApi.on('fileSaved', (data: { path: string; success: boolean }) => {
+      if (data.success) {
+        // Update original content and remove from modified files
+        setModifiedFiles(prev => {
+          const next = new Map(prev);
+          next.delete(data.path);
+          return next;
+        });
+        // Update original content ref if it's the current file
+        if (data.path === selectedFile) {
+          originalContentRef.current = fileContent;
+        }
+      }
+    });
+
+    const unsubAllFilesSaved = vscodeApi.on('allFilesSaved', (data: { results: Array<{ path: string; success: boolean }> }) => {
+      setModifiedFiles(prev => {
+        const next = new Map(prev);
+        data.results.forEach(result => {
+          if (result.success) {
+            next.delete(result.path);
+          }
+        });
+        return next;
+      });
     });
 
     const unsubSelectFile = vscodeApi.on('selectFile', (filePath: string) => {
@@ -106,6 +153,8 @@ function App() {
     return () => {
       unsubConfig();
       unsubFileContent();
+      unsubFileSaved();
+      unsubAllFilesSaved();
       unsubSelectFile();
       unsubFolderSelected();
       unsubFileChange();
@@ -113,7 +162,7 @@ function App() {
       unsubWatchingStopped();
       unsubError();
     };
-  }, [selectedFile, addToRecentFiles, pushHistory]);
+  }, [selectedFile, fileContent, addToRecentFiles, pushHistory]);
 
   // Handle file selection (from internal navigation)
   const handleSelectFile = useCallback((path: string) => {
@@ -153,9 +202,79 @@ function App() {
     vscodeApi.setWatching(!isWatching);
   }, [isWatching]);
 
+  // Handle content changes from editor
+  const handleContentChange = useCallback((newContent: string, isModified: boolean) => {
+    if (!selectedFile) return;
+
+    setFileContent(newContent);
+
+    if (isModified) {
+      setModifiedFiles(prev => {
+        const next = new Map(prev);
+        next.set(selectedFile, {
+          path: selectedFile,
+          content: newContent,
+          originalContent: originalContentRef.current,
+        });
+        return next;
+      });
+    } else {
+      setModifiedFiles(prev => {
+        const next = new Map(prev);
+        next.delete(selectedFile);
+        return next;
+      });
+    }
+  }, [selectedFile]);
+
+  // Handle save current file
+  const handleSave = useCallback(() => {
+    if (!selectedFile) return;
+
+    const modified = modifiedFiles.get(selectedFile);
+    if (modified) {
+      vscodeApi.saveFile(selectedFile, modified.content);
+    }
+  }, [selectedFile, modifiedFiles]);
+
+  // Handle save all modified files
+  const handleSaveAll = useCallback(() => {
+    const files = Array.from(modifiedFiles.values()).map(f => ({
+      path: f.path,
+      content: f.content,
+    }));
+
+    if (files.length > 0) {
+      vscodeApi.saveAllFiles(files);
+    }
+  }, [modifiedFiles]);
+
+  // Check if current file is modified
+  const isCurrentFileModified = selectedFile ? modifiedFiles.has(selectedFile) : false;
+  const hasModifiedFiles = modifiedFiles.size > 0;
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Save: Ctrl+S
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (isCurrentFileModified) {
+          handleSave();
+        }
+        return;
+      }
+
+      // Save All: Ctrl+Shift+S
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 's') {
+        e.preventDefault();
+        if (hasModifiedFiles) {
+          handleSaveAll();
+        }
+        return;
+      }
+
+      // Navigation: Alt+Left/Right
       if (e.altKey && e.key === 'ArrowLeft' && canGoBack) {
         e.preventDefault();
         handleGoBack();
@@ -167,7 +286,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canGoBack, canGoForward, handleGoBack, handleGoForward]);
+  }, [canGoBack, canGoForward, handleGoBack, handleGoForward, isCurrentFileModified, hasModifiedFiles, handleSave, handleSaveAll]);
 
   // Mouse back/forward buttons
   useEffect(() => {
@@ -232,6 +351,27 @@ function App() {
           <h1 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
             SpecTacular
           </h1>
+
+          {/* Version Badge */}
+          {versionInfo && (
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-light-text-muted dark:text-dark-text-muted">
+                v{versionInfo.currentVersion}
+              </span>
+              {versionInfo.updateAvailable && versionInfo.latestVersion && (
+                <button
+                  onClick={() => vscodeApi.openExternal(versionInfo.releaseUrl)}
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-light-accent-blue/20 dark:bg-dark-accent-blue/20 text-light-accent-blue dark:text-dark-accent-blue hover:bg-light-accent-blue/30 dark:hover:bg-dark-accent-blue/30 transition-colors"
+                  title={`Update to v${versionInfo.latestVersion}`}
+                >
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z" />
+                  </svg>
+                  v{versionInfo.latestVersion}
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Navigation Buttons */}
           <div className="flex items-center gap-1 ml-4">
@@ -372,10 +512,14 @@ function App() {
             filePath={selectedFile}
             rootPath={rootPath || ''}
             content={fileContent}
-            isModified={false}
+            isModified={isCurrentFileModified}
             isLoading={isLoading}
             error={error}
             onNavigate={handleSelectFile}
+            onContentChange={handleContentChange}
+            onSave={handleSave}
+            onSaveAll={handleSaveAll}
+            hasModifiedFiles={hasModifiedFiles}
           />
         ) : (
           <div className="flex items-center justify-center h-full">

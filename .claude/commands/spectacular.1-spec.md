@@ -8,15 +8,107 @@ description: (1/5) Create feature branch and specification document.
 $ARGUMENTS
 ```
 
-## Pre-Processing (REQUIRED)
+---
 
-Before executing this command:
-1. **Detect Language**: Identify the language of the user's input
-2. **Fix Typos**: Correct any spelling or grammatical errors to understand intent
-3. **Clarify Intent**: If the request is ambiguous, ask for clarification
-4. **Respond in User's Language**: Use the language from CLAUDE.md preferences or the prompt language
+# Phase 1: Prompt Perfection (REQUIRED)
 
-You **MUST** consider the user input before proceeding (if not empty).
+Before creating the spec, analyze and perfect the user's prompt. Goal: transform it into an unambiguous, executable request that requires ZERO guessing.
+
+## Step 1: Initial Analysis
+
+- Detect language (respond in user's language throughout)
+- Identify request type: [New Feature | Enhancement | Bug Fix | Refactoring | Other]
+- Extract the core intent: What does the user ultimately want to build?
+
+## Step 2: Completeness Check
+
+Verify the prompt contains:
+- [ ] **Goal** - Clear desired outcome
+- [ ] **Context** - Project area, technology, environment
+- [ ] **Scope** - Which files, components, areas affected
+- [ ] **Constraints** - Performance, security, compatibility requirements (optional)
+- [ ] **Success Criteria** - How to verify it's done
+
+Mark missing items and **ASK** about them before proceeding.
+
+## Step 3: Clarification
+
+- If anything is ambiguous or unclear, **ASK** before proceeding
+- If multiple valid approaches exist:
+  - List each option with pros/cons
+  - Mark ⭐ recommended option with reasoning
+  - Wait for user selection
+
+## Step 4: Correction
+
+- Fix grammar, spelling, sentence structure
+- Preserve all technical terms, code references, variable names EXACTLY
+- Keep original intent and tone
+- Make it clear, specific, and actionable
+
+## Step 5: Output Perfected Prompt
+
+Present the analysis in this format:
+
+```
+**Detected Language:** [Language]
+**Request Type:** [New Feature | Enhancement | Bug Fix | Refactoring | Other]
+
+**Original:**
+> [user's original input]
+
+**Completeness Check:**
+- [x] Goal: [extracted or ❌ MISSING]
+- [x] Context: [extracted or ❌ MISSING]
+- [x] Scope: [extracted or ❌ MISSING]
+- [ ] Constraints: [extracted or ❌ MISSING - optional]
+- [x] Success Criteria: [extracted or ❌ MISSING]
+
+**Questions (if any):**
+> 1. [Question about missing/unclear information]
+
+**Options (if multiple approaches):**
+> 1. [Option A] - [pros/cons]
+> 2. [Option B] - [pros/cons]
+> ⭐ **Recommended:** [Option X] - [reasoning]
+
+---
+
+**Perfected Prompt:**
+> **Goal:** [one clear sentence]
+>
+> **Context:** [environment, tech stack, background]
+>
+> **Scope:** [specific files, components, areas]
+>
+> **Requirements:**
+> 1. [First specific requirement]
+> 2. [Second specific requirement]
+>
+> **Constraints:** [any limitations, or "None"]
+>
+> **Expected Result:** [what success looks like]
+
+**Changes Made:**
+- [list of corrections and improvements]
+```
+
+## Step 6: User Confirmation Gate
+
+⏸️ **Wait for user approval.** Display:
+
+```
+Ready to create specification. Reply with:
+- `y` or `yes` — proceed with spec creation
+- `n` or `no` — cancel
+- Or type modifications for adjustments
+```
+
+**STOP HERE** and wait for user response. Only proceed to Phase 2 after receiving `y` or `yes`.
+
+---
+
+# Phase 2: Spec Creation
 
 ## Purpose
 

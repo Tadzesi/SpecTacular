@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { buildFileTree, readFileContent, FileNode } from './fileOperations';
 import { revealFileInTree } from './extension';
+import { VersionCheckService, VersionInfo } from './VersionCheckService';
 
 export class DashboardPanel {
   public static currentPanel: DashboardPanel | undefined;
@@ -194,6 +195,14 @@ export class DashboardPanel {
           revealFileInTree(message.path);
         }
         break;
+
+      case 'saveFile':
+        await this._handleSaveFile(message.path as string, message.content as string);
+        break;
+
+      case 'saveAllFiles':
+        await this._handleSaveAllFiles(message.files as Array<{ path: string; content: string }>);
+        break;
     }
   }
 
@@ -221,6 +230,57 @@ export class DashboardPanel {
         type: 'error',
         data: { message: `Failed to read file: ${error}` }
       });
+    }
+  }
+
+  private async _handleSaveFile(filePath: string, content: string) {
+    try {
+      const uri = vscode.Uri.file(filePath);
+      const encoder = new TextEncoder();
+      await vscode.workspace.fs.writeFile(uri, encoder.encode(content));
+      this._postMessage({
+        type: 'fileSaved',
+        data: { path: filePath, success: true }
+      });
+      // Show a brief notification
+      vscode.window.setStatusBarMessage(`Saved: ${path.basename(filePath)}`, 2000);
+    } catch (error) {
+      this._postMessage({
+        type: 'fileSaveError',
+        data: { path: filePath, message: `Failed to save file: ${error}` }
+      });
+      vscode.window.showErrorMessage(`Failed to save ${path.basename(filePath)}: ${error}`);
+    }
+  }
+
+  private async _handleSaveAllFiles(files: Array<{ path: string; content: string }>) {
+    const results: Array<{ path: string; success: boolean; error?: string }> = [];
+    const encoder = new TextEncoder();
+
+    for (const file of files) {
+      try {
+        const uri = vscode.Uri.file(file.path);
+        await vscode.workspace.fs.writeFile(uri, encoder.encode(file.content));
+        results.push({ path: file.path, success: true });
+      } catch (error) {
+        results.push({ path: file.path, success: false, error: String(error) });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
+
+    this._postMessage({
+      type: 'allFilesSaved',
+      data: { results }
+    });
+
+    if (failCount === 0) {
+      vscode.window.setStatusBarMessage(`Saved ${successCount} file${successCount !== 1 ? 's' : ''}`, 2000);
+    } else {
+      vscode.window.showWarningMessage(
+        `Saved ${successCount} file${successCount !== 1 ? 's' : ''}, ${failCount} failed`
+      );
     }
   }
 
@@ -287,7 +347,15 @@ export class DashboardPanel {
     }
   }
 
-  private _sendConfig() {
+  private async _sendConfig() {
+    const versionService = VersionCheckService.getInstance();
+    const versionInfo = versionService.getVersionInfo() || {
+      currentVersion: versionService.getCurrentVersion(),
+      latestVersion: null,
+      updateAvailable: false,
+      releaseUrl: 'https://github.com/Tadzesi/SpecTacular/releases'
+    };
+
     this._postMessage({
       type: 'config',
       data: {
@@ -297,7 +365,8 @@ export class DashboardPanel {
         workspaceFolders: vscode.workspace.workspaceFolders?.map(f => ({
           name: f.name,
           path: f.uri.fsPath
-        })) || []
+        })) || [],
+        versionInfo
       }
     });
   }

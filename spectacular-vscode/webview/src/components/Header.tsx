@@ -1,5 +1,12 @@
 import { ThemeToggle } from './ThemeToggle';
 
+interface VersionInfo {
+  currentVersion: string;
+  latestVersion: string | null;
+  updateAvailable: boolean;
+  releaseUrl: string;
+}
+
 interface HeaderProps {
   isWatching: boolean;
   modifiedCount: number;
@@ -10,6 +17,8 @@ interface HeaderProps {
   onGoForward: () => void;
   currentPath: string;
   onSelectFolder: () => void;
+  versionInfo?: VersionInfo;
+  onOpenExternal?: (url: string) => void;
 }
 
 export function Header({
@@ -22,6 +31,8 @@ export function Header({
   onGoForward,
   currentPath,
   onSelectFolder,
+  versionInfo,
+  onOpenExternal,
 }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-4 py-2 bg-light-bg-secondary dark:bg-dark-bg-secondary border-b border-light-border dark:border-dark-border">
@@ -37,6 +48,27 @@ export function Header({
         <h1 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
           SpecTacular
         </h1>
+
+        {/* Version Badge */}
+        {versionInfo && (
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-light-text-muted dark:text-dark-text-muted">
+              v{versionInfo.currentVersion}
+            </span>
+            {versionInfo.updateAvailable && versionInfo.latestVersion && (
+              <button
+                onClick={() => onOpenExternal?.(versionInfo.releaseUrl)}
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-light-accent-blue/20 dark:bg-dark-accent-blue/20 text-light-accent-blue dark:text-dark-accent-blue hover:bg-light-accent-blue/30 dark:hover:bg-dark-accent-blue/30 transition-colors"
+                title={`Update to v${versionInfo.latestVersion}`}
+              >
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z" />
+                </svg>
+                v{versionInfo.latestVersion}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Navigation Buttons */}
         <div className="flex items-center gap-1 ml-4">

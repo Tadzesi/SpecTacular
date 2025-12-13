@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2025-12-13
+
+### Added
+
+- **WYSIWYG Markdown Editor** - New rich text editor in VS Code extension:
+  - TipTap-based editor with formatting toolbar
+  - Bold, italic, headings, lists, and blockquotes
+  - Table support with resizable columns
+  - Task list checkboxes with nested support
+  - Status tags (`#status/done`) and wikilinks (`[[link]]`) preserved
+  - YAML frontmatter automatically preserved during editing
+  - Placeholder text for empty documents
+
+- **Automatic Task Status Management** - TaskStatusService for intelligent status tracking:
+  - Monitors task files in `tasks/` folders for changes
+  - Parses YAML frontmatter and acceptance criteria checkboxes
+  - Automatically updates task status to "done" when all acceptance criteria are checked
+  - Updates the main `tasks.md` table with new status tags
+  - Status bar notifications when task status changes
+
+- **Version Check & Update Notification** - VersionCheckService for update awareness:
+  - Checks GitHub releases API for latest version on startup
+  - Shows notification when newer version is available
+  - Version badge displayed in dashboard header
+  - One-click button to view release page
+
+- **Navigation Improvements** - Enhanced header UI:
+  - Back/forward navigation buttons
+  - Folder selection button
+  - Current path display
+  - Version badge with update indicator
+
+### Changed
+
+- **Improved Task Status Tracking in Pipeline Commands** - CLI commands now properly update:
+  - Status tags in `tasks.md` table (`#status/pending` → `#status/in-progress` → `#status/done`)
+  - YAML frontmatter in individual task files (`status: pending` → `status: done`)
+  - Acceptance criteria checkboxes (`- [ ]` → `- [x]`)
+  - Progress summary table in `tasks.md`
+  - Applied same fixes to both Claude Code (`.md`) and Cursor (`.mdc`) command files
+
+### Fixed
+
+- Fixed mismatch between pipeline command instructions and actual file format (checkbox vs status tags)
+
 ## [1.4.0] - 2025-12-09
 
 ### Removed
@@ -194,7 +239,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.4.0...v1.6.0
 [1.4.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.0...v1.2.1

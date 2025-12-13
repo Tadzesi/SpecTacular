@@ -7,3 +7,4 @@ export { MarkdownRenderer } from './MarkdownRenderer';
 export { ResizeHandle } from './ResizeHandle';
 export { Sidebar } from './Sidebar';
 export { ThemeToggle } from './ThemeToggle';
+export * from './editor';

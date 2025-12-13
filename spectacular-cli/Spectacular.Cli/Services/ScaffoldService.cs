@@ -12,9 +12,10 @@ public class ScaffoldService
         _templateService = new TemplateService();
     }
 
-    public async Task<List<string>> ScaffoldAsync(string targetPath, string projectName, string techStack, AiTool aiTool = AiTool.Both, string language = "English")
+    public async Task<(List<string> Created, List<string> Skipped)> ScaffoldAsync(string targetPath, string projectName, string techStack, AiTool aiTool = AiTool.Both, string language = "English")
     {
         var createdFiles = new List<string>();
+        var skippedFiles = new List<string>();
         var assembly = Assembly.GetExecutingAssembly();
         var resourcePrefix = "Spectacular.Cli.Resources.templates.";
 
@@ -53,6 +54,13 @@ public class ScaffoldService
                 Directory.CreateDirectory(directory);
             }
 
+            // Skip CLAUDE.md if it already exists (don't overwrite user's customizations)
+            if (relativePath.Equals("CLAUDE.md", StringComparison.OrdinalIgnoreCase) && File.Exists(fullPath))
+            {
+                skippedFiles.Add(relativePath);
+                continue;
+            }
+
             // Read resource content
             using var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null) continue;
@@ -75,7 +83,7 @@ public class ScaffoldService
             Directory.CreateDirectory(specsDir);
         }
 
-        return createdFiles.OrderBy(f => f).ToList();
+        return (createdFiles.OrderBy(f => f).ToList(), skippedFiles);
     }
 
     private static string MapResourceToPath(string resourceName, string prefix)

@@ -2,23 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Current Version: 1.4.1**
+**Current Version: 1.5.1**
 
 ## Overview
 
 SpecTacular is a specification-driven development toolkit consisting of:
-- **spectacular-cli**: Command-line tool for scaffolding and managing SpecTacular projects
-- **spectacular-vscode**: VS Code extension for previewing and monitoring markdown specification files with real-time file watching
-
-> **Note:** The Electron desktop dashboard (`spectacular-dashboard`) was removed in v1.4.0 to reduce distribution size. The VS Code extension now provides all dashboard functionality with better IDE integration.
-
-## Tech Stack
-
-- **Frontend**: React 18 + TypeScript + Vite
-- **VS Code Extension**: VS Code Extension API + React Webview
-- **Styling**: Tailwind CSS with dark/light theme support
-- **File Watching**: VS Code FileSystemWatcher
-- **Markdown**: react-markdown with remark-gfm and syntax highlighting
+- **spectacular-cli**: .NET 8 CLI tool for scaffolding and managing SpecTacular projects
+- **spectacular-vscode**: VS Code extension with React webview for previewing markdown specification files
 
 ## Development Commands
 
@@ -26,7 +16,7 @@ SpecTacular is a specification-driven development toolkit consisting of:
 ```bash
 cd spectacular-cli/Spectacular.Cli
 dotnet build                    # Build CLI
-dotnet test                     # Run tests
+dotnet test                     # Run tests (from spectacular-cli/)
 dotnet publish -c Release -r win-x64 -o ../publish/win-x64  # Publish for Windows
 
 # Install locally after publishing
@@ -38,11 +28,19 @@ cd ../installer
 ```bash
 cd spectacular-vscode
 npm install
-npm run compile          # Build extension and webview
-npm run watch            # Development mode with hot reload
-npm run package          # Create .vsix package for distribution
+npm run compile          # Build extension + webview
+npm run watch            # Dev mode with hot reload (runs concurrently)
+npm run lint             # Lint extension TypeScript
+npm run package          # Create .vsix package
 
-# Install for development (run as Administrator)
+# Webview development (spectacular-vscode/webview/)
+cd webview
+npm run build            # Build webview for production
+npm run dev              # Vite dev server
+npm run lint             # Lint React code
+npm run test             # Run vitest
+
+# Install extension for development (run as Administrator)
 .\install-dev.ps1        # Creates symlink to VS Code extensions folder
 ```
 
@@ -55,118 +53,103 @@ npm run package          # Create .vsix package for distribution
 
 Key features:
 - Uses System.Text.Json source generators for AOT/trimming compatibility
-- Single-file executable with self-contained runtime
-- Embedded resource templates for project scaffolding
+- Single-file executable with self-contained runtime (`PublishSingleFile`, `SelfContained`)
+- Embedded resource templates (`EmbeddedResource`) for project scaffolding
 
 ### VS Code Extension (spectacular-vscode/)
-- `src/extension.ts` - Extension entry point, commands, active editor listener
-- `src/DashboardPanel.ts` - WebviewPanel manager, file operations, message handling
-- `src/SpecsTreeProvider.ts` - Custom TreeDataProvider for filtered specs tree view
-- `src/FileDecorationProvider.ts` - File decoration for modified indicators
-- `src/fileOperations.ts` - File tree building, markdown file filtering
-- `webview/` - React application (preview-only layout)
+Extension host (`src/`):
+- `extension.ts` - Entry point, commands, `onDidChangeActiveTextEditor` listener for auto-preview
+- `DashboardPanel.ts` - WebviewPanel manager, file operations, message handling
+- `SpecsTreeProvider.ts` - TreeDataProvider for filtered specs tree view
+- `FileDecorationProvider.ts` - File decoration for modified indicators
+- `TaskStatusService.ts` - Parses task files and tracks status changes
+- `fileOperations.ts` - File tree building, markdown file filtering
 
-Key features:
-- **Native VS Code Integration** - Uses VS Code's explorer for primary navigation
-- **Filtered Specs Tree** - Custom tree view showing only `specs/` or `.spectacular/` folders
-- **Auto-Preview** - `onDidChangeActiveTextEditor` listener automatically previews markdown files
-- **File Decorations** - Modified files show dot indicator via FileDecorationProvider
-- Auto-reveals specs folder on startup
-- Dashboard opens in editor panel (full-width preview)
-- Auto-detects `specs` folder first, then `.spectacular` folder
-- Real-time file watching via VS Code FileSystemWatcher
-- Theme integration with VS Code (light/dark mode)
-- Navigation history with back/forward buttons
-- Recent files dropdown in header
-- Mouse back/forward button support (Mouse Button 3/4)
-- Keyboard navigation (Alt+Left/Right)
+Webview (`webview/src/`):
+- `App.tsx` - Main app component with navigation state
+- `components/ContentArea.tsx` - Markdown preview with TipTap editor
+- `components/MarkdownRenderer.tsx` - Renders markdown with status tags, wikilinks, syntax highlighting
+- `components/editor/` - TipTap-based markdown editor components
+- `vscodeApi.ts` - VS Code API wrapper for webview-to-extension communication
 
-### VS Code Extension Message Protocol
-Webview communicates with extension via `postMessage`. Key messages:
-- `ready` - Webview signals it's ready to receive config
-- `readFile` - Request file content
-- `selectFile` - Extension tells webview to display a file (from editor change)
-- `config` - Extension sends initial configuration
-- `fileContent` - Extension sends file content
-- `fileChange` - Extension notifies of file changes
+Key behaviors:
+- Auto-preview: When user opens a markdown file in specs/, dashboard updates to show it
+- Folder detection: Checks for `specs/` first, then `.spectacular/`
+- File watching: Debounced (300ms default, configurable via `spectacular.watchDebounceMs`)
 
-## Project Structure
+### Webview-Extension Message Protocol
+Messages from webview to extension (`command` field):
+- `ready` - Webview initialized, requests config
+- `readFile` - Request file content by path
+- `saveFile` / `saveAllFiles` - Save edited content
+- `startWatching` / `stopWatching` - Control file watcher
+- `copyToClipboard` - Copy text to clipboard
+- `revealInTree` - Reveal file in specs tree view
 
+Messages from extension to webview (`type` field):
+- `config` - Initial configuration (rootPath, theme, workspaceFolders)
+- `selectFile` - Display a file (triggered by active editor change)
+- `fileContent` - File content response
+- `fileChange` - File modified on disk
+- `themeChange` - VS Code theme changed
+
+## Scaffolded Project Structure
+Created by `spectacular init`:
 ```
-spectacular-cli/              # .NET CLI tool
-├── Spectacular.Cli/         # Main CLI project
-│   ├── Commands/            # CLI commands (init, dashboard, update)
-│   ├── Services/            # Business logic
-│   └── Resources/templates/ # Embedded scaffolding templates
-└── Spectacular.Cli.Tests/   # Unit tests
-
-spectacular-vscode/           # VS Code extension
-├── src/                     # Extension source code
-│   ├── extension.ts         # Entry point, commands
-│   ├── DashboardPanel.ts    # Webview panel manager
-│   ├── SpecsTreeProvider.ts # Specs tree view provider
-│   ├── FileDecorationProvider.ts # File modification indicators
-│   └── fileOperations.ts    # File tree operations
-├── webview/                 # React webview application
-│   ├── src/
-│   │   ├── components/      # UI components
-│   │   ├── hooks/           # Custom React hooks
-│   │   └── types/           # TypeScript interfaces
-│   └── dist/                # Built webview assets
-├── dist/                    # Built extension
-├── resources/               # Extension icons
-└── package.json             # Extension manifest
-
-# Scaffolded project structure (created by `spectacular init`):
 .spectacular/
 ├── memory/constitution.md   # Non-negotiable project principles
-├── scripts/powershell/      # Automation scripts
+├── scripts/powershell/      # Automation scripts (create-new-feature.ps1, setup-plan.ps1)
 └── templates/               # Document templates for specs
 
-.claude/
-├── commands/                # Claude Code slash commands
-│   └── spectacular.*.md     # Pipeline commands (0-quick through 5-validate)
-└── tasks/                   # Task notes (wikilink graph)
+.claude/commands/            # Claude Code slash commands
+└── spectacular.*.md         # Pipeline commands (0-quick through 5-validate)
+
+.cursor/rules/               # Cursor rule files
+└── spectacular-*.mdc        # Same pipeline commands for Cursor
 
 specs/<###-feature-name>/    # Per-feature artifacts
 ├── spec.md                  # Feature specification
 ├── plan.md                  # Implementation plan
-└── tasks.md                 # Task checklist
+└── tasks.md                 # Task checklist with status tags
 ```
 
 ## Markdown Features
 
-### Status Tags
-The markdown renderer supports visual status tags that display as icons:
+The webview's MarkdownRenderer supports:
+- **Status tags**: `#status/done`, `#status/pending`, `#status/in-progress`, `#status/blocked`, `#status/skipped` render as colored icons
+- **Wikilinks**: `[[filename]]` syntax creates navigable links between markdown files
+- **Task links**: Links matching `task-\d+` pattern show a copy button on hover
+- **Syntax highlighting**: Code blocks with language-aware formatting via react-syntax-highlighter
 
-| Tag | Icon | Description |
-|-----|------|-------------|
-| `#status/done` | ✓ (green) | Task completed |
-| `#status/complete` | ✓ (green) | Feature/phase complete |
-| `#status/pending` | ○ (gray) | Not yet started |
-| `#status/in-progress` | ◐ (blue) | Currently in progress |
-| `#status/blocked` | ⊘ (red) | Blocked by dependency |
-| `#status/skipped` | → (gray) | Intentionally skipped |
+## AI Pipeline Commands
 
-Usage in tasks.md tables:
-```markdown
-| Task | Description | Status |
-|------|-------------|--------|
-| [[task-01]] | Setup project | #status/done |
-| [[task-02]] | Implement feature | #status/in-progress |
+The scaffolded project includes pipeline commands for spec-driven development:
+
+| Command | Purpose |
+|---------|---------|
+| `0-quick` | Full pipeline: spec → plan → tasks → implement → validate |
+| `1-spec` | Create feature branch and specification |
+| `2-plan` | Generate technical implementation plan |
+| `3-tasks` | Create actionable task list |
+| `4-implement` | Execute tasks one by one |
+| `5-validate` | Verify build passes and all tasks complete |
+
+Scripts in `.spectacular/scripts/powershell/`:
+- `create-new-feature.ps1 -Json` - Creates branch and spec folder
+- `setup-plan.ps1 -Json` - Sets up plan.md
+- `generate-commands.ps1` - Regenerates commands from `.spectacular/prompts/`
+
+## Publishing
+
+After making changes to either component:
+```bash
+# CLI: Publish and install locally
+cd spectacular-cli/Spectacular.Cli
+dotnet publish -c Release -r win-x64 -o ../publish/win-x64
+cd ../installer && .\install.ps1 -Local
+
+# Extension: Package and install
+cd spectacular-vscode
+npm run compile && npm run package
+# Then install the .vsix file in VS Code
 ```
-
-### Wikilinks
-The renderer supports `[[wikilink]]` syntax for navigation between markdown files.
-
-### Task Links
-Links matching `task-\d+` pattern show a copy button on hover.
-
-## Core Principles (from Constitution)
-
-1. **Task Completion is Non-Negotiable** - Build must pass, tests must pass
-2. **Simple Steps Over Complex Workflows** - Use pipeline commands when possible
-3. **Validation Before Completion** - Always run `/organizer.5-validate`
-4. **Production-Ready Defaults** - No placeholder code in completed work
-- This project also contains custom solution for generating task, plan etc.
-- When changes are made, then publish application.

@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-export class SpecsTreeProvider implements vscode.TreeDataProvider<SpecsTreeItem> {
-  private _onDidChangeTreeData = new vscode.EventEmitter<SpecsTreeItem | undefined | null | void>();
+export type TreeItem = SpecsTreeItem | WelcomeTreeItem;
+
+export class SpecsTreeProvider implements vscode.TreeDataProvider<TreeItem> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<TreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private workspaceRoot: string | undefined;
@@ -50,7 +52,7 @@ export class SpecsTreeProvider implements vscode.TreeDataProvider<SpecsTreeItem>
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: SpecsTreeItem): vscode.TreeItem {
+  getTreeItem(element: TreeItem): vscode.TreeItem {
     return element;
   }
 
@@ -60,7 +62,12 @@ export class SpecsTreeProvider implements vscode.TreeDataProvider<SpecsTreeItem>
   }
 
   // Required for reveal() to work with nested items
-  getParent(element: SpecsTreeItem): SpecsTreeItem | undefined {
+  getParent(element: TreeItem): TreeItem | undefined {
+    // WelcomeTreeItem has no parent
+    if (element instanceof WelcomeTreeItem) {
+      return undefined;
+    }
+
     const parentPath = path.dirname(element.resourceUri.fsPath);
     const normalizedParentPath = this._normalizePath(parentPath);
     const normalizedSpecsRoot = this.specsRoot ? this._normalizePath(this.specsRoot.fsPath) : '';
@@ -74,9 +81,36 @@ export class SpecsTreeProvider implements vscode.TreeDataProvider<SpecsTreeItem>
     return this.itemCache.get(normalizedParentPath);
   }
 
-  async getChildren(element?: SpecsTreeItem): Promise<SpecsTreeItem[]> {
+  async getChildren(element?: TreeItem): Promise<TreeItem[]> {
+    // WelcomeTreeItem has no children
+    if (element instanceof WelcomeTreeItem) {
+      return [];
+    }
     if (!this.specsRoot) {
       return [];
+    }
+
+    // If requesting root level children, check if folder is empty
+    if (!element) {
+      const hasContent = await this._containsMarkdown(this.specsRoot);
+      if (!hasContent) {
+        // Return welcome placeholder items
+        return [
+          new WelcomeTreeItem(
+            '$(info) No specs found',
+            'Run "spectacular init" to scaffold your first spec'
+          ),
+          new WelcomeTreeItem(
+            '$(terminal) spectacular init',
+            'Click to copy command to clipboard',
+            {
+              command: 'spectacular.copyToClipboard',
+              title: 'Copy command',
+              arguments: ['spectacular init']
+            }
+          )
+        ];
+      }
     }
 
     const targetUri = element ? element.resourceUri : this.specsRoot;
@@ -181,6 +215,10 @@ export class SpecsTreeProvider implements vscode.TreeDataProvider<SpecsTreeItem>
   private async _findItemRecursive(normalizedFilePath: string, parent?: SpecsTreeItem): Promise<SpecsTreeItem | undefined> {
     const children = await this.getChildren(parent);
     for (const child of children) {
+      // Skip WelcomeTreeItem - only process SpecsTreeItem
+      if (child instanceof WelcomeTreeItem) {
+        continue;
+      }
       const childPath = this._normalizePath(child.resourceUri.fsPath);
       if (childPath === normalizedFilePath) {
         return child;
@@ -221,6 +259,21 @@ export class SpecsTreeItem extends vscode.TreeItem {
         title: 'Open Spec File',
         arguments: [resourceUri]
       };
+    }
+  }
+}
+
+export class WelcomeTreeItem extends vscode.TreeItem {
+  constructor(
+    label: string,
+    tooltip: string,
+    command?: vscode.Command
+  ) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.tooltip = tooltip;
+    this.contextValue = 'welcome';
+    if (command) {
+      this.command = command;
     }
   }
 }

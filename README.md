@@ -22,6 +22,35 @@ SpecTacular solves these problems by providing:
 - **Dark/light themes** - Comfortable viewing in any environment
 - **Syntax highlighting** - Code blocks with language-aware formatting
 
+## What's New in v1.6.0
+
+### VS Code Extension
+
+- **WYSIWYG Markdown Editor** - Rich text editing with TipTap:
+  - Toolbar with formatting buttons (bold, italic, headings, lists)
+  - Table support with resizing
+  - Task list checkboxes
+  - Status tags and wikilinks preserved
+  - YAML frontmatter handling
+
+- **Automatic Task Status Management**:
+  - Monitors task files for changes
+  - Auto-updates status to "done" when all acceptance criteria checked
+  - Updates main `tasks.md` table automatically
+  - Status bar notifications
+
+- **Version Check & Update Notification**:
+  - Checks GitHub for latest releases
+  - Shows notification when updates available
+  - Version badge in header with update button
+
+### CLI
+
+- **Improved Task Status Tracking** - Pipeline commands now properly update:
+  - Status tags in `tasks.md` table (`#status/pending` → `#status/done`)
+  - YAML frontmatter in task files (`status: pending` → `status: done`)
+  - Acceptance criteria checkboxes (`- [ ]` → `- [x]`)
+
 ## Quick Start
 
 ### Step 1: Install the CLI
@@ -42,7 +71,7 @@ spectacular --version
 
 The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
 
-**Download:** [spectacular-dashboard-1.4.1.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.4.1/spectacular-dashboard-1.4.1.vsix)
+**Download:** [spectacular-dashboard-1.6.0.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.0/spectacular-dashboard-1.6.0.vsix)
 
 **Installation:**
 
@@ -54,7 +83,7 @@ The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
 **Or via command line:**
 ```bash
 # Download and install
-curl -L -o spectacular-dashboard.vsix https://github.com/Tadzesi/SpecTacular/releases/download/v1.4.1/spectacular-dashboard-1.4.1.vsix
+curl -L -o spectacular-dashboard.vsix https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.0/spectacular-dashboard-1.6.0.vsix
 code --install-extension spectacular-dashboard.vsix
 ```
 
