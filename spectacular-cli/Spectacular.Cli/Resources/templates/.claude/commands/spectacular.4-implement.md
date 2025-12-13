@@ -34,18 +34,26 @@ Find the active feature directory in specs/.
 
 ### 2. Read Task List
 
-Load `tasks.md` and identify all incomplete tasks (marked `- [ ]`).
+Load `tasks.md` and identify all incomplete tasks (marked `#status/pending` or `#status/in-progress`).
 
 ### 3. Execute Tasks
 
-For each incomplete task:
+For each incomplete task (marked `#status/pending` in tasks.md):
 
-1. **Mark in progress** - Update TodoWrite with task status
-2. **Execute the task** - Perform the actual work
-3. **Verify completion** - Ensure task requirements are met
-4. **Mark complete** - Update both:
-   - TodoWrite status
-   - tasks.md checkbox (`- [ ]` â†’ `- [x]`)
+1. **Mark in progress** - Update:
+   - TodoWrite with task status
+   - tasks.md table: `#status/pending` → `#status/in-progress`
+   - Task file YAML frontmatter: `status: pending` → `status: in-progress`
+
+2. **Execute the task** - Perform the actual work following the steps
+
+3. **Verify completion** - Check all acceptance criteria in the task file
+
+4. **Mark complete** - Update ALL of these:
+   - TodoWrite status → completed
+   - tasks.md table: `#status/in-progress` → `#status/done`
+   - Task file YAML frontmatter: `status: in-progress` → `status: done`
+   - Task file acceptance criteria: `- [ ]` → `- [x]` (check each criterion)
 
 ### Task Execution Guidelines
 
@@ -56,10 +64,12 @@ For each incomplete task:
 
 ### 4. Progress Reporting
 
-After each task, report:
-- Task completed
-- Files created/modified
-- Any issues encountered
+After each task:
+1. **Update Progress Summary** in tasks.md - increment Done count, decrement Remaining
+2. **Report**:
+   - Task completed
+   - Files created/modified
+   - Any issues encountered
 
 ### 5. Report Completion
 

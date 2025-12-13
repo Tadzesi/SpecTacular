@@ -44,8 +44,11 @@ Execute:
 The script performs these checks:
 
 #### Check 1: Tasks Complete
-- All checkboxes in tasks.md must be marked `[x]`
-- No incomplete tasks (`[ ]`) allowed
+- All tasks in tasks.md must have `#status/done`
+- No incomplete tasks (`#status/pending` or `#status/in-progress`) allowed
+- All individual task files must have:
+  - YAML frontmatter: `status: done`
+  - All acceptance criteria checked: `- [x]`
 
 #### Check 2: Build Passes
 - Detects project type (npm, dotnet, cargo, go)
