@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2025-12-13
+
+### Added
+
+- **Architecture Documentation** - Comprehensive `ARCHITECTURE.md` file for NotebookLM schema generation:
+  - Complete system overview with Mermaid diagrams
+  - CLI and VS Code extension component documentation
+  - Message protocol specification between extension and webview
+  - Data flow diagrams for all major operations
+  - Technology stack reference
+  - Key files reference with dependencies
+  - Configuration reference
+  - Diagram index for quick navigation
+
+### Fixed
+
+- Synchronized version numbers across all components (CLI, VS Code extension, CLAUDE.md)
+
 ## [1.6.0] - 2025-12-13
 
 ### Added
@@ -239,8 +257,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.0...HEAD
-[1.6.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.4.0...v1.6.0
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.0...v1.6.1
+[1.6.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.4.1...v1.6.0
 [1.4.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.2.0...v1.2.1
