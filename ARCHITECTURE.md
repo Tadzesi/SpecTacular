@@ -859,7 +859,7 @@ flowchart TD
 
     SCAFFOLD[ScaffoldService.ScaffoldAsync] --> LOAD[Load embedded resources<br/>31 template files]
     LOAD --> FILTER[Filter by AI tool selection]
-    FILTER --> APPLY[Apply template variables<br/>{{PROJECT}}, {{TECH}}, {{DATE}}]
+    FILTER --> APPLY[Apply template variables<br/>PROJECT, TECH, DATE]
     APPLY --> WRITE[Write files to disk]
     WRITE --> MKDIR[Create specs/ directory]
     MKDIR --> CONFIG[Save dashboard path config]
