@@ -130,30 +130,13 @@ public static class InitCommand
                 }
             }
 
-            // Auto-configure dashboard if found
-            var dashboardPath = ConfigService.ResolveDashboardPath(targetPath);
-            if (dashboardPath != null)
-            {
-                // Save to global config so it works everywhere
-                var config = new SpectacularConfig { DashboardPath = dashboardPath };
-                ConfigService.SaveGlobalConfig(config);
-
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"  [OK] Dashboard configured: {dashboardPath}");
-                Console.ResetColor();
-            }
-
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("  Next steps:");
             Console.ResetColor();
             Console.WriteLine("  1. Customize .spectacular/memory/constitution.md");
             Console.WriteLine("  2. Start creating features with: /spectacular.1-spec");
-            if (dashboardPath != null)
-            {
-                Console.WriteLine("  3. Launch dashboard with: spectacular dashboard");
-            }
+            Console.WriteLine("  3. Install VS Code extension for Dashboard preview");
             Console.WriteLine();
         }
         catch (Exception ex)

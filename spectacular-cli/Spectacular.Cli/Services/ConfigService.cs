@@ -5,7 +5,8 @@ namespace Spectacular.Cli.Services;
 
 public class SpectacularConfig
 {
-    public string? DashboardPath { get; set; }
+    // Config class reserved for future CLI settings
+    // DashboardPath removed in v1.7.0 - Dashboard is now VS Code extension only
 }
 
 [JsonSerializable(typeof(SpectacularConfig))]
@@ -122,60 +123,4 @@ public static class ConfigService
             ".spectacular", "bin");
     }
 
-    /// <summary>
-    /// Resolves the dashboard executable path from config or defaults
-    /// </summary>
-    public static string? ResolveDashboardPath(string? projectPath = null)
-    {
-        var config = LoadConfig(projectPath);
-
-        // 1. Check config
-        if (!string.IsNullOrEmpty(config.DashboardPath) && File.Exists(config.DashboardPath))
-        {
-            return config.DashboardPath;
-        }
-
-        // 2. Check default install location (~/.spectacular/bin)
-        var defaultPath = Path.Combine(GetInstallDir(), "SpectacularDashboard.exe");
-        if (File.Exists(defaultPath))
-        {
-            return defaultPath;
-        }
-
-        // 3. Check legacy install location (~/.spectacular/dashboard)
-        var legacyDashboardPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".spectacular", "dashboard", "SpectacularDashboard.exe");
-        if (File.Exists(legacyDashboardPath))
-        {
-            return legacyDashboardPath;
-        }
-
-        // 4. Check legacy install location (%LOCALAPPDATA%\Programs\spectacular)
-        var legacyPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Programs", "spectacular", "SpectacularDashboard.exe");
-        if (File.Exists(legacyPath))
-        {
-            return legacyPath;
-        }
-
-        // 5. Check common dev locations
-        var devPaths = new[]
-        {
-            @"C:\Projects\development\SpecTacular\spectacular-dashboard\release\win-unpacked\SpectacularDashboard.exe",
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Projects", "SpecTacular", "spectacular-dashboard", "release", "win-unpacked", "SpectacularDashboard.exe")
-        };
-
-        foreach (var devPath in devPaths)
-        {
-            if (File.Exists(devPath))
-            {
-                return devPath;
-            }
-        }
-
-        return null;
-    }
 }

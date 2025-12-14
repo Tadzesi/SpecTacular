@@ -29,7 +29,6 @@ class Program
         // Add subcommands
         rootCommand.AddCommand(InitCommand.Create());
         rootCommand.AddCommand(UpdateCommand.Create());
-        rootCommand.AddCommand(DashboardCommand.Create());
 
         // Check if no command is provided (no args, or first arg is an option)
         var hasNoCommand = args.Length == 0 ||
@@ -47,15 +46,11 @@ class Program
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("  init");
             Console.ResetColor();
-            Console.WriteLine("       Scaffold a new SpecTacular project");
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("  dashboard");
-            Console.ResetColor();
-            Console.WriteLine("  Launch or install the SpecTacular Dashboard");
+            Console.WriteLine("     Scaffold a new SpecTacular project");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("  update");
             Console.ResetColor();
-            Console.WriteLine("     Check for and install updates");
+            Console.WriteLine("   Check for and install updates");
             Console.WriteLine();
             Console.WriteLine("Run 'spectacular <command> --help' for more information on a command.");
             return 1;

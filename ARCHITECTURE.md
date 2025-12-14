@@ -72,13 +72,12 @@ graph TB
     subgraph Commands["Commands Layer"]
         INIT[InitCommand<br/>--name, --tech, --path<br/>--tool, --language, --force]
         UPDATE[UpdateCommand<br/>--check]
-        DASH[DashboardCommand<br/>Info Display]
     end
 
     subgraph Services["Services Layer"]
         SCAFFOLD[ScaffoldService<br/>Extract templates<br/>Apply variables<br/>Write files]
         TEMPLATE[TemplateService<br/>Variable substitution<br/>VAR → value]
-        CONFIG[ConfigService<br/>Global config<br/>Project config<br/>Path resolution]
+        CONFIG[ConfigService<br/>Global config<br/>Project config]
     end
 
     subgraph External["External Dependencies"]
@@ -88,7 +87,6 @@ graph TB
 
     PROG --> INIT
     PROG --> UPDATE
-    PROG --> DASH
 
     INIT --> SCAFFOLD
     SCAFFOLD --> TEMPLATE
@@ -101,7 +99,6 @@ graph TB
     style PROG fill:#4a9eff,color:#fff
     style INIT fill:#68d391,color:#000
     style UPDATE fill:#68d391,color:#000
-    style DASH fill:#68d391,color:#000
     style SCAFFOLD fill:#f6ad55,color:#000
     style TEMPLATE fill:#f6ad55,color:#000
     style CONFIG fill:#f6ad55,color:#000
@@ -113,7 +110,6 @@ graph TB
 |---------|------|---------|---------|
 | `init` | InitCommand.cs | Scaffold new project | `--name`, `--tech`, `--path`, `--force`, `--tool`, `--language` |
 | `update` | UpdateCommand.cs | Check/install updates | `--check` |
-| `dashboard` | DashboardCommand.cs | Show extension info | None |
 
 ### 2.3 Services
 
@@ -160,7 +156,7 @@ graph TB
 **Config Schema:**
 ```json
 {
-  "DashboardPath": "string | null"
+  // Reserved for future CLI configuration options
 }
 ```
 
@@ -237,9 +233,6 @@ sequenceDiagram
 
     ScaffoldService->>FileSystem: Create specs/ directory
     ScaffoldService-->>InitCommand: Return created/skipped lists
-
-    InitCommand->>ConfigService: ResolveDashboardPath()
-    InitCommand->>ConfigService: SaveGlobalConfig()
 
     InitCommand->>User: Display summary
 ```
@@ -1122,22 +1115,6 @@ graph LR
 | `spectacular.watchDebounceMs` | 300 | File change debounce (ms) |
 | `spectacular.autoOpen` | false | Auto-open dashboard on startup |
 | `spectacular.autoPreview` | true | Auto-preview on file open |
-
-### CLI Configuration
-
-**Global config:** `%LOCALAPPDATA%\spectacular\config.json`
-```json
-{
-  "DashboardPath": "C:\\path\\to\\dashboard.exe"
-}
-```
-
-**Project config:** `.spectacular\config.json`
-```json
-{
-  "DashboardPath": null
-}
-```
 
 ---
 

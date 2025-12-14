@@ -22,54 +22,27 @@ SpecTacular solves these problems by providing:
 - **Dark/light themes** - Comfortable viewing in any environment
 - **Syntax highlighting** - Code blocks with language-aware formatting
 
-## What's New in v1.6.3
+## Core Components
 
-### Bug Fixes
+SpecTacular consists of two main components that work together:
 
-- **Fixed Markdown Nested List Rendering** - Sub-items (1.1., 1.2., etc.) now render correctly in both VS Code preview and SpecTacular Dashboard
-- **Fixed Ordered List Numbers** - List numbers now display properly in the Dashboard viewer
-- **Updated CLI Templates** - All templates now use proper markdown nested list syntax (`- 1.1.` instead of `1.1.`)
-- **Updated AI Prompts** - Formatting instructions updated to generate correctly formatted markdown
+### CLI Tool (`spectacular`)
 
-### Template Changes
+A .NET 8 command-line tool that scaffolds spec-driven projects:
 
-Templates now generate sub-items with `-` prefix for proper markdown rendering:
-```markdown
-1. Main step
-   - 1.1. Sub-step (renders correctly)
-   - 1.2. Another sub-step
-```
+- **Project initialization** - Creates folder structure, templates, and AI workflow commands
+- **Multi-tool support** - Generates commands for Claude Code (`.claude/commands/`) and Cursor (`.cursor/rules/`)
+- **Self-updating** - Built-in update checker and installer
 
----
+### VS Code Extension (Dashboard)
 
-## What's New in v1.6.0
+A VS Code extension providing a rich markdown preview and editing experience:
 
-### VS Code Extension
-
-- **WYSIWYG Markdown Editor** - Rich text editing with TipTap:
-  - Toolbar with formatting buttons (bold, italic, headings, lists)
-  - Table support with resizing
-  - Task list checkboxes
-  - Status tags and wikilinks preserved
-  - YAML frontmatter handling
-
-- **Automatic Task Status Management**:
-  - Monitors task files for changes
-  - Auto-updates status to "done" when all acceptance criteria checked
-  - Updates main `tasks.md` table automatically
-  - Status bar notifications
-
-- **Version Check & Update Notification**:
-  - Checks GitHub for latest releases
-  - Shows notification when updates available
-  - Version badge in header with update button
-
-### CLI
-
-- **Improved Task Status Tracking** - Pipeline commands now properly update:
-  - Status tags in `tasks.md` table (`#status/pending` → `#status/done`)
-  - YAML frontmatter in task files (`status: pending` → `status: done`)
-  - Acceptance criteria checkboxes (`- [ ]` → `- [x]`)
+- **Markdown Dashboard** - Preview specs with status tags, wikilinks, and syntax highlighting
+- **WYSIWYG Editor** - Rich text editing with TipTap (tables, task lists, formatting)
+- **Specs Tree View** - Browse all specification files in a navigable sidebar
+- **Auto Task Status** - Automatically updates task status when acceptance criteria are checked
+- **Real-time Watching** - Files update automatically when changed on disk
 
 ## Quick Start
 
@@ -134,10 +107,9 @@ This creates:
 
 ```bash
 spectacular init      # Initialize SpecTacular in current directory
-spectacular dashboard # Show VS Code extension info
+spectacular update    # Update to latest version
 spectacular --version # Show version
 spectacular --help    # Show help
-spectacular update    # Update to latest version
 ```
 
 ### Options

@@ -47,7 +47,7 @@ npm run test             # Run vitest
 ## Architecture
 
 ### CLI (spectacular-cli/)
-- `Commands/` - CLI command implementations (init, dashboard, update)
+- `Commands/` - CLI command implementations (init, update)
 - `Services/` - Business logic (ScaffoldService, ConfigService, TemplateService)
 - `Resources/templates/` - Embedded template files for scaffolding
 
