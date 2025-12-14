@@ -1,6 +1,6 @@
 # SpecTacular Architecture Documentation
 
-**Version:** 1.6.3
+**Version:** 1.6.4
 **Purpose:** Comprehensive architecture documentation for NotebookLM schema generation
 
 ---
