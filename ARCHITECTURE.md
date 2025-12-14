@@ -1,6 +1,6 @@
 # SpecTacular Architecture Documentation
 
-**Version:** 1.6.1
+**Version:** 1.6.3
 **Purpose:** Comprehensive architecture documentation for NotebookLM schema generation
 
 ---
@@ -77,7 +77,7 @@ graph TB
 
     subgraph Services["Services Layer"]
         SCAFFOLD[ScaffoldService<br/>Extract templates<br/>Apply variables<br/>Write files]
-        TEMPLATE[TemplateService<br/>Variable substitution<br/>{{VAR}} → value]
+        TEMPLATE[TemplateService<br/>Variable substitution<br/>VAR → value]
         CONFIG[ConfigService<br/>Global config<br/>Project config<br/>Path resolution]
     end
 
