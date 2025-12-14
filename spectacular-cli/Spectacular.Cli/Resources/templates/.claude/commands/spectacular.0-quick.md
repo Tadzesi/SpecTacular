@@ -81,10 +81,12 @@ Run validation checks:
 
 ## Markdown Formatting
 
-When generating markdown files, use hierarchical numbering:
+When generating markdown files, use hierarchical numbering with proper nested list syntax:
 - Main steps: `1.`, `2.`, `3.`
-- Sub-steps: `1.1`, `1.2`, `2.1`, `2.2`
-- Sub-sub-steps: `1.1.1`, `1.1.2` (if needed)
+- Sub-steps: Use `-` prefix: `- 1.1.`, `- 1.2.`, `- 2.1.`
+- Sub-sub-steps: Use `-` prefix: `- 1.1.1.`, `- 1.1.2.` (if needed)
+
+**IMPORTANT**: Sub-items MUST use `-` prefix for proper markdown rendering in VS Code preview.
 
 ## Final Report
 

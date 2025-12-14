@@ -22,6 +22,26 @@ SpecTacular solves these problems by providing:
 - **Dark/light themes** - Comfortable viewing in any environment
 - **Syntax highlighting** - Code blocks with language-aware formatting
 
+## What's New in v1.6.3
+
+### Bug Fixes
+
+- **Fixed Markdown Nested List Rendering** - Sub-items (1.1., 1.2., etc.) now render correctly in both VS Code preview and SpecTacular Dashboard
+- **Fixed Ordered List Numbers** - List numbers now display properly in the Dashboard viewer
+- **Updated CLI Templates** - All templates now use proper markdown nested list syntax (`- 1.1.` instead of `1.1.`)
+- **Updated AI Prompts** - Formatting instructions updated to generate correctly formatted markdown
+
+### Template Changes
+
+Templates now generate sub-items with `-` prefix for proper markdown rendering:
+```markdown
+1. Main step
+   - 1.1. Sub-step (renders correctly)
+   - 1.2. Another sub-step
+```
+
+---
+
 ## What's New in v1.6.0
 
 ### VS Code Extension
@@ -71,7 +91,7 @@ spectacular --version
 
 The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
 
-**Download:** [spectacular-dashboard-1.6.0.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.0/spectacular-dashboard-1.6.0.vsix)
+**Download:** [spectacular-dashboard-1.6.3.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.3/spectacular-dashboard-1.6.3.vsix)
 
 **Installation:**
 
@@ -83,7 +103,7 @@ The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
 **Or via command line:**
 ```bash
 # Download and install
-curl -L -o spectacular-dashboard.vsix https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.0/spectacular-dashboard-1.6.0.vsix
+curl -L -o spectacular-dashboard.vsix https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.3/spectacular-dashboard-1.6.3.vsix
 code --install-extension spectacular-dashboard.vsix
 ```
 

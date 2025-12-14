@@ -8,11 +8,84 @@ const STATUS_TAG_REGEX = /#status\/([a-zA-Z-]+)/g;
 const WIKILINK_REGEX = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 /**
+ * Fix line breaks for items that should be on separate lines.
+ * This handles cases where AI-generated content puts items on the same line.
+ */
+function fixLineBreaks(markdown: string): string {
+  let processed = markdown;
+
+  // Fix bold key-value pairs on same line (e.g., "**Key1**: value **Key2**: value")
+  // Add newline before **Key**: when preceded by non-newline content
+  // Look for pattern: some content followed by space then **Bold**:
+  processed = processed.replace(
+    /([^\n])\s+(\*\*[^*]+\*\*\s*:)/g,
+    '$1\n$2'
+  );
+
+  // Fix numbered sub-items on same line (e.g., "1.1. Item 1.2. Item")
+  // Pattern: space followed by digit.digit. and space, then non-whitespace
+  // Apply multiple times to handle chains like "1.1. a 1.2. b 1.3. c"
+  let prevProcessed = '';
+  while (prevProcessed !== processed) {
+    prevProcessed = processed;
+    processed = processed.replace(
+      /\s+(\d+\.\d+\.)\s+(?=\S)/g,
+      '\n$1 '
+    );
+  }
+
+  // Fix main numbered items on same line (e.g., "1. Item 2. Item 3. Item")
+  // Pattern: space followed by digit. (not digit.digit.) and space, then non-whitespace
+  // Apply multiple times to handle chains
+  prevProcessed = '';
+  while (prevProcessed !== processed) {
+    prevProcessed = processed;
+    // Match space, number, period, space, then lookahead for non-whitespace
+    // But NOT if followed by another digit (which would make it like "1.2.")
+    processed = processed.replace(
+      /\s+(\d+\.)\s+(?=[^\s\d])/g,
+      '\n$1 '
+    );
+  }
+
+  // Ensure numbered lists have a blank line before them when preceded by text
+  // Pattern: non-list content followed directly by "1. " at start of line
+  // This helps markdown parsers recognize lists
+  processed = processed.replace(
+    /([^\n])\n(\d+\.\s)/g,
+    (match, before, listItem) => {
+      // Don't add extra line if before is already a list item or empty
+      if (/^\s*$/.test(before) || /^\d+\./.test(before) || /^[-*]/.test(before)) {
+        return match;
+      }
+      return `${before}\n\n${listItem}`;
+    }
+  );
+
+  // Similarly for sub-items after headings or paragraphs
+  processed = processed.replace(
+    /([^\n])\n(\d+\.\d+\.\s)/g,
+    (match, before, listItem) => {
+      // Don't add extra line if before is already a list/sub-item
+      if (/^\s*$/.test(before) || /^\d+\./.test(before)) {
+        return match;
+      }
+      return `${before}\n\n${listItem}`;
+    }
+  );
+
+  return processed;
+}
+
+/**
  * Pre-process markdown content to convert custom syntax to HTML
  * that TipTap can parse, then post-process when serializing back
  */
 export function preprocessMarkdown(markdown: string): string {
   let processed = markdown;
+
+  // First, fix line break issues for proper list/item rendering
+  processed = fixLineBreaks(processed);
 
   // Convert #status/xxx to span elements
   processed = processed.replace(STATUS_TAG_REGEX, (_match, status) => {

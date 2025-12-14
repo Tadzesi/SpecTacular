@@ -111,15 +111,14 @@ function App() {
     });
 
     const unsubSelectFile = vscodeApi.on('selectFile', (filePath: string) => {
-      // File selected from VS Code (e.g., via editor change)
-      if (filePath !== selectedFile) {
-        isNavigatingRef.current = true;
-        setSelectedFile(filePath);
-        addToRecentFiles(filePath);
-        if (!isNavigatingRef.current) {
-          pushHistory(filePath);
-        }
-        isNavigatingRef.current = false;
+      // File selected from VS Code (e.g., via tree view click or editor change)
+      // Always update state - React will skip re-render if value unchanged
+      // History's duplicate prevention handles consecutive same-file clicks
+      setSelectedFile(filePath);
+      addToRecentFiles(filePath);
+      // Only push to history if not navigating via back/forward buttons
+      if (!isNavigatingRef.current) {
+        pushHistory(filePath);
       }
     });
 

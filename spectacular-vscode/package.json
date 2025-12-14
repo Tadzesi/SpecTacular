@@ -2,7 +2,7 @@
   "name": "spectacular-dashboard",
   "displayName": "SpecTacular Dashboard",
   "description": "Markdown specification viewer with real-time file monitoring for SpecTacular projects",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "publisher": "spectacular",
   "engines": {
     "vscode": "^1.85.0"
@@ -62,7 +62,13 @@
       },
       {
         "command": "spectacular.openSpecFile",
-        "title": "Open Spec File",
+        "title": "Open in Editor",
+        "category": "SpecTacular",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "spectacular.previewSpecFile",
+        "title": "Preview Spec File",
         "category": "SpecTacular"
       },
       {
@@ -114,6 +120,13 @@
         {
           "command": "spectacular.openDashboard",
           "when": "view == spectacular.specsTree",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "spectacular.openSpecFile",
+          "when": "view == spectacular.specsTree && viewItem == file",
           "group": "navigation"
         }
       ]

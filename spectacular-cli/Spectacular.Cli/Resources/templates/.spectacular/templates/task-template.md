@@ -21,7 +21,7 @@ tags: [task]
 ## Steps
 
 1. [First step]
-   1.1. [Sub-step if needed]
+   - 1.1. [Sub-step if needed]
 2. [Second step]
 3. [Third step]
 

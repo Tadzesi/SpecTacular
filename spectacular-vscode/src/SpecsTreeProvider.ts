@@ -253,10 +253,10 @@ export class SpecsTreeItem extends vscode.TreeItem {
     } else {
       this.contextValue = 'file';
       this.iconPath = vscode.ThemeIcon.File;
-      // When clicked, open the file and trigger preview
+      // When clicked, preview in dashboard only (don't open in editor tab)
       this.command = {
-        command: 'spectacular.openSpecFile',
-        title: 'Open Spec File',
+        command: 'spectacular.previewSpecFile',
+        title: 'Preview Spec File',
         arguments: [resourceUri]
       };
     }

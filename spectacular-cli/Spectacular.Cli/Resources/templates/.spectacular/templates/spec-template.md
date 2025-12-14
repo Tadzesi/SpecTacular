@@ -22,8 +22,8 @@
 ## Requirements
 
 1. [First requirement - must be testable]
-   1.1. [Sub-requirement if needed]
-   1.2. [Sub-requirement if needed]
+   - 1.1. [Sub-requirement if needed]
+   - 1.2. [Sub-requirement if needed]
 2. [Second requirement]
 3. [Third requirement]
 

@@ -57,15 +57,29 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  // Register command to open a spec file (from tree view)
+  // Register command to open a spec file in editor (explicit open via context menu)
   const openSpecFile = vscode.commands.registerCommand(
     'spectacular.openSpecFile',
-    async (uri: vscode.Uri) => {
+    async (arg: vscode.Uri | { resourceUri: vscode.Uri }) => {
+      // Handle both Uri (direct call) and TreeItem (context menu call)
+      const uri = arg instanceof vscode.Uri ? arg : arg.resourceUri;
+
       // Open the file in VS Code editor
       const document = await vscode.workspace.openTextDocument(uri);
       await vscode.window.showTextDocument(document, { preview: false, preserveFocus: false });
 
       // Ensure dashboard panel is open and show the file
+      const rootPath = await getWorkspaceRoot();
+      DashboardPanel.createOrShow(context.extensionUri, rootPath);
+      DashboardPanel.currentPanel?.showFile(uri.fsPath);
+    }
+  );
+
+  // Register command to preview a spec file in dashboard only (no editor tab)
+  const previewSpecFile = vscode.commands.registerCommand(
+    'spectacular.previewSpecFile',
+    async (uri: vscode.Uri) => {
+      // Only show in dashboard panel - don't open in editor
       const rootPath = await getWorkspaceRoot();
       DashboardPanel.createOrShow(context.extensionUri, rootPath);
       DashboardPanel.currentPanel?.showFile(uri.fsPath);
@@ -112,6 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
     openDashboard,
     openDashboardToSide,
     openSpecFile,
+    previewSpecFile,
     refreshTree,
     revealSpecs,
     revealInTree,

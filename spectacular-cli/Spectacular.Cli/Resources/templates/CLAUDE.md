@@ -28,24 +28,26 @@ Before executing any task, always:
 
 ## Formatting Standards
 
-When generating markdown files (spec.md, plan.md, tasks.md), use hierarchical numbering:
+When generating markdown files (spec.md, plan.md, tasks.md), use hierarchical numbering with proper nested list syntax:
 - Main steps: `1.`, `2.`, `3.`
-- Sub-steps: `1.1`, `1.2`, `2.1`, `2.2`
-- Sub-sub-steps: `1.1.1`, `1.1.2` (if needed)
+- Sub-steps: Use `-` prefix with numbering: `- 1.1.`, `- 1.2.`, `- 2.1.`
+- Sub-sub-steps: Use `-` prefix: `- 1.1.1.`, `- 1.1.2.` (if needed)
+
+**IMPORTANT**: Sub-items MUST use `-` prefix for proper markdown rendering in VS Code preview.
 
 Example:
 ```markdown
 ## Requirements
 
 1. User Authentication
-   1.1. Implement login endpoint
-   1.2. Implement logout endpoint
-   1.3. Session management
-        1.3.1. Token generation
-        1.3.2. Token validation
+   - 1.1. Implement login endpoint
+   - 1.2. Implement logout endpoint
+   - 1.3. Session management
+     - 1.3.1. Token generation
+     - 1.3.2. Token validation
 2. User Profile
-   2.1. View profile
-   2.2. Edit profile
+   - 2.1. View profile
+   - 2.2. Edit profile
 ```
 
 ## Tech Stack Details
