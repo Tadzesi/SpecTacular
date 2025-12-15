@@ -247,7 +247,8 @@ sequenceDiagram
 graph TB
     subgraph VSCode["VS Code Extension Host"]
         EXT[extension.ts<br/>Entry Point]
-        DP[DashboardPanel<br/>Webview Manager]
+        DP[DashboardPanel<br/>WebviewPanel Manager]
+        DVP[DashboardViewProvider<br/>Sidebar WebviewView]
         STP[SpecsTreeProvider<br/>TreeDataProvider]
         FDP[FileDecorationProvider<br/>Modified Indicators]
         TSS[TaskStatusService<br/>Auto Status Update]
@@ -265,11 +266,13 @@ graph TB
     end
 
     EXT --> DP
+    EXT --> DVP
     EXT --> STP
     EXT --> FDP
     EXT --> TSS
     EXT --> VCS
     DP --> FO
+    DVP --> FO
 
     DP <-->|postMessage API| API
     API --> APP
@@ -330,9 +333,38 @@ graph TB
 | `_sendConfig()` | Send initial config to webview |
 | `_handleMessage(message)` | Process webview commands |
 
-#### 3.2.3 SpecsTreeProvider.ts
+#### 3.2.3 DashboardViewProvider.ts
 
-**Implements:** `vscode.TreeDataProvider<TreeItem>`
+**Purpose:** Alternative WebviewViewProvider for sidebar integration
+
+**Implements:** `vscode.WebviewViewProvider`
+
+**Differences from DashboardPanel:**
+
+| Aspect | DashboardPanel | DashboardViewProvider |
+|--------|----------------|----------------------|
+| Type | WebviewPanel | WebviewViewProvider |
+| Location | Editor area | Sidebar/Panel |
+| Pattern | Singleton | Provider registration |
+| Persistence | retainContextWhenHidden | View lifecycle |
+
+**Key Methods:**
+
+| Method | Purpose |
+|--------|---------|
+| `resolveWebviewView()` | Initialize webview when view becomes visible |
+| `_handleMessage()` | Process commands from webview |
+| `_startWatching()` | Begin file system watching with debounce |
+| `_sendConfig()` | Send configuration to webview |
+
+**Message Commands Supported:**
+- `ready`, `getFileTree`, `readFile`
+- `startWatching`, `stopWatching`, `setWatching`
+- `selectDirectory`, `openExternal`, `copyToClipboard`
+
+#### 3.2.4 SpecsTreeProvider.ts
+
+**Implements:** `vscode.TreeDataProvider<SpecsTreeItem>`
 
 **Tree Item Types:**
 
@@ -395,7 +427,38 @@ graph TB
     style PENDING fill:#f6ad55,color:#000
 ```
 
-#### 3.2.6 fileOperations.ts
+#### 3.2.6 VersionCheckService.ts
+
+**Purpose:** Singleton service for checking GitHub releases for updates
+
+**Singleton Pattern:** `VersionCheckService.getInstance()`
+
+**Key Methods:**
+
+| Method | Purpose |
+|--------|---------|
+| `getCurrentVersion()` | Get version from extension manifest |
+| `checkForUpdates()` | Fetch latest release from GitHub API |
+| `showUpdateNotificationIfNeeded()` | Show VS Code notification if update available |
+| `getVersionInfo()` | Return cached version info |
+
+**GitHub Integration:**
+- Fetches from `api.github.com/repos/Tadzesi/SpecTacular/releases/latest`
+- Compares semantic versions (major.minor.patch)
+- Caches result to avoid repeated API calls
+- 5-second timeout for network requests
+
+**VersionInfo Interface:**
+```typescript
+interface VersionInfo {
+  currentVersion: string;
+  latestVersion: string | null;
+  updateAvailable: boolean;
+  releaseUrl: string;
+}
+```
+
+#### 3.2.7 fileOperations.ts
 
 **Functions:**
 
@@ -1056,11 +1119,13 @@ graph TB
 | File | Path | Purpose |
 |------|------|---------|
 | extension.ts | src/extension.ts | Extension entry |
-| DashboardPanel.ts | src/DashboardPanel.ts | Webview manager |
-| SpecsTreeProvider.ts | src/SpecsTreeProvider.ts | Tree view |
-| FileDecorationProvider.ts | src/FileDecorationProvider.ts | Decorations |
-| TaskStatusService.ts | src/TaskStatusService.ts | Task automation |
-| fileOperations.ts | src/fileOperations.ts | File utilities |
+| DashboardPanel.ts | src/DashboardPanel.ts | WebviewPanel manager (main dashboard) |
+| DashboardViewProvider.ts | src/DashboardViewProvider.ts | WebviewViewProvider for sidebar |
+| SpecsTreeProvider.ts | src/SpecsTreeProvider.ts | Tree view data provider |
+| FileDecorationProvider.ts | src/FileDecorationProvider.ts | Modified file decorations |
+| TaskStatusService.ts | src/TaskStatusService.ts | Task status automation |
+| VersionCheckService.ts | src/VersionCheckService.ts | GitHub release update checker |
+| fileOperations.ts | src/fileOperations.ts | File tree builder utilities |
 
 ### Webview Files
 
@@ -1089,9 +1154,12 @@ graph LR
 
     subgraph Extension["Extension Dependencies"]
         EXT[extension.ts] --> DP[DashboardPanel.ts]
+        EXT --> DVP[DashboardViewProvider.ts]
         EXT --> STP[SpecsTreeProvider.ts]
         EXT --> TSS[TaskStatusService.ts]
+        EXT --> VCS[VersionCheckService.ts]
         DP --> FO[fileOperations.ts]
+        DVP --> FO
     end
 
     subgraph Webview["Webview Dependencies"]
@@ -1110,11 +1178,11 @@ graph LR
 
 ### VS Code Settings
 
-| Setting | Default | Purpose |
-|---------|---------|---------|
-| `spectacular.watchDebounceMs` | 300 | File change debounce (ms) |
-| `spectacular.autoOpen` | false | Auto-open dashboard on startup |
-| `spectacular.autoPreview` | true | Auto-preview on file open |
+| Setting | Type | Default | Purpose |
+|---------|------|---------|---------|
+| `spectacular.autoOpenOnStartup` | boolean | false | Auto-open dashboard when SpecTacular project detected |
+| `spectacular.watchDebounceMs` | number | 300 | File watcher debounce time in milliseconds |
+| `spectacular.defaultRootFolder` | string | "" | Default root folder path relative to workspace |
 
 ---
 

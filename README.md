@@ -62,22 +62,35 @@ spectacular --version
 
 ### Step 2: Install VS Code Extension
 
-The SpecTacular Dashboard is available as a VS Code extension (VSIX file).
+The SpecTacular Dashboard is a VS Code extension that provides markdown preview and editing capabilities.
 
-**Download:** [spectacular-dashboard-1.6.4.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.4/spectacular-dashboard-1.6.4.vsix)
+**Option A: Install from Release (Recommended)**
 
-**Installation:**
+Download the latest VSIX: [spectacular-dashboard-1.6.4.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.4/spectacular-dashboard-1.6.4.vsix)
 
-1. Download the VSIX file from the link above
-2. Open VS Code and press `Ctrl+Shift+X` (Extensions)
+**Install via VS Code:**
+1. Open VS Code
+2. Press `Ctrl+Shift+X` (Extensions view)
 3. Click the `...` menu (top-right) → **Install from VSIX...**
 4. Select the downloaded `.vsix` file
+5. Reload VS Code when prompted
 
 **Or via command line:**
 ```bash
-# Download and install
-curl -L -o spectacular-dashboard.vsix https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.4/spectacular-dashboard-1.6.4.vsix
-code --install-extension spectacular-dashboard.vsix
+code --install-extension spectacular-dashboard-1.6.4.vsix
+```
+
+**Option B: Build and Install from Source**
+
+```bash
+git clone https://github.com/Tadzesi/SpecTacular.git
+cd SpecTacular/spectacular-vscode
+npm install
+npm run compile
+npm run package
+
+# Install the generated VSIX
+code --install-extension spectacular-dashboard-1.6.4.vsix
 ```
 
 ### Step 3: Initialize Your Project

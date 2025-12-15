@@ -26,7 +26,22 @@ A VS Code extension for viewing and monitoring markdown specification files with
 
 ## Installation
 
-### From VSIX Package
+### Option 1: Install from Release (End Users)
+
+1. Download the latest VSIX from [GitHub Releases](https://github.com/Tadzesi/SpecTacular/releases)
+2. Install in VS Code:
+   - Open VS Code
+   - Press `Ctrl+Shift+X` (Extensions view)
+   - Click "..." menu → "Install from VSIX..."
+   - Select the downloaded `.vsix` file
+   - Reload VS Code when prompted
+
+Or via command line:
+```bash
+code --install-extension spectacular-dashboard-1.6.4.vsix
+```
+
+### Option 2: Build from Source
 
 1. Build the extension:
    ```bash
@@ -36,21 +51,28 @@ A VS Code extension for viewing and monitoring markdown specification files with
    npm run package
    ```
 
-2. Install in VS Code:
-   - Open VS Code
-   - Go to Extensions (Ctrl+Shift+X)
-   - Click "..." menu → "Install from VSIX..."
-   - Select the generated `.vsix` file
+2. Install the generated VSIX:
+   ```bash
+   code --install-extension spectacular-dashboard-1.6.4.vsix
+   ```
 
-### Development Installation
+### Option 3: Development Mode (For Contributors)
 
-Run as Administrator:
+For active development with hot reload, run as Administrator:
+
 ```powershell
 cd spectacular-vscode
+npm install
+npm run compile
+
+# Create symlink to VS Code extensions folder
 .\install-dev.ps1
 ```
 
-This creates a symlink from the VS Code extensions folder to your development directory.
+This creates a symbolic link from the VS Code extensions folder to your development directory, allowing you to test changes immediately. After running this:
+
+1. Reload VS Code (`Ctrl+Shift+P` → "Developer: Reload Window")
+2. Run `npm run watch` for hot reload during development
 
 ## Usage
 
