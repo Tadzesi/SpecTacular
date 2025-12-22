@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.5] - 2025-12-22
+
+### Fixed
+
+- **Markdown List Rendering (Proper Solution)** - Installed `@tailwindcss/typography` plugin to enable professional markdown typography:
+  - Installed `@tailwindcss/typography` v0.5.19 in VS Code extension webview
+  - Configured typography plugin in `webview/tailwind.config.js`
+  - `prose` and `prose-invert` classes now function correctly
+  - Numbered lists render with proper indentation, visual hierarchy, and styling
+  - Nested lists display with appropriate sub-numbering styles (decimal, lower-alpha, lower-roman)
+  - Dark mode typography inversion works correctly
+  - Consistent rendering across all markdown content matching VS Code preview
+- **Added Comprehensive Test File** - Created `.spectacular/examples/list-rendering-test.md`:
+  - 14 test cases covering simple lists, nested lists, mixed formats
+  - Tests integration with status tags, wikilinks, code blocks
+  - Includes verification steps and expected results
+
+### Technical Details
+
+- **Root Cause**: Previous v1.6.3 fix used CSS workarounds, but `prose` class had no effect without typography plugin
+- **Impact**: Professional typographic styling now applied to all markdown content (lists, headings, blockquotes, tables)
+- **Files Modified**:
+  - `spectacular-vscode/webview/package.json` - Added `@tailwindcss/typography` to devDependencies
+  - `spectacular-vscode/webview/tailwind.config.js` - Registered typography plugin
+  - `.spectacular/examples/list-rendering-test.md` - New comprehensive test file
+- **Backward Compatibility**: All existing functionality preserved (status tags, wikilinks, WYSIWYG editor, code highlighting)
+
+## [1.6.4] - 2025-12-14
+
+### Removed
+
+- **Dashboard CLI Command** - Removed `spectacular dashboard` command from CLI:
+  - Dashboard functionality fully migrated to VS Code extension
+  - Simplified CLI to focus on project scaffolding
+  - Removed `DashboardPath` from ConfigService
+  - Users should use VS Code extension for dashboard functionality
+
+### Changed
+
+- Cleaned up CLI codebase by removing dashboard-related code
+
+## [1.6.3] - 2025-12-14
+
+### Fixed
+
+- **Markdown Nested List Rendering (Initial Fix)** - CSS workaround for list display issues:
+  - Added explicit `list-style-type` for ordered/unordered lists
+  - Added `display: list-item` for proper list rendering
+  - Fixed ordered list numbers not displaying in dashboard viewer
+
+### Changed
+
+- **Template Markdown Formatting** - Updated CLI templates to use hybrid nested list syntax:
+  - Changed sub-items from `1.1.` to `- 1.1.` for better VS Code preview compatibility
+  - Updated templates: `plan-template.md`, `spec-template.md`, `task-template.md`
+  - Updated AI prompts: `spectacular.0-quick.md`, `spectacular.2-plan.md`
+  - Updated `CLAUDE.md` with corrected markdown formatting standards
+
+### Added
+
+- **PowerShell Feature Management Scripts** - New automation scripts in `.spectacular/scripts/powershell/`:
+  - Feature creation and branch management
+  - Spec and plan generation helpers
+  - Validation scripts for implementation checking
+
+### Note
+
+- This version used CSS workarounds; v1.6.5 provides the proper solution with `@tailwindcss/typography` plugin
+
 ## [1.6.1] - 2025-12-13
 
 ### Added
@@ -257,7 +326,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.5...HEAD
+[1.6.5]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.4...v1.6.5
+[1.6.4]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.3...v1.6.4
+[1.6.3]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.1...v1.6.3
 [1.6.1]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.4.1...v1.6.0
 [1.4.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.3.0...v1.4.0
