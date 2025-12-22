@@ -4,11 +4,23 @@
       .logo-primary { fill: #4a9eff; }
       .logo-secondary { fill: #68d391; }
       .logo-accent { fill: #f6ad55; }
+      .logo-doc-bg { fill: white; }
+      .logo-doc-stroke { stroke: #4a9eff; }
+      .logo-line-primary { stroke: #4a9eff; }
+      .logo-line-secondary { stroke: #68d391; }
+      .logo-line-accent { stroke: #f6ad55; }
+      .logo-check { stroke: #68d391; }
 
       @media (prefers-color-scheme: dark) {
         .logo-primary { fill: #63b3ff; }
         .logo-secondary { fill: #7ee3a5; }
         .logo-accent { fill: #ffc470; }
+        .logo-doc-bg { fill: #1e1e1e; }
+        .logo-doc-stroke { stroke: #63b3ff; }
+        .logo-line-primary { stroke: #63b3ff; }
+        .logo-line-secondary { stroke: #7ee3a5; }
+        .logo-line-accent { stroke: #ffc470; }
+        .logo-check { stroke: #7ee3a5; }
       }
     </style>
 
@@ -53,16 +65,16 @@
   <!-- Document icon overlay (bottom right) -->
   <g transform="translate(125, 130)">
     <!-- Document background -->
-    <rect x="0" y="0" width="35" height="45" rx="3" fill="white" opacity="0.95" stroke="#4a9eff" stroke-width="1.5"/>
+    <rect x="0" y="0" width="35" height="45" rx="3" class="logo-doc-bg logo-doc-stroke" opacity="0.95" stroke-width="1.5"/>
 
     <!-- Document lines (spec lines) -->
-    <line x1="6" y1="12" x2="29" y2="12" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
-    <line x1="6" y1="20" x2="29" y2="20" stroke="#68d391" stroke-width="2" opacity="0.7"/>
-    <line x1="6" y1="28" x2="24" y2="28" stroke="#f6ad55" stroke-width="2" opacity="0.7"/>
+    <line x1="6" y1="12" x2="29" y2="12" class="logo-line-primary" stroke-width="2" opacity="0.7"/>
+    <line x1="6" y1="20" x2="29" y2="20" class="logo-line-secondary" stroke-width="2" opacity="0.7"/>
+    <line x1="6" y1="28" x2="24" y2="28" class="logo-line-accent" stroke-width="2" opacity="0.7"/>
 
     <!-- Checkmark (task completion indicator) -->
     <path d="M 8 37 L 14 43 L 27 30"
-          fill="none" stroke="#68d391" stroke-width="2.5"
+          fill="none" class="logo-check" stroke-width="2.5"
           stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 

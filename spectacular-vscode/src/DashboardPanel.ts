@@ -373,7 +373,7 @@ export class DashboardPanel {
 
   private _getThemeKind(theme: vscode.ColorTheme): 'dark' | 'light' {
     return theme.kind === vscode.ColorThemeKind.Dark ||
-           theme.kind === vscode.ColorThemeKind.HighContrastDark
+           theme.kind === vscode.ColorThemeKind.HighContrast
       ? 'dark'
       : 'light';
   }
