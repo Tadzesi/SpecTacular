@@ -1,0 +1,37 @@
+{
+  "name": "spectacular-docs",
+  "version": "1.6.4",
+  "description": "SpecTacular documentation site - specification-driven development toolkit",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "typedoc:extension": "typedoc --out api/extension ../spectacular-vscode/src --plugin typedoc-plugin-markdown --readme none",
+    "typedoc:webview": "typedoc --out api/webview ../spectacular-vscode/webview/src --plugin typedoc-plugin-markdown --readme none",
+    "generate-api": "npm run typedoc:extension && npm run typedoc:webview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0",
+    "vitepress-plugin-mermaid": "^2.0.16",
+    "typedoc": "^0.25.7",
+    "typedoc-plugin-markdown": "^3.17.1",
+    "markdown-it": "^14.0.0"
+  },
+  "keywords": [
+    "documentation",
+    "vitepress",
+    "specification",
+    "markdown",
+    "vscode-extension",
+    "cli-tool"
+  ],
+  "author": "SpecTacular Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tadzesi/SpecTacular.git",
+    "directory": "docs"
+  }
+}

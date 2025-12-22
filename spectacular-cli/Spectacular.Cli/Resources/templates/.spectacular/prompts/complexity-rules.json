@@ -1,0 +1,152 @@
+{
+  "version": "1.0.0",
+  "description": "Complexity detection rules for hybrid prompt perfection",
+  "rules": [
+    {
+      "id": "multi_file_scope",
+      "name": "Multi-file Scope",
+      "description": "Prompt affects multiple files or directories",
+      "triggers": [
+        "multiple files",
+        "across files",
+        "in all",
+        "entire codebase",
+        "throughout the project",
+        "all components"
+      ],
+      "weight": 5,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "architecture_question",
+      "name": "Architecture Question",
+      "description": "User asks about system design or structure",
+      "triggers": [
+        "how does",
+        "how is",
+        "where is",
+        "what handles",
+        "explain the",
+        "understand how",
+        "show me where"
+      ],
+      "weight": 7,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "pattern_detection",
+      "name": "Pattern Detection Needed",
+      "description": "Need to follow existing conventions",
+      "triggers": [
+        "existing pattern",
+        "current convention",
+        "like other",
+        "similar to",
+        "follow the pattern",
+        "match existing",
+        "same style as"
+      ],
+      "weight": 6,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "feasibility_check",
+      "name": "Feasibility Validation",
+      "description": "Need to check if something is technically possible",
+      "triggers": [
+        "is it possible",
+        "can we",
+        "will this work",
+        "compatible with",
+        "does this support",
+        "can I integrate"
+      ],
+      "weight": 4,
+      "agent": "Explore",
+      "confidence": "medium"
+    },
+    {
+      "id": "implementation_planning",
+      "name": "Implementation Planning",
+      "description": "Complex implementation task",
+      "triggers": [
+        "implement",
+        "build",
+        "create feature",
+        "add functionality",
+        "develop",
+        "integrate"
+      ],
+      "weight": 3,
+      "agent": "Plan",
+      "confidence": "medium"
+    },
+    {
+      "id": "cross_cutting_concerns",
+      "name": "Cross-Cutting Concerns",
+      "description": "Affects multiple layers or concerns",
+      "triggers": [
+        "authentication",
+        "authorization",
+        "logging",
+        "error handling",
+        "caching",
+        "monitoring",
+        "security"
+      ],
+      "weight": 4,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "refactoring_task",
+      "name": "Refactoring Task",
+      "description": "Large-scale code restructuring",
+      "triggers": [
+        "refactor",
+        "restructure",
+        "reorganize",
+        "clean up",
+        "improve structure"
+      ],
+      "weight": 5,
+      "agent": "Explore",
+      "confidence": "high"
+    }
+  ],
+  "thresholds": {
+    "simple": {
+      "min": 0,
+      "max": 4,
+      "description": "Simple prompt, inline validation sufficient",
+      "action": "inline"
+    },
+    "moderate": {
+      "min": 5,
+      "max": 9,
+      "description": "Moderate complexity, agent optional",
+      "action": "suggest_agent"
+    },
+    "complex": {
+      "min": 10,
+      "max": 999,
+      "description": "Complex prompt, agent recommended",
+      "action": "spawn_agent"
+    }
+  },
+  "agent_config": {
+    "explore": {
+      "model": "haiku",
+      "timeout": 30000,
+      "description": "Fast codebase exploration"
+    },
+    "plan": {
+      "model": "sonnet",
+      "timeout": 60000,
+      "description": "Implementation planning"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "description": "Multi-agent verification configuration for cross-validation",
+  "verification_settings": {
+    "enabled": true,
+    "verification_mode": "parallel",
+    "require_consensus": true,
+    "consensus_threshold": 0.66,
+    "max_parallel_agents": 3
+  },
+  "verification_triggers": {
+    "high_complexity_score": {
+      "enabled": true,
+      "threshold": 15,
+      "agent_count": 2
+    },
+    "critical_operations": {
+      "enabled": true,
+      "keywords": [
+        "authentication",
+        "authorization",
+        "security",
+        "payment",
+        "data migration",
+        "database schema"
+      ],
+      "agent_count": 3
+    },
+    "conflicting_patterns": {
+      "enabled": true,
+      "agent_count": 2
+    },
+    "feasibility_uncertainty": {
+      "enabled": true,
+      "agent_count": 2
+    }
+  },
+  "agent_strategies": {
+    "strategy_1": {
+      "name": "Breadth-First Exploration",
+      "agent": "Explore",
+      "model": "haiku",
+      "focus": "wide_coverage",
+      "timeout": 30000
+    },
+    "strategy_2": {
+      "name": "Depth-First Analysis",
+      "agent": "Explore",
+      "model": "sonnet",
+      "focus": "detailed_analysis",
+      "timeout": 45000
+    },
+    "strategy_3": {
+      "name": "Pattern-Focused Verification",
+      "agent": "Explore",
+      "model": "haiku",
+      "focus": "pattern_validation",
+      "timeout": 30000
+    }
+  },
+  "consensus_analysis": {
+    "compare_findings": true,
+    "highlight_agreements": true,
+    "flag_disagreements": true,
+    "aggregate_recommendations": true,
+    "confidence_scoring": true
+  },
+  "disagreement_resolution": {
+    "show_all_perspectives": true,
+    "highlight_differences": true,
+    "ask_user_to_decide": true,
+    "provide_reasoning_comparison": true
+  },
+  "performance_optimization": {
+    "parallel_execution": true,
+    "early_termination_on_consensus": false,
+    "cache_individual_results": true,
+    "reuse_overlapping_analysis": true
+  }
+}

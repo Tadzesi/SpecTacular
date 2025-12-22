@@ -60,93 +60,131 @@ body {
   background: var(--text-muted);
 }
 
-/* Code block styling */
+/* Code block styling - VS Code compatible */
 .markdown-content pre {
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  background-color: var(--vscode-textCodeBlock-background, var(--bg-tertiary));
+  border-radius: 3px;
   padding: 16px;
   overflow-x: auto;
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .markdown-content code {
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-  font-size: 0.9em;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 1em;
 }
 
 .markdown-content :not(pre) > code {
-  background-color: var(--bg-tertiary);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border-color);
+  background-color: var(--vscode-textCodeBlock-background, var(--bg-tertiary));
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: var(--vscode-textPreformat-foreground, var(--text-primary));
+  font-size: 0.9em;
 }
 
-/* Table styling */
+/* Table styling - VS Code compatible */
 .markdown-content table {
   border-collapse: collapse;
   width: 100%;
-  margin: 16px 0;
+  margin: 0 0 1em 0;
+  display: table;
 }
 
-.markdown-content th,
-.markdown-content td {
-  border: 1px solid var(--border-color);
-  padding: 8px 12px;
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid var(--vscode-panel-border, var(--border-color));
+  padding: 6px 13px;
   text-align: left;
 }
 
-.markdown-content th {
-  background-color: var(--bg-secondary);
+.markdown-content table th {
+  background-color: var(--vscode-textBlockQuote-background, var(--bg-secondary));
   font-weight: 600;
 }
 
-.markdown-content tr:nth-child(even) {
-  background-color: var(--bg-secondary);
+.markdown-content table tr {
+  background-color: var(--vscode-editor-background, transparent);
 }
 
-/* Blockquote styling */
+.markdown-content table tr:nth-child(2n) {
+  background-color: var(--vscode-textCodeBlock-background, var(--bg-secondary));
+}
+
+/* Paragraph styling - VS Code compatible */
+.markdown-content p {
+  margin-top: 0;
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Blockquote styling - VS Code compatible */
 .markdown-content blockquote {
-  border-left: 4px solid var(--accent-blue);
-  margin: 16px 0;
-  padding: 0 16px;
-  color: var(--text-secondary);
+  border-left: 4px solid var(--vscode-textBlockQuote-border, var(--accent-blue));
+  margin: 0 0 1em 0;
+  padding: 0 1em;
+  color: var(--vscode-textBlockQuote-foreground, var(--text-secondary));
+  background-color: var(--vscode-textBlockQuote-background, transparent);
 }
 
-/* Link styling */
+.markdown-content blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Link styling - VS Code compatible */
 .markdown-content a {
-  color: var(--accent-blue);
+  color: var(--vscode-textLink-foreground, var(--accent-blue));
   text-decoration: none;
 }
 
 .markdown-content a:hover {
   text-decoration: underline;
+  color: var(--vscode-textLink-activeForeground, var(--accent-blue));
 }
 
-/* Heading styling */
+/* Heading styling - VS Code compatible */
 .markdown-content h1,
 .markdown-content h2,
 .markdown-content h3,
 .markdown-content h4,
 .markdown-content h5,
 .markdown-content h6 {
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
+  color: var(--vscode-editor-foreground, var(--text-primary));
+}
+
+.markdown-content h1:first-child,
+.markdown-content h2:first-child,
+.markdown-content h3:first-child,
+.markdown-content h4:first-child,
+.markdown-content h5:first-child,
+.markdown-content h6:first-child {
+  margin-top: 0;
 }
 
 .markdown-content h1 {
   font-size: 2em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--vscode-panel-border, var(--border-color));
   padding-bottom: 0.3em;
+  margin-bottom: 16px;
 }
 
 .markdown-content h2 {
   font-size: 1.5em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--vscode-panel-border, var(--border-color));
   padding-bottom: 0.3em;
 }
 
@@ -154,11 +192,25 @@ body {
   font-size: 1.25em;
 }
 
-/* List styling */
+.markdown-content h4 {
+  font-size: 1em;
+}
+
+.markdown-content h5 {
+  font-size: 0.875em;
+}
+
+.markdown-content h6 {
+  font-size: 0.85em;
+  color: var(--vscode-descriptionForeground, var(--text-secondary));
+}
+
+/* List styling - VS Code compatible */
 .markdown-content ul,
 .markdown-content ol {
   padding-left: 2em;
-  margin: 16px 0;
+  margin-top: 0;
+  margin-bottom: 1em;
 }
 
 .markdown-content ul {
@@ -170,15 +222,81 @@ body {
 }
 
 .markdown-content li {
-  margin: 4px 0;
-  display: list-item;
+  margin-top: 0.25em;
 }
 
-/* Horizontal rule */
+.markdown-content li > p {
+  margin-top: 1em;
+}
+
+.markdown-content li + li {
+  margin-top: 0.25em;
+}
+
+.markdown-content ul ul,
+.markdown-content ul ol,
+.markdown-content ol ul,
+.markdown-content ol ol {
+  margin-top: 0.25em;
+  margin-bottom: 0;
+}
+
+.markdown-content ul ul {
+  list-style-type: circle;
+}
+
+.markdown-content ul ul ul {
+  list-style-type: square;
+}
+
+/* Horizontal rule - VS Code compatible */
 .markdown-content hr {
-  border: none;
-  border-top: 1px solid var(--border-color);
-  margin: 24px 0;
+  border: 0;
+  height: 0.25em;
+  margin: 1.5em 0;
+  padding: 0;
+  background-color: var(--vscode-panel-border, var(--border-color));
+}
+
+/* Base markdown content container - VS Code compatible */
+.markdown-content {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--vscode-editor-foreground, var(--text-primary));
+  word-wrap: break-word;
+  padding: 20px;
+}
+
+.markdown-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Strong and emphasis */
+.markdown-content strong,
+.markdown-content b {
+  font-weight: 600;
+}
+
+.markdown-content em,
+.markdown-content i {
+  font-style: italic;
+}
+
+/* Images */
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 1em 0;
+}
+
+/* Strikethrough */
+.markdown-content del {
+  text-decoration: line-through;
 }
 
 /* Pulsing animation for modified indicator */
@@ -224,14 +342,26 @@ body {
   outline: none;
 }
 
-/* TipTap ProseMirror styles */
+/* TipTap ProseMirror styles - VS Code compatible */
 .ProseMirror {
   min-height: 200px;
-  padding: 16px;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--vscode-editor-foreground, var(--text-primary));
 }
 
 .ProseMirror:focus {
   outline: none;
+}
+
+.ProseMirror > *:first-child {
+  margin-top: 0 !important;
+}
+
+.ProseMirror > *:last-child {
+  margin-bottom: 0 !important;
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
@@ -323,16 +453,16 @@ body {
   flex: 1;
 }
 
-/* Code block styles */
+/* Code block styles - VS Code compatible */
 .ProseMirror pre {
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  background-color: var(--vscode-textCodeBlock-background, var(--bg-tertiary));
+  border-radius: 3px;
   padding: 16px;
   overflow-x: auto;
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.45;
+  margin: 1em 0;
 }
 
 .ProseMirror pre code {
@@ -343,44 +473,64 @@ body {
 }
 
 .ProseMirror code {
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-family: 'Consolas', 'Courier New', monospace;
   font-size: 0.9em;
-  background-color: var(--bg-tertiary);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid var(--border-color);
+  background-color: var(--vscode-textCodeBlock-background, var(--bg-tertiary));
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: var(--vscode-textPreformat-foreground, var(--text-primary));
 }
 
-/* Blockquote styles */
+/* Blockquote styles - VS Code compatible */
 .ProseMirror blockquote {
-  border-left: 4px solid var(--accent-blue);
-  margin: 16px 0;
-  padding: 0 16px;
-  color: var(--text-secondary);
+  border-left: 4px solid var(--vscode-textBlockQuote-border, var(--accent-blue));
+  margin: 0 0 1em 0;
+  padding: 0 1em;
+  color: var(--vscode-textBlockQuote-foreground, var(--text-secondary));
+  background-color: var(--vscode-textBlockQuote-background, transparent);
 }
 
-/* Heading styles */
+.ProseMirror blockquote > :first-child {
+  margin-top: 0;
+}
+
+.ProseMirror blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Heading styles - VS Code compatible */
 .ProseMirror h1,
 .ProseMirror h2,
 .ProseMirror h3,
 .ProseMirror h4,
 .ProseMirror h5,
 .ProseMirror h6 {
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
+  color: var(--vscode-editor-foreground, var(--text-primary));
+}
+
+.ProseMirror h1:first-child,
+.ProseMirror h2:first-child,
+.ProseMirror h3:first-child,
+.ProseMirror h4:first-child,
+.ProseMirror h5:first-child,
+.ProseMirror h6:first-child {
+  margin-top: 0;
 }
 
 .ProseMirror h1 {
   font-size: 2em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--vscode-panel-border, var(--border-color));
   padding-bottom: 0.3em;
+  margin-bottom: 16px;
 }
 
 .ProseMirror h2 {
   font-size: 1.5em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--vscode-panel-border, var(--border-color));
   padding-bottom: 0.3em;
 }
 
@@ -388,11 +538,25 @@ body {
   font-size: 1.25em;
 }
 
-/* List styles */
+.ProseMirror h4 {
+  font-size: 1em;
+}
+
+.ProseMirror h5 {
+  font-size: 0.875em;
+}
+
+.ProseMirror h6 {
+  font-size: 0.85em;
+  color: var(--vscode-descriptionForeground, var(--text-secondary));
+}
+
+/* List styles - VS Code compatible */
 .ProseMirror ul,
 .ProseMirror ol {
   padding-left: 2em;
-  margin: 16px 0;
+  margin-top: 0;
+  margin-bottom: 1em;
 }
 
 .ProseMirror ul {
@@ -404,15 +568,47 @@ body {
 }
 
 .ProseMirror li {
-  margin: 4px 0;
-  display: list-item;
+  margin-top: 0.25em;
 }
 
-/* Horizontal rule */
+.ProseMirror li > p {
+  margin-top: 1em;
+}
+
+.ProseMirror li + li {
+  margin-top: 0.25em;
+}
+
+.ProseMirror ul ul,
+.ProseMirror ul ol,
+.ProseMirror ol ul,
+.ProseMirror ol ol {
+  margin-top: 0.25em;
+  margin-bottom: 0;
+}
+
+.ProseMirror ul ul {
+  list-style-type: circle;
+}
+
+.ProseMirror ul ul ul {
+  list-style-type: square;
+}
+
+/* Horizontal rule - VS Code compatible */
 .ProseMirror hr {
-  border: none;
-  border-top: 1px solid var(--border-color);
-  margin: 24px 0;
+  border: 0;
+  height: 0.25em;
+  margin: 1.5em 0;
+  padding: 0;
+  background-color: var(--vscode-panel-border, var(--border-color));
+}
+
+/* Paragraph styles - VS Code compatible */
+.ProseMirror p {
+  margin-top: 0;
+  margin-bottom: 1em;
+  line-height: 1.6;
 }
 
 /* Status tag styles */

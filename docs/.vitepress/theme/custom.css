@@ -1,0 +1,56 @@
+/* Custom styles for SpecTacular documentation */
+
+:root {
+  /* Brand colors */
+  --vp-c-brand-1: #4a9eff;
+  --vp-c-brand-2: #68d391;
+  --vp-c-brand-3: #f6ad55;
+
+  /* Custom accent colors */
+  --vp-c-brand-light: #63b3ff;
+  --vp-c-brand-lighter: #80c1ff;
+  --vp-c-brand-dark: #3a8eef;
+  --vp-c-brand-darker: #2a7edf;
+}
+
+/* Logo styling */
+.VPNavBarTitle .logo {
+  max-height: 32px;
+  width: auto;
+}
+
+/* Mermaid diagram styling */
+.vp-doc .mermaid {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+/* Code block enhancements */
+.vp-doc div[class*='language-'] {
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+
+/* Table styling */
+.vp-doc table {
+  display: block;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+/* Status badge colors (if we add custom badges) */
+.status-done {
+  color: #68d391;
+}
+
+.status-pending {
+  color: #4a9eff;
+}
+
+.status-blocked {
+  color: #f56565;
+}
+
+.status-in-progress {
+  color: #f6ad55;
+}

@@ -70,3 +70,120 @@ Available slash commands for specification-driven development:
 2. **Simple Steps Over Complex Workflows** - Use pipeline commands when possible
 3. **Validation Before Completion** - Always run `/spectacular.5-validate`
 4. **Production-Ready Defaults** - No placeholder code in completed work
+
+## Prompt-Hybrid Intelligence
+
+This project includes **advanced prompt perfection commands** with AI-powered codebase analysis:
+
+### `/prompt-hybrid` - Intelligent Prompt Perfection
+
+Transforms any prompt into an unambiguous, executable format using automatic complexity detection and autonomous agents.
+
+**Features:**
+- ✅ Automatic complexity detection (simple/moderate/complex)
+- ✅ Agent-powered codebase analysis for complex tasks
+- ✅ Result caching (10-20x faster for repeated prompts)
+- ✅ Multi-agent verification for critical operations
+- ✅ Learning system that improves over time
+
+**Usage:**
+```
+/prompt-hybrid "Add user authentication following existing patterns"
+```
+
+**How it works:**
+1. Analyzes your prompt and detects complexity
+2. Spawns AI agents automatically for complex tasks (score ≥10)
+3. Agents explore codebase, detect patterns, validate feasibility
+4. Returns perfected prompt with technical insights
+5. Caches results for 24h (reused for similar prompts)
+
+**Complexity Triggers:**
+- Multi-file scope (+5)
+- Architecture questions (+7)
+- Pattern detection needed (+6)
+- Feasibility checks (+4)
+- Implementation planning (+3)
+- Cross-cutting concerns (+4)
+- Refactoring tasks (+5)
+
+**Performance:**
+- Simple path: ~2s (inline validation)
+- Complex path (first time): ~20s (agent analysis)
+- Complex path (cached): ~2s (10-20x faster!)
+
+---
+
+### `/prompt-technical` - Technical Implementation Analysis
+
+Deep technical analysis for programming tasks with hybrid intelligence.
+
+**Usage:**
+```
+/prompt-technical
+```
+
+**What it does:**
+1. Perfects your prompt using complexity detection
+2. Analyzes project structure and patterns
+3. Provides 2-3 implementation options with pros/cons
+4. Recommends best approach with code scaffolding
+5. Validates technical feasibility
+
+**Use this when:**
+- You need implementation options for a task
+- You want to follow existing codebase patterns
+- You need code examples matching your conventions
+- You want feasibility validation before starting
+
+---
+
+### Configuration
+
+Prompt-hybrid settings are in `.spectacular/prompts/`:
+
+- `complexity-rules.json` - Complexity detection rules and triggers
+- `agent-templates.json` - AI agent prompt templates
+- `cache-config.json` - Result caching settings (24h default)
+- `verification-config.json` - Multi-agent verification rules
+- `learning-config.json` - Learning system configuration
+
+**Customize complexity scoring:**
+Edit `.spectacular/prompts/complexity-rules.json` to adjust trigger weights and thresholds.
+
+**Clear cache:**
+Delete `.claude/cache/agent-results/` to invalidate all cached results.
+
+---
+
+### Integration with SpecTacular Workflow
+
+Prompt-hybrid commands complement the SpecTacular pipeline:
+
+**Workflow Pattern:**
+```
+1. /prompt-hybrid "feature description"
+   → Get perfected, validated prompt
+
+2. /spectacular.1-spec [use perfected prompt]
+   → Create specification with insights
+
+3. /spectacular.2-plan
+   → Generate technical plan
+
+4. /spectacular.3-tasks
+   → Break down into tasks
+
+5. /spectacular.4-implement
+   → Execute implementation
+
+6. /spectacular.5-validate
+   → Validate completion
+```
+
+**Or use the quick pipeline:**
+```
+/spectacular.0-quick "feature description"
+```
+
+The SpecTacular commands can optionally use prompt-hybrid logic internally for automatic complexity detection and codebase analysis during spec and plan generation.

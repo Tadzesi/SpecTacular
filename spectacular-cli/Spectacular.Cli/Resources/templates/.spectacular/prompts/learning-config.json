@@ -1,0 +1,61 @@
+{
+  "version": "1.0.0",
+  "description": "Learning system configuration for prompt pattern tracking",
+  "learning_settings": {
+    "enabled": true,
+    "pattern_storage": ".claude/memory/prompt-patterns.md",
+    "learning_threshold": 3,
+    "auto_suggest_improvements": true,
+    "track_user_modifications": true
+  },
+  "pattern_tracking": {
+    "track_successful_transformations": true,
+    "track_clarification_questions": true,
+    "track_user_preference_patterns": true,
+    "track_complexity_accuracy": true,
+    "track_agent_effectiveness": true
+  },
+  "learning_categories": {
+    "prompt_types": {
+      "track": true,
+      "categories": [
+        "bug_fix",
+        "feature_implementation",
+        "refactoring",
+        "architecture_question",
+        "code_review",
+        "performance_optimization"
+      ]
+    },
+    "common_missing_info": {
+      "track": true,
+      "auto_detect": true
+    },
+    "user_modification_patterns": {
+      "track": true,
+      "learn_preferences": true
+    },
+    "complexity_score_accuracy": {
+      "track": true,
+      "auto_adjust_weights": false,
+      "suggest_weight_adjustments": true
+    }
+  },
+  "smart_defaults": {
+    "enabled": true,
+    "confidence_threshold": 0.75,
+    "min_pattern_occurrences": 3,
+    "context_sources": [
+      "project_type",
+      "tech_stack",
+      "coding_conventions",
+      "team_patterns"
+    ]
+  },
+  "feedback_loop": {
+    "track_approval_rate": true,
+    "track_modification_frequency": true,
+    "track_agent_vs_manual_preference": true,
+    "suggest_rule_improvements": true
+  }
+}

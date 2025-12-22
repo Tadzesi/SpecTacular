@@ -84,6 +84,12 @@ function fixLineBreaks(markdown: string): string {
 export function preprocessMarkdown(markdown: string): string {
   let processed = markdown;
 
+  // Strip checkmarks and other prefixes from list items BEFORE processing
+  // This prevents breaking list structure
+  // Match checkmark/x/✓/✗ followed by optional space, then list item
+  processed = processed.replace(/^([✓✗xX]\s+)?(\d+\.)/gm, '$2');
+  processed = processed.replace(/^(\s+)([✓✗xX]\s+)?(-|\d+\.)/gm, '$1$3');
+
   // First, fix line break issues for proper list/item rendering
   processed = fixLineBreaks(processed);
 

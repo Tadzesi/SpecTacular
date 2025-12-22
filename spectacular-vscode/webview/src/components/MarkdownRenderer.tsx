@@ -192,7 +192,7 @@ export function MarkdownRenderer({ content, currentFilePath, onNavigate }: Markd
   };
 
   return (
-    <div className="markdown-content prose dark:prose-invert max-w-none">
+    <div className="markdown-content">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -212,9 +212,10 @@ export function MarkdownRenderer({ content, currentFilePath, onNavigate }: Markd
                     language={language}
                     PreTag="div"
                     customStyle={{
-                      margin: 0,
-                      borderRadius: '6px',
+                      margin: '1em 0',
+                      borderRadius: '3px',
                       fontSize: '14px',
+                      padding: '16px',
                     }}
                   >
                     {String(children).replace(/\n$/, '')}
@@ -230,9 +231,10 @@ export function MarkdownRenderer({ content, currentFilePath, onNavigate }: Markd
                   language="text"
                   PreTag="div"
                   customStyle={{
-                    margin: 0,
-                    borderRadius: '6px',
+                    margin: '1em 0',
+                    borderRadius: '3px',
                     fontSize: '14px',
+                    padding: '16px',
                   }}
                 >
                   {String(children).replace(/\n$/, '')}
