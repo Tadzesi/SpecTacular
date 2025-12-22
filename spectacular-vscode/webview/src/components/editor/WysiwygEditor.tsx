@@ -12,6 +12,7 @@ import TaskItem from '@tiptap/extension-task-item';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
 import { Markdown } from 'tiptap-markdown';
+import { marked } from 'marked';
 
 import { StatusTag } from './extensions/StatusTag';
 import { Wikilink } from './extensions/Wikilink';
@@ -60,6 +61,26 @@ export function WysiwygEditor({
         codeBlock: {
           HTMLAttributes: {
             class: 'code-block',
+          },
+        },
+        // Enable nesting for ordered and bulleted lists
+        orderedList: {
+          HTMLAttributes: {
+            class: 'ordered-list',
+          },
+          keepMarks: true,
+          keepAttributes: false,
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'bullet-list',
+          },
+          keepMarks: true,
+          keepAttributes: false,
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'list-item',
           },
         },
       }),
@@ -195,10 +216,21 @@ export function WysiwygEditor({
       frontmatterRef.current = frontmatter;
 
       // Pre-process markdown for custom extensions (only the body, not frontmatter)
-      const processedContent = preprocessMarkdown(body);
+      const preprocessed = preprocessMarkdown(body);
+      console.log('=== DEBUG: After preprocessing ===');
+      console.log(preprocessed.substring(0, 1000));
 
-      // Set the content without emitting update event
-      editor.commands.setContent(processedContent, {
+      // Convert markdown to HTML using marked (better nested list support)
+      // marked handles nested lists properly according to CommonMark spec
+      const htmlContent = marked.parse(preprocessed, {
+        breaks: true,
+        gfm: true,
+      }) as string;
+      console.log('=== DEBUG: After marked.parse ===');
+      console.log(htmlContent.substring(0, 1000));
+
+      // Set the HTML content (TipTap will parse it into its document structure)
+      editor.commands.setContent(htmlContent, {
         emitUpdate: false,
       });
 

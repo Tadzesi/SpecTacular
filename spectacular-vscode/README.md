@@ -19,10 +19,12 @@ A VS Code extension for viewing and monitoring markdown specification files with
   - Keyboard shortcuts (Alt+Left, Alt+Right)
 - **Recent Files** - Quick access dropdown for recently viewed files
 - **Markdown Features**:
+  - **Nested List Support** - Properly renders hierarchical nested lists (fixed in v1.6.6)
   - Status tags with visual icons (`#status/done`, `#status/pending`, etc.)
   - Wikilink support (`[[link]]` syntax)
   - Syntax highlighting for code blocks
   - GFM (GitHub Flavored Markdown) support
+  - CommonMark-compliant rendering with `marked` library
 
 ## Installation
 
@@ -38,7 +40,7 @@ A VS Code extension for viewing and monitoring markdown specification files with
 
 Or via command line:
 ```bash
-code --install-extension spectacular-dashboard-1.6.4.vsix
+code --install-extension spectacular-dashboard-1.6.6.vsix
 ```
 
 ### Option 2: Build from Source

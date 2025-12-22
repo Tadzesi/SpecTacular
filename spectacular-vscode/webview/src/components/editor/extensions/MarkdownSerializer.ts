@@ -8,8 +8,18 @@ const STATUS_TAG_REGEX = /#status\/([a-zA-Z-]+)/g;
 const WIKILINK_REGEX = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 /**
+ * Check if a line is a list item (numbered, bulleted, or task)
+ */
+function isListItem(line: string): boolean {
+  // Match lines that start with optional whitespace followed by list markers
+  // Markers: -, *, +, 1., 2., etc., or task list items [ ] or [x]
+  return /^\s*(-|\*|\+|\d+\.|\[[ xX]\])\s/.test(line);
+}
+
+/**
  * Fix line breaks for items that should be on separate lines.
  * This handles cases where AI-generated content puts items on the same line.
+ * IMPORTANT: Skips list items to preserve their indentation/nesting structure.
  */
 function fixLineBreaks(markdown: string): string {
   let processed = markdown;
@@ -22,31 +32,40 @@ function fixLineBreaks(markdown: string): string {
     '$1\n$2'
   );
 
-  // Fix numbered sub-items on same line (e.g., "1.1. Item 1.2. Item")
-  // Pattern: space followed by digit.digit. and space, then non-whitespace
-  // Apply multiple times to handle chains like "1.1. a 1.2. b 1.3. c"
-  let prevProcessed = '';
-  while (prevProcessed !== processed) {
-    prevProcessed = processed;
-    processed = processed.replace(
+  // Process line by line to preserve list item structure
+  const lines = processed.split('\n');
+  const processedLines: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // CRITICAL: If this is a list item, preserve it as-is (no processing)
+    if (isListItem(line)) {
+      processedLines.push(line);
+      continue;
+    }
+
+    // For non-list lines, apply existing fixes
+    let processedLine = line;
+
+    // Fix numbered sub-items on same line (e.g., "text 1.1. Item")
+    // Only if not already a list item
+    processedLine = processedLine.replace(
       /\s+(\d+\.\d+\.)\s+(?=\S)/g,
       '\n$1 '
     );
-  }
 
-  // Fix main numbered items on same line (e.g., "1. Item 2. Item 3. Item")
-  // Pattern: space followed by digit. (not digit.digit.) and space, then non-whitespace
-  // Apply multiple times to handle chains
-  prevProcessed = '';
-  while (prevProcessed !== processed) {
-    prevProcessed = processed;
-    // Match space, number, period, space, then lookahead for non-whitespace
-    // But NOT if followed by another digit (which would make it like "1.2.")
-    processed = processed.replace(
+    // Fix main numbered items on same line (e.g., "text 1. Item")
+    // Only if not already a list item
+    processedLine = processedLine.replace(
       /\s+(\d+\.)\s+(?=[^\s\d])/g,
       '\n$1 '
     );
+
+    processedLines.push(processedLine);
   }
+
+  processed = processedLines.join('\n');
 
   // Ensure numbered lists have a blank line before them when preceded by text
   // Pattern: non-list content followed directly by "1. " at start of line
@@ -78,6 +97,82 @@ function fixLineBreaks(markdown: string): string {
 }
 
 /**
+ * Normalize list indentation to ensure proper nesting is recognized.
+ * This function validates and standardizes indentation levels for nested lists.
+ * TEMPORARILY DISABLED FOR TESTING
+ */
+// @ts-ignore - temporarily unused for testing
+function normalizeListIndentation(markdown: string): string {
+  console.log('=== normalizeListIndentation INPUT ===');
+  console.log(markdown.substring(0, 500));
+
+  const lines = markdown.split('\n');
+  const normalized: string[] = [];
+  let inList = false;
+  let listStack: { indent: number; marker: string }[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Check if this is a list item
+    const listMatch = line.match(/^(\s*)(-|\*|\+|\d+\.|\[[ xX]\])\s+(.*)$/);
+
+    if (listMatch) {
+      const indent = listMatch[1];
+      const marker = listMatch[2];
+      const content = listMatch[3];
+      const indentLength = indent.length;
+
+      if (!inList) {
+        // Starting a new list - no indentation for first item
+        listStack = [{ indent: 0, marker }];
+        normalized.push(`${marker} ${content}`);
+        inList = true;
+      } else {
+        // Already in a list - determine nesting level
+        // Find the appropriate parent level
+        let nestingLevel = 0;
+
+        // Remove stack entries with greater or equal indentation
+        while (
+          listStack.length > 0 &&
+          listStack[listStack.length - 1].indent >= indentLength
+        ) {
+          listStack.pop();
+        }
+
+        // Current nesting level is the stack depth
+        nestingLevel = listStack.length;
+
+        // Add current item to stack
+        listStack.push({ indent: indentLength, marker });
+
+        // Normalize indentation: 3 spaces per nesting level (CommonMark standard for nested lists)
+        // This ensures markdown-it/TipTap properly recognizes the nested structure
+        const normalizedIndent = '   '.repeat(nestingLevel);
+        normalized.push(`${normalizedIndent}${marker} ${content}`);
+      }
+    } else {
+      // Not a list item
+      if (line.trim() === '') {
+        // Empty line - preserve but might continue list context
+        normalized.push(line);
+      } else {
+        // Non-empty, non-list line - end list context
+        normalized.push(line);
+        inList = false;
+        listStack = [];
+      }
+    }
+  }
+
+  const result = normalized.join('\n');
+  console.log('=== normalizeListIndentation OUTPUT ===');
+  console.log(result.substring(0, 500));
+  return result;
+}
+
+/**
  * Pre-process markdown content to convert custom syntax to HTML
  * that TipTap can parse, then post-process when serializing back
  */
@@ -90,7 +185,13 @@ export function preprocessMarkdown(markdown: string): string {
   processed = processed.replace(/^([✓✗xX]\s+)?(\d+\.)/gm, '$2');
   processed = processed.replace(/^(\s+)([✓✗xX]\s+)?(-|\d+\.)/gm, '$1$3');
 
-  // First, fix line break issues for proper list/item rendering
+  // CRITICAL: Normalize list indentation to preserve nesting hierarchy
+  // This must run BEFORE fixLineBreaks to ensure list structure is intact
+  // TEMPORARILY DISABLED to test if marked can handle original indentation
+  // processed = normalizeListIndentation(processed);
+
+  // Fix line break issues for non-list content
+  // (fixLineBreaks now skips list items automatically)
   processed = fixLineBreaks(processed);
 
   // Convert #status/xxx to span elements
