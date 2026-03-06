@@ -20,7 +20,8 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Purpose
 
-Execute the **implementation plan** by processing all tasks. This is step 4 of the pipeline:
+Execute each task through a strict **prepare → implement → validate** gate.
+A task only completes when ALL its acceptance criteria pass. This is step 4:
 
 ```
 1-spec -> 2-plan -> 3-tasks -> 4-implement -> 5-validate
@@ -30,50 +31,120 @@ Execute the **implementation plan** by processing all tasks. This is step 4 of t
 
 ### 1. Locate Current Feature
 
-Find the active feature directory in specs/.
+Find the active feature directory in `specs/`.
 
-### 2. Read Task List
+### 2. Load Task List
 
-Load `tasks.md` and identify all incomplete tasks (marked `#status/pending` or `#status/in-progress`).
+Read `tasks.md` and enumerate all task files in `tasks/`.
+Identify pending tasks (status: pending or in-progress).
 
-### 3. Execute Tasks
+Register all pending tasks upfront using TaskCreate so progress is visible:
+```
+For each pending task:
+  TaskCreate: title="[NN] Task Name", status=pending
+```
 
-For each incomplete task (marked `#status/pending` in tasks.md):
+Display the execution plan before starting:
+```
+EXECUTION PLAN
+Feature: [name]
+Tasks: N total, X already complete, Y to execute
+Order: 01 → 02 → ... (critical path)
+```
 
-1. **Mark in progress** - Update:
-   - TodoWrite with task status
-   - tasks.md table: `#status/pending` → `#status/in-progress`
-   - Task file YAML frontmatter: `status: pending` → `status: in-progress`
+### 3. Per-Task Execution Loop
 
-2. **Execute the task** - Perform the actual work following the steps
+For each pending task **in dependency order**:
 
-3. **Verify completion** - Check all acceptance criteria in the task file
+---
 
-4. **Mark complete** - Update ALL of these:
-   - TodoWrite status → completed
-   - tasks.md table: `#status/in-progress` → `#status/done`
-   - Task file YAML frontmatter: `status: in-progress` → `status: done`
-   - Task file acceptance criteria: `- [ ]` → `- [x]` (check each criterion)
+#### PHASE A — Prepare
 
-### Task Execution Guidelines
+1. **TaskUpdate** → `in_progress`
+2. Update tasks.md: `#status/pending` → `#status/in-progress`
+3. Update task file YAML: `status: pending` → `status: in-progress`
+4. Read `tasks/NN-name.md` fully — objective, context, acceptance criteria
+5. **AI Analysis** (do this BEFORE touching any code):
+   - Read ALL files mentioned in the task's Context section
+   - Find existing patterns in the codebase this task should follow
+   - Identify the minimal change set needed
+   - Flag any risk: naming conflicts, breaking changes, missing dependencies
+   - State your recommended approach in 2-3 sentences
+   ```
+   TASK NN/N: [Name]
+   Analyzing: [files read]
+   Approach: [recommendation]
+   Risk: [flags, or "none"]
+   ```
 
-- Complete tasks **in order** (respect dependencies)
-- **One task at a time** - finish before starting next
-- If a task fails, **stop and report** the issue
-- Keep changes **focused** on the current task
+---
 
-### 4. Progress Reporting
+#### PHASE B — Implement
 
-After each task:
-1. **Update Progress Summary** in tasks.md - increment Done count, decrement Remaining
-2. **Report**:
-   - Task completed
-   - Files created/modified
-   - Any issues encountered
+6. Execute with **tight focus** — only what this task requires.
+   Do not refactor unrelated code. Do not add features beyond task scope.
+7. List every file created or modified after implementation.
 
-### 5. Report Completion
+---
 
-When all tasks are done, output:
-- Total tasks completed
-- Files created/modified
-- Next step: `/spectacular.5-validate`
+#### PHASE C — Validate
+
+8. Check each acceptance criterion from `tasks/NN-name.md` **explicitly**:
+
+   For each criterion:
+   - State what you are checking
+   - Show evidence it passes (code snippet, test output, or logical proof)
+   - Mark PASS or FAIL
+
+   ```
+   VALIDATION: Task NN
+   [x] Criterion 1 — PASS: [evidence]
+   [x] Criterion 2 — PASS: [evidence]
+   [ ] Criterion 3 — FAIL: [reason]
+   ```
+
+9. If any criterion **FAILS**:
+   - Do NOT mark the task complete
+   - Diagnose the root cause (read the relevant files — do not guess)
+   - Fix and re-run validation from step 8
+   - If fix is blocked: **stop the pipeline** and report:
+     ```
+     BLOCKED: Task NN
+     Criterion: [which one]
+     Root cause: [diagnosis]
+     Action needed: [what must be decided or provided]
+     ```
+
+10. Once ALL criteria **PASS**:
+    - Check all `- [ ]` boxes → `- [x]` in `tasks/NN-name.md`
+      (VS Code TaskStatusService will auto-update YAML `status: done`)
+    - Update tasks.md table: `#status/in-progress` → `#status/done`
+    - Update Progress Summary: increment Done, decrement Remaining
+    - **TaskUpdate** → `completed`
+
+---
+
+#### PHASE D — Progress Report
+
+After each completed task, display:
+```
+PROGRESS: N/TOTAL complete
+[x] 01: Name
+[x] 02: Name
+[ ] 03: Name  ← next
+[ ] 04: Name
+Remaining: N tasks
+```
+
+---
+
+### 4. Report Completion
+
+When all tasks are complete:
+```
+ALL TASKS COMPLETE
+Feature: [name]
+Tasks completed: N/N
+Files modified: [list]
+Next step: /spectacular.5-validate
+```

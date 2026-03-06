@@ -1,0 +1,315 @@
+{
+  "version": "1.0.0",
+  "description": "Lead Agent orchestration configuration for multi-agent research system",
+
+  "orchestration_settings": {
+    "enabled": true,
+    "max_iterations": 4,
+    "parallel_agents_per_iteration": 3,
+    "min_confidence_threshold": 0.80,
+    "min_coverage_threshold": 0.70,
+    "iteration_timeout_seconds": 60,
+    "early_termination_enabled": true,
+    "early_termination_thresholds": {
+      "confidence": 0.90,
+      "coverage": 0.85
+    }
+  },
+
+  "strategy_templates": {
+    "narrow_research": {
+      "name": "Narrow Research",
+      "description": "Focused analysis of specific component or small scope",
+      "scope_threshold": 5,
+      "initial_agents": ["ExploreAgent", "CitationAgent"],
+      "agent_count": 2,
+      "max_iterations": 2,
+      "focus": "specific_implementation",
+      "estimated_duration_seconds": 60,
+      "use_cases": [
+        "Single component analysis",
+        "Specific bug investigation",
+        "Function implementation details"
+      ]
+    },
+    "broad_research": {
+      "name": "Broad Research",
+      "description": "Multi-component analysis across related systems",
+      "scope_threshold": 15,
+      "initial_agents": ["ExploreAgent", "CitationAgent", "PatternAgent"],
+      "agent_count": 3,
+      "max_iterations": 3,
+      "focus": "architecture_understanding",
+      "estimated_duration_seconds": 120,
+      "use_cases": [
+        "Feature implementation planning",
+        "Module architecture analysis",
+        "Integration pattern discovery"
+      ]
+    },
+    "comprehensive_research": {
+      "name": "Comprehensive Research",
+      "description": "Full system analysis with security and performance considerations",
+      "scope_threshold": 999,
+      "initial_agents": ["ExploreAgent", "CitationAgent", "SecurityAgent", "PerformanceAgent", "PatternAgent"],
+      "agent_count": 5,
+      "max_iterations": 4,
+      "focus": "full_system_analysis",
+      "estimated_duration_seconds": 180,
+      "use_cases": [
+        "Security audit",
+        "Performance optimization planning",
+        "Large-scale refactoring",
+        "Migration planning"
+      ]
+    }
+  },
+
+  "strategy_selection_rules": {
+    "narrow_triggers": {
+      "scope_indicators": [
+        "single file",
+        "one component",
+        "specific function",
+        "this class",
+        "particular method"
+      ],
+      "estimated_file_count_max": 5
+    },
+    "broad_triggers": {
+      "scope_indicators": [
+        "feature",
+        "module",
+        "subsystem",
+        "across components",
+        "integration"
+      ],
+      "estimated_file_count_range": [5, 15]
+    },
+    "comprehensive_triggers": {
+      "scope_indicators": [
+        "entire system",
+        "whole application",
+        "complete architecture",
+        "all components",
+        "end-to-end"
+      ],
+      "critical_keywords": [
+        "security",
+        "audit",
+        "performance",
+        "migration",
+        "refactor"
+      ],
+      "estimated_file_count_min": 15
+    }
+  },
+
+  "agent_cohort_rules": {
+    "always_include": [
+      "ExploreAgent",
+      "CitationAgent"
+    ],
+    "conditional_agents": {
+      "SecurityAgent": {
+        "keywords": ["security", "authentication", "authorization", "encryption", "vulnerability", "payment", "sensitive", "credential"],
+        "complexity_min": 15,
+        "description": "Security-critical operations"
+      },
+      "PerformanceAgent": {
+        "keywords": ["performance", "slow", "optimization", "bottleneck", "scalability", "latency", "throughput"],
+        "complexity_min": 12,
+        "description": "Performance analysis needed"
+      },
+      "PatternAgent": {
+        "keywords": ["pattern", "convention", "like other", "match existing", "consistent", "standard"],
+        "complexity_min": 10,
+        "description": "Pattern detection or consistency analysis",
+        "auto_include_for_strategy": ["broad_research", "comprehensive_research"]
+      }
+    }
+  },
+
+  "iteration_triggers": {
+    "confidence_gap": {
+      "enabled": true,
+      "threshold": 0.80,
+      "description": "Average confidence below threshold",
+      "action": "spawn_validation_agent",
+      "priority": "important"
+    },
+    "coverage_gap": {
+      "enabled": true,
+      "threshold": 0.70,
+      "description": "File coverage below threshold",
+      "action": "spawn_exploration_agent",
+      "priority": "important"
+    },
+    "conflicting_findings": {
+      "enabled": true,
+      "description": "Agents reported contradictory information",
+      "action": "spawn_verification_agent",
+      "priority": "critical",
+      "agent_type": "Plan"
+    },
+    "missing_context": {
+      "enabled": true,
+      "description": "Architectural relationships unclear",
+      "action": "spawn_targeted_agent",
+      "priority": "important"
+    },
+    "unanswered_questions": {
+      "enabled": true,
+      "description": "Critical questions from prompt not answered",
+      "action": "spawn_specialized_agent",
+      "priority": "critical"
+    }
+  },
+
+  "convergence_settings": {
+    "require_all_criteria": true,
+    "criteria": {
+      "min_coverage": {
+        "enabled": true,
+        "threshold": 0.70,
+        "description": "Minimum file coverage percentage"
+      },
+      "min_confidence": {
+        "enabled": true,
+        "threshold": 0.80,
+        "description": "Minimum average confidence score"
+      },
+      "max_unresolved_conflicts": {
+        "enabled": true,
+        "threshold": 2,
+        "description": "Maximum number of unresolved conflicts"
+      },
+      "all_critical_questions_answered": {
+        "enabled": true,
+        "description": "All questions marked critical must be answered"
+      }
+    },
+    "partial_convergence_allowed": true,
+    "partial_convergence_threshold": 0.75
+  },
+
+  "checkpoint_settings": {
+    "enabled": true,
+    "save_frequency": "per_iteration",
+    "checkpoint_directory": ".claude/cache/iteration-checkpoints",
+    "checkpoint_format": "json",
+    "checkpoint_compression": false,
+    "checkpoint_retention_hours": 24,
+    "restore_on_failure": true,
+    "include_in_checkpoint": {
+      "findings": true,
+      "citations": true,
+      "agent_history": true,
+      "coverage_metrics": true,
+      "confidence_scores": true,
+      "iteration_count": true,
+      "timestamp": true
+    }
+  },
+
+  "performance_optimization": {
+    "parallel_execution": {
+      "enabled": true,
+      "max_concurrent_agents": 3,
+      "sequential_fallback": true
+    },
+    "early_termination": {
+      "enabled": true,
+      "high_confidence_threshold": 0.90,
+      "high_coverage_threshold": 0.85,
+      "require_both": true
+    },
+    "agent_timeout": {
+      "default_seconds": 30,
+      "per_agent_overrides": {
+        "ExploreAgent": 30,
+        "CitationAgent": 20,
+        "SecurityAgent": 45,
+        "PerformanceAgent": 45,
+        "PatternAgent": 30,
+        "Plan": 60
+      }
+    },
+    "incremental_analysis": {
+      "enabled": true,
+      "cache_previous_findings": true,
+      "avoid_duplicate_file_analysis": true
+    }
+  },
+
+  "error_handling": {
+    "agent_failure_strategy": "continue_with_others",
+    "agent_timeout_strategy": "mark_incomplete_continue",
+    "checkpoint_failure_strategy": "warn_and_continue",
+    "max_agent_retries": 1,
+    "retry_delay_seconds": 5,
+    "graceful_degradation": true
+  },
+
+  "reporting": {
+    "show_iteration_progress": true,
+    "show_agent_spawning": true,
+    "show_convergence_status": true,
+    "show_performance_metrics": true,
+    "verbose_mode": false,
+    "include_debug_info": false
+  },
+
+  "integration": {
+    "external_memory": {
+      "enabled": true,
+      "update_on_completion": true,
+      "config_file": ".claude/config/external-memory-config.json"
+    },
+    "caching_system": {
+      "enabled": true,
+      "cache_final_results": true,
+      "cache_expiry_hours": 24,
+      "config_file": ".claude/config/cache-config.json"
+    },
+    "learning_system": {
+      "enabled": true,
+      "track_research_effectiveness": true,
+      "config_file": ".claude/config/learning-config.json"
+    },
+    "citation_system": {
+      "enabled": true,
+      "config_file": ".claude/config/citation-config.json"
+    }
+  },
+
+  "experimental_features": {
+    "enabled": false,
+    "features": {
+      "ml_strategy_selection": {
+        "enabled": false,
+        "description": "Machine learning for automatic strategy selection"
+      },
+      "predictive_iteration_count": {
+        "enabled": false,
+        "description": "Predict iterations needed based on prompt analysis"
+      },
+      "dynamic_threshold_adjustment": {
+        "enabled": false,
+        "description": "Adjust confidence/coverage thresholds based on domain"
+      }
+    }
+  },
+
+  "metadata": {
+    "created": "2025-12-28",
+    "author": "Claude Code Enhancement Phase 1",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2025-12-28",
+        "changes": "Initial orchestration configuration"
+      }
+    ]
+  }
+}

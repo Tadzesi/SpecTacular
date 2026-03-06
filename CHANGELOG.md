@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-03-06
+
+### Added
+
+- **CLAUDE.md** — New project guidance file for Claude Code with build commands, architecture overview, key conventions, and message protocol reference
+- **Pipeline Redesign** — Completely redesigned `4-implement` command with per-task PHASE A/B/C/D validate gate:
+  - PHASE A: Prepare — read task file, existing code context, AI analysis
+  - PHASE B: Implement — tight scope, only what task requires
+  - PHASE C: Validate — check each acceptance criterion explicitly (PASS/FAIL)
+  - PHASE D: Report — progress N/TOTAL, BLOCKED report on failure
+  - Task only advances when ALL criteria pass
+- **AI Analysis Step** — Added "AI Deep Analysis" block to `2-plan` and pre-task analysis to `3-tasks`:
+  - Detects similar existing code and reuse opportunities
+  - Recommends approach with rationale
+  - Finds minimal change set
+- **Spec Compliance Check** — `5-validate` now verifies implementation matches original spec requirements
+- **AI Feature Review** — `5-validate` includes code quality assessment and improvement recommendations
+- **Outcome-based Acceptance Criteria** — `3-tasks` enforces independently verifiable results (not process steps)
+- **Codebase Analysis** — `1-spec` now actively analyzes existing code before writing spec
+
+### Fixed
+
+- Documentation accuracy: corrected 17 stale version references across `docs/` folder
+- Extension architecture diagram in `spectacular-vscode/README.md` — added missing `TaskStatusService.ts`, `VersionCheckService.ts`, `vscodeApi.ts`, `contexts/`, `types/`
+- `App.tsx` description corrected (has full WYSIWYG editor, not preview-only)
+- Constitution `TodoWrite` reference updated to `TaskCreate/TaskUpdate tools`
+- Hardcoded absolute paths in `PROMPT_HYBRID_INTEGRATION.md` replaced with relative paths
+
+### Changed
+
+- CLI version bumped to 1.7.0 to reflect significant pipeline improvements
+- Pipeline commands now use `TaskCreate`/`TaskUpdate` for task tracking instead of manual checkbox management
+- Both `.claude/commands/` and `.cursor/rules/` versions of pipeline commands updated consistently
+
+## [1.6.6] - 2025-12-22
+
+### Fixed
+
+- **Nested List Rendering in VS Code Extension** — Fixed ordered and unordered nested list rendering in the markdown preview dashboard:
+  - Lists now render with proper visual hierarchy and indentation
+  - Resolved issue introduced by Tailwind CSS purging list styles
+
 ## [1.6.5] - 2025-12-22
 
 ### Fixed
@@ -326,7 +368,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `generate-commands.ps1` - Sync prompts to Claude/Cursor command files
 - Example healthcheck specification template
 
-[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.5...HEAD
+[Unreleased]: https://github.com/Tadzesi/SpecTacular/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.6...v1.7.0
+[1.6.6]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.5...v1.6.6
 [1.6.5]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.4...v1.6.5
 [1.6.4]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.3...v1.6.4
 [1.6.3]: https://github.com/Tadzesi/SpecTacular/compare/v1.6.1...v1.6.3

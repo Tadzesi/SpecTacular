@@ -3,7 +3,7 @@
 The SpecTacular Dashboard is a VS Code extension that provides rich markdown preview, WYSIWYG editing, and specification management.
 
 **Extension ID:** `spectacular-dashboard`
-**Current Version:** 1.6.4
+**Current Version:** 1.6.6
 
 ## Features
 

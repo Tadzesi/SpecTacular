@@ -78,7 +78,7 @@ spectacular init --name "MyProject" --tech "Node.js, TypeScript"
 # https://github.com/Tadzesi/SpecTacular/releases
 
 # Install via command line
-code --install-extension spectacular-dashboard-1.6.4.vsix
+code --install-extension spectacular-dashboard-1.6.6.vsix
 ```
 
 :::

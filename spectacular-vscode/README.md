@@ -55,7 +55,7 @@ code --install-extension spectacular-dashboard-1.6.6.vsix
 
 2. Install the generated VSIX:
    ```bash
-   code --install-extension spectacular-dashboard-1.6.4.vsix
+   code --install-extension spectacular-dashboard-1.6.6.vsix
    ```
 
 ### Option 3: Development Mode (For Contributors)
@@ -151,27 +151,36 @@ npm run package
 
 ```
 spectacular-vscode/
-├── src/                           # Extension source
-│   ├── extension.ts               # Entry point, commands, editor listener
-│   ├── DashboardPanel.ts          # Webview panel manager
-│   ├── SpecsTreeProvider.ts       # Custom tree view for specs
-│   ├── FileDecorationProvider.ts  # File modification indicators
-│   └── fileOperations.ts          # File tree operations
-├── webview/                       # React webview app
+├── src/                           # Extension host source
+│   ├── extension.ts               # Entry point, commands, file watchers
+│   ├── DashboardPanel.ts          # Singleton WebviewPanel manager
+│   ├── SpecsTreeProvider.ts       # Custom tree view for specs folders
+│   ├── FileDecorationProvider.ts  # File modification indicators in explorer
+│   ├── TaskStatusService.ts       # Auto-updates task YAML status on checkbox change
+│   ├── VersionCheckService.ts     # Checks GitHub releases for updates on activation
+│   └── fileOperations.ts          # File tree building and content reading
+├── webview/                       # React webview app (separate npm workspace)
 │   └── src/
-│       ├── App.tsx                # Main app (preview-only, no sidebar)
-│       ├── components/            # UI components
-│       └── hooks/                 # React hooks
+│       ├── App.tsx                # Root component: file state, navigation, save/watch
+│       ├── vscodeApi.ts           # Message passing layer (postMessage to/from extension)
+│       ├── components/
+│       │   ├── ContentArea.tsx    # Switches between MarkdownRenderer and WysiwygEditor
+│       │   ├── MarkdownRenderer.tsx # Preview: react-markdown + status tags + wikilinks
+│       │   └── editor/            # WYSIWYG editor (TipTap + marked + custom extensions)
+│       ├── hooks/                 # useNavigationHistory, useTheme, useFileTree, etc.
+│       ├── contexts/              # ThemeContext
+│       └── types/                 # Shared TypeScript types
 ├── resources/                     # Icons
-└── dist/                          # Built output
+└── dist/                          # Built extension output
 ```
 
 ### Key Components
 
-- **SpecsTreeProvider**: Custom TreeDataProvider showing filtered view of specs folders
-- **FileDecorationProvider**: Adds visual indicators for modified files
-- **onDidChangeActiveTextEditor**: Listens for editor changes to auto-preview markdown files
-- **DashboardPanel**: WebviewPanel showing the markdown preview with navigation history
+- **SpecsTreeProvider**: `TreeDataProvider` showing filtered view of `specs/` or `.spectacular/` folders
+- **TaskStatusService**: Watches `tasks/*.md` files; when all acceptance criteria checkboxes are checked, auto-updates YAML frontmatter `status:` to `done`
+- **VersionCheckService**: Checks GitHub releases on activation and shows update notification
+- **FileDecorationProvider**: Adds visual indicators for unsaved files in the tree view
+- **DashboardPanel**: Singleton `WebviewPanel` showing the markdown preview; handles bidirectional message passing with the webview
 
 ## License
 

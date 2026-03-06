@@ -1,0 +1,552 @@
+{
+  "version": "1.0.0",
+  "description": "Predictive intelligence configuration for proactive guidance (Phase 0.15)",
+  "enabled": true,
+
+  "journey_stages": {
+    "exploring": {
+      "name": "Exploration Phase",
+      "description": "User is trying to understand existing code or architecture",
+      "triggers": [
+        "how does",
+        "how is",
+        "where is",
+        "what handles",
+        "explain",
+        "understand",
+        "show me",
+        "find",
+        "locate",
+        "discover"
+      ],
+      "advice_template": "You're exploring {area}. Consider also investigating: {related_areas}",
+      "suggestions": {
+        "expand_scope": true,
+        "suggest_related_areas": true,
+        "offer_comprehensive_analysis": true
+      }
+    },
+    "planning": {
+      "name": "Planning Phase",
+      "description": "User is designing or planning implementation",
+      "triggers": [
+        "should i",
+        "how should",
+        "what's the best way",
+        "design",
+        "plan",
+        "architecture for",
+        "approach for",
+        "strategy"
+      ],
+      "advice_template": "Planning {task} requires considering: {dependencies}",
+      "suggestions": {
+        "highlight_dependencies": true,
+        "warn_about_risks": true,
+        "suggest_alternatives": true
+      }
+    },
+    "implementing": {
+      "name": "Implementation Phase",
+      "description": "User is actively building or coding",
+      "triggers": [
+        "add",
+        "create",
+        "implement",
+        "build",
+        "develop",
+        "integrate",
+        "write",
+        "make"
+      ],
+      "advice_template": "Before implementing {feature}, ensure: {prerequisites}",
+      "suggestions": {
+        "warn_about_testing": true,
+        "warn_about_edge_cases": true,
+        "warn_about_security": true,
+        "suggest_patterns": true
+      }
+    },
+    "debugging": {
+      "name": "Debugging Phase",
+      "description": "User is fixing bugs or issues",
+      "triggers": [
+        "fix",
+        "debug",
+        "error",
+        "bug",
+        "issue",
+        "problem",
+        "not working",
+        "broken"
+      ],
+      "advice_template": "While fixing {issue}, consider preventive measures: {prevention}",
+      "suggestions": {
+        "suggest_root_cause_analysis": true,
+        "suggest_preventive_measures": true,
+        "suggest_related_issues": true
+      }
+    },
+    "refactoring": {
+      "name": "Refactoring Phase",
+      "description": "User is improving or restructuring code",
+      "triggers": [
+        "refactor",
+        "restructure",
+        "reorganize",
+        "clean up",
+        "improve",
+        "optimize"
+      ],
+      "advice_template": "Refactoring {component} impacts: {affected_areas}",
+      "suggestions": {
+        "identify_related_debt": true,
+        "warn_about_breaking_changes": true,
+        "suggest_comprehensive_refactor": true
+      }
+    },
+    "reviewing": {
+      "name": "Review Phase",
+      "description": "User is reviewing or auditing code",
+      "triggers": [
+        "review",
+        "audit",
+        "check",
+        "validate",
+        "assess",
+        "analyze quality"
+      ],
+      "advice_template": "Reviewing {area} should include: {review_checklist}",
+      "suggestions": {
+        "suggest_comprehensive_review": true,
+        "highlight_common_issues": true,
+        "suggest_standards": true
+      }
+    }
+  },
+
+  "domain_risks": {
+    "authentication": {
+      "severity": "critical",
+      "risks": [
+        {
+          "id": "auth_rate_limiting",
+          "name": "Missing Rate Limiting",
+          "description": "Authentication endpoints without rate limiting are vulnerable to brute force attacks",
+          "mitigation": "Implement rate limiting (e.g., 5 attempts per minute)",
+          "priority": "P0"
+        },
+        {
+          "id": "auth_password_security",
+          "name": "Weak Password Hashing",
+          "description": "Passwords must be hashed with strong algorithms (BCrypt, Argon2)",
+          "mitigation": "Use BCrypt with 12+ rounds or Argon2id",
+          "priority": "P0"
+        },
+        {
+          "id": "auth_token_expiration",
+          "name": "Token Expiration",
+          "description": "JWT tokens should have reasonable expiration times",
+          "mitigation": "Access tokens: 15min-1hr, Refresh tokens: 7 days",
+          "priority": "P1"
+        },
+        {
+          "id": "auth_session_management",
+          "name": "Session Management",
+          "description": "Sessions must be securely managed and invalidated",
+          "mitigation": "Implement session invalidation on logout, use secure cookies",
+          "priority": "P1"
+        }
+      ],
+      "common_followups": [
+        "authorization",
+        "password_reset",
+        "email_verification",
+        "two_factor_authentication",
+        "session_management"
+      ]
+    },
+    "authorization": {
+      "severity": "critical",
+      "risks": [
+        {
+          "id": "authz_broken_access_control",
+          "name": "Broken Access Control (OWASP A01)",
+          "description": "Users can access resources they shouldn't",
+          "mitigation": "Implement role-based or attribute-based access control",
+          "priority": "P0"
+        },
+        {
+          "id": "authz_privilege_escalation",
+          "name": "Privilege Escalation",
+          "description": "Users can elevate their permissions",
+          "mitigation": "Validate permissions on every request, server-side",
+          "priority": "P0"
+        }
+      ],
+      "common_followups": [
+        "role_management",
+        "permission_system",
+        "audit_logging"
+      ]
+    },
+    "payment": {
+      "severity": "critical",
+      "risks": [
+        {
+          "id": "payment_idempotency",
+          "name": "Missing Idempotency",
+          "description": "Duplicate payments can occur on retry",
+          "mitigation": "Implement idempotency keys for all payment operations",
+          "priority": "P0"
+        },
+        {
+          "id": "payment_pci_compliance",
+          "name": "PCI DSS Compliance",
+          "description": "Storing card data requires PCI compliance",
+          "mitigation": "Use payment provider tokens, never store card data",
+          "priority": "P0"
+        },
+        {
+          "id": "payment_webhook_security",
+          "name": "Webhook Security",
+          "description": "Payment webhooks can be spoofed",
+          "mitigation": "Verify webhook signatures from payment provider",
+          "priority": "P0"
+        },
+        {
+          "id": "payment_refunds",
+          "name": "Refund Handling",
+          "description": "Refund logic is often forgotten",
+          "mitigation": "Plan refund workflow, partial refunds, refund limits",
+          "priority": "P1"
+        }
+      ],
+      "common_followups": [
+        "refund_system",
+        "invoice_generation",
+        "payment_history",
+        "subscription_management"
+      ]
+    },
+    "database": {
+      "severity": "high",
+      "risks": [
+        {
+          "id": "db_sql_injection",
+          "name": "SQL Injection (OWASP A03)",
+          "description": "Unsanitized input can execute malicious SQL",
+          "mitigation": "Use parameterized queries or ORM, never string concatenation",
+          "priority": "P0"
+        },
+        {
+          "id": "db_n_plus_one",
+          "name": "N+1 Query Problem",
+          "description": "Inefficient queries cause performance issues",
+          "mitigation": "Use eager loading, analyze query patterns",
+          "priority": "P1"
+        },
+        {
+          "id": "db_migration_safety",
+          "name": "Unsafe Migrations",
+          "description": "Schema changes can cause data loss",
+          "mitigation": "Test migrations, have rollback plan, backup data",
+          "priority": "P0"
+        }
+      ],
+      "common_followups": [
+        "database_indexing",
+        "query_optimization",
+        "migration_strategy"
+      ]
+    },
+    "api": {
+      "severity": "medium",
+      "risks": [
+        {
+          "id": "api_rate_limiting",
+          "name": "Missing Rate Limiting",
+          "description": "API can be overwhelmed by excessive requests",
+          "mitigation": "Implement rate limiting per endpoint/user",
+          "priority": "P1"
+        },
+        {
+          "id": "api_versioning",
+          "name": "No API Versioning",
+          "description": "Breaking changes affect existing clients",
+          "mitigation": "Version API endpoints (v1, v2) from the start",
+          "priority": "P1"
+        },
+        {
+          "id": "api_input_validation",
+          "name": "Missing Input Validation",
+          "description": "Invalid data causes errors or security issues",
+          "mitigation": "Validate all inputs with strict schemas",
+          "priority": "P1"
+        }
+      ],
+      "common_followups": [
+        "api_documentation",
+        "error_handling",
+        "response_pagination"
+      ]
+    },
+    "security": {
+      "severity": "critical",
+      "risks": [
+        {
+          "id": "security_xss",
+          "name": "Cross-Site Scripting (XSS)",
+          "description": "Unescaped output allows script injection",
+          "mitigation": "Escape all user input, use CSP headers",
+          "priority": "P0"
+        },
+        {
+          "id": "security_csrf",
+          "name": "Cross-Site Request Forgery (CSRF)",
+          "description": "Unauthorized commands from trusted user",
+          "mitigation": "Use CSRF tokens for state-changing operations",
+          "priority": "P0"
+        },
+        {
+          "id": "security_secrets",
+          "name": "Hardcoded Secrets",
+          "description": "Secrets in code can be exposed",
+          "mitigation": "Use environment variables or secret management",
+          "priority": "P0"
+        }
+      ],
+      "common_followups": [
+        "security_headers",
+        "dependency_scanning",
+        "security_logging"
+      ]
+    },
+    "performance": {
+      "severity": "medium",
+      "risks": [
+        {
+          "id": "perf_caching",
+          "name": "Missing Caching Strategy",
+          "description": "Repeated expensive operations slow system",
+          "mitigation": "Cache at appropriate layers (CDN, app, database)",
+          "priority": "P2"
+        },
+        {
+          "id": "perf_monitoring",
+          "name": "No Performance Monitoring",
+          "description": "Cannot detect performance degradation",
+          "mitigation": "Implement APM (Application Performance Monitoring)",
+          "priority": "P2"
+        }
+      ],
+      "common_followups": [
+        "performance_testing",
+        "load_testing",
+        "optimization"
+      ]
+    }
+  },
+
+  "common_followups": {
+    "user_registration": [
+      {
+        "task": "email_verification",
+        "reason": "Prevent spam accounts, verify email ownership",
+        "priority": "P1",
+        "typical_percentage": 90
+      },
+      {
+        "task": "login_functionality",
+        "reason": "Users need to sign in after registration",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "password_reset",
+        "reason": "Users forget passwords frequently",
+        "priority": "P1",
+        "typical_percentage": 95
+      },
+      {
+        "task": "profile_management",
+        "reason": "Users want to update their information",
+        "priority": "P2",
+        "typical_percentage": 75
+      }
+    ],
+    "authentication": [
+      {
+        "task": "authorization_middleware",
+        "reason": "Control access to protected resources",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "session_management",
+        "reason": "Manage user sessions securely",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "rate_limiting",
+        "reason": "Prevent brute force attacks",
+        "priority": "P0",
+        "typical_percentage": 80
+      },
+      {
+        "task": "password_reset_flow",
+        "reason": "Users will forget passwords",
+        "priority": "P1",
+        "typical_percentage": 90
+      }
+    ],
+    "api_endpoint": [
+      {
+        "task": "input_validation",
+        "reason": "Validate all inputs for security and correctness",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "error_handling",
+        "reason": "Handle errors gracefully with proper responses",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "api_documentation",
+        "reason": "Document endpoint for consumers",
+        "priority": "P1",
+        "typical_percentage": 85
+      },
+      {
+        "task": "unit_tests",
+        "reason": "Test endpoint behavior",
+        "priority": "P1",
+        "typical_percentage": 70
+      }
+    ],
+    "database_model": [
+      {
+        "task": "migration_script",
+        "reason": "Update database schema",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "indexes",
+        "reason": "Optimize query performance",
+        "priority": "P1",
+        "typical_percentage": 70
+      },
+      {
+        "task": "validation_rules",
+        "reason": "Ensure data integrity",
+        "priority": "P1",
+        "typical_percentage": 90
+      }
+    ],
+    "caching_layer": [
+      {
+        "task": "cache_invalidation_strategy",
+        "reason": "Prevent stale data issues",
+        "priority": "P0",
+        "typical_percentage": 100
+      },
+      {
+        "task": "cache_monitoring",
+        "reason": "Track cache hit rates and performance",
+        "priority": "P2",
+        "typical_percentage": 60
+      }
+    ]
+  },
+
+  "pattern_detection": {
+    "naming_conventions": {
+      "interface_prefix": {
+        "pattern": "I{Name}",
+        "example": "IUserService",
+        "language": ["C#"]
+      },
+      "async_suffix": {
+        "pattern": "{Verb}{Noun}Async",
+        "example": "GetUserAsync",
+        "language": ["C#", "JavaScript", "TypeScript"]
+      },
+      "component_suffix": {
+        "pattern": "{Name}Component",
+        "example": "UserProfileComponent",
+        "language": ["TypeScript", "Angular", "React"]
+      },
+      "test_suffix": {
+        "pattern": "{Name}.test.{ext}",
+        "example": "UserService.test.ts",
+        "language": ["JavaScript", "TypeScript"]
+      }
+    },
+    "architectural_patterns": {
+      "service_layer": {
+        "indicators": ["services/", "Services/", "*Service.cs", "*Service.ts"],
+        "description": "Service layer pattern separates business logic"
+      },
+      "repository_pattern": {
+        "indicators": ["repositories/", "Repositories/", "*Repository.cs"],
+        "description": "Repository pattern abstracts data access"
+      },
+      "mvc": {
+        "indicators": ["controllers/", "models/", "views/", "Controllers/", "Models/", "Views/"],
+        "description": "Model-View-Controller architecture"
+      },
+      "clean_architecture": {
+        "indicators": ["domain/", "application/", "infrastructure/", "Domain/", "Application/", "Infrastructure/"],
+        "description": "Clean architecture with clear layer separation"
+      }
+    }
+  },
+
+  "risk_assessment": {
+    "security_critical_keywords": [
+      "authentication",
+      "authorization",
+      "password",
+      "token",
+      "security",
+      "payment",
+      "credit card",
+      "sensitive data",
+      "encryption",
+      "ssl",
+      "tls"
+    ],
+    "high_impact_keywords": [
+      "production",
+      "database migration",
+      "schema change",
+      "breaking change",
+      "refactor",
+      "delete",
+      "drop table"
+    ],
+    "complexity_multipliers": {
+      "security_critical": 1.5,
+      "high_impact": 1.3,
+      "multi_team": 1.2,
+      "external_dependency": 1.1
+    }
+  },
+
+  "smart_suggestions": {
+    "enabled": true,
+    "confidence_threshold": 0.7,
+    "max_suggestions": 5,
+    "categories": [
+      "related_areas",
+      "common_followups",
+      "risk_mitigation",
+      "pattern_matching",
+      "testing_strategy"
+    ]
+  }
+}

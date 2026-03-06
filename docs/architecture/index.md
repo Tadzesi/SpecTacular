@@ -1,6 +1,6 @@
 # Architecture Overview
 
-**Version:** 1.6.4
+**Version:** 1.7.0
 
 SpecTacular is a specification-driven development toolkit consisting of two main components that work together to provide a complete spec management workflow.
 

@@ -47,34 +47,43 @@ Execute each step in order. Report progress after each step.
 
 ### Step 3: Tasks (`3-tasks`)
 
-**Goal**: Create actionable task list from spec and plan
+**Goal**: Generate individual subtask files with acceptance criteria
 
-1. Read spec.md and plan.md
-2. Write tasks.md with checkbox format
+1. AI analysis: optimal task breakdown, dependency ordering, risk flags
+2. Create `tasks/NN-name.md` for each task with YAML frontmatter + acceptance criteria
+3. Create `tasks.md` as index with status overview
 
-**Output**: Tasks file path, task count
+**Output**: Task files list, critical path, task count
 
 ### Step 4: Implement (`4-implement`)
 
-**Goal**: Execute each task
+**Goal**: Execute each task through prepare→implement→validate gate
 
-For each task in tasks.md:
-1. Mark in_progress in TodoWrite
-2. Execute the task
-3. Mark complete in both TodoWrite AND tasks.md
+For each task:
+1. TaskCreate → register all tasks upfront for progress visibility
+2. TaskUpdate → in_progress
+3. **PREPARE**: Read task file, analyze codebase, state approach
+4. **IMPLEMENT**: Execute with tight focus (task scope only)
+5. **VALIDATE**: Check every acceptance criterion explicitly — PASS or FAIL
+6. If any criterion FAILS: fix and re-validate before continuing
+7. If BLOCKED: stop pipeline, report reason
+8. Check all criteria checkboxes → TaskUpdate → completed
+9. Display progress: N/TOTAL complete
 
 ### Step 5: Validate (`5-validate`)
 
-**Goal**: Verify implementation is production-ready
+**Goal**: Full pipeline validation + AI feature review
 
-Run validation checks:
-1. Tasks: All marked [x] in tasks.md
-2. Build: Run appropriate build command
-3. Tests: Run appropriate test command
+1. Check all tasks complete (status: done in frontmatter)
+2. Build passes
+3. Tests pass
+4. AI spec compliance check (re-read spec.md acceptance criteria)
+5. AI feature review: quality assessment + recommendations
 
 ## Final Report
 
 After all steps complete, report:
 - Feature name and branch
 - Files created/modified
-- Validation status
+- Validation summary (tasks/build/tests/spec)
+- AI review and next step recommendations

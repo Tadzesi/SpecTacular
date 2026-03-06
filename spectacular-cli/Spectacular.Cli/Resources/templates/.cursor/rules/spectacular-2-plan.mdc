@@ -39,28 +39,49 @@ Run:
 .spectacular/scripts/powershell/setup-plan.ps1 -Json
 ```
 
+### 3.5. AI Deep Analysis (Before Writing Plan)
+
+Before writing the plan, actively investigate the codebase:
+- **Read existing similar implementations** — find analogous functionality. How does it work?
+  What patterns should new code follow?
+- **Identify reusable code** — what can be extended vs. rewritten from scratch?
+- **Evaluate alternatives** — if 2-3 viable approaches exist, state the tradeoffs and recommend one.
+- **Check for breaking changes** — will this affect existing functionality?
+- **Find the minimal change set** — what is the smallest correct implementation?
+
+Output a recommendation block:
+```
+PLANNING ANALYSIS
+Similar existing code: [files/patterns]
+Recommended approach: [chosen option and why]
+Alternatives considered: [briefly]
+Breaking change risk: [yes/no + detail]
+Minimal change set: [key files only]
+```
+
 ### 4. Write Implementation Plan
 
 Create `plan.md` with:
 
 #### Tech Stack Analysis
-- Identify relevant technologies from the project
-- List frameworks, libraries, and tools needed
+- Technologies, frameworks, libraries needed (only what's actually required)
+- Dependencies to add — justify each one
 
 #### Project Structure
-- Map affected directories and files
-- Identify new files to create
+- Exact files to create (with paths)
+- Exact files to modify (with reason)
+- Files explicitly NOT to touch (boundary definition)
 
 #### Implementation Approach
-- High-level strategy
-- Key design decisions
-- Integration points
+- Chosen strategy (from analysis above, with rationale)
+- Key design decisions and why
+- Integration points and interfaces
 
 #### Risk Assessment
-- Technical challenges
-- Dependencies
-- Mitigation strategies
+- Technical challenges ranked by severity
+- Dependencies and their constraints
+- Mitigation strategy for each risk
 
 ### 5. Report Completion
 
-Output plan file path and next step: `3-tasks`
+Output plan file path, the chosen approach (from 3.5 analysis), and next step: `@spectacular-3-tasks`

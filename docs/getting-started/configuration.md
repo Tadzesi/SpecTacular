@@ -30,7 +30,7 @@ When you run `spectacular init`, a `.spectacular/` directory is created with:
   "projectName": "MyProject",
   "techStack": ["Node.js", "TypeScript"],
   "language": "en",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "initialized": "2024-12-22T10:00:00Z"
 }
 ```

@@ -37,14 +37,33 @@ Run:
 .spectacular/scripts/powershell/create-new-feature.ps1 -Json -Number [N] -ShortName "[name]" "[description]"
 ```
 
-### 4. Write Simplified Spec
+### 4. AI Codebase Analysis (Before Writing Spec)
+
+Before writing the spec, actively analyze the codebase:
+- Read the project structure to understand what already exists
+- Identify any existing code that overlaps with or enables the new feature
+- Flag potential conflicts with existing functionality
+- Recommend the best approach given what's already there
+- Note what the spec should explicitly NOT cover (out of scope)
+
+Output a brief analysis:
+```
+CODEBASE ANALYSIS
+Existing related code: [files/patterns found]
+Recommended approach: [1-2 sentences]
+Out of scope: [what to exclude]
+Risks: [any flags]
+```
+
+### 5. Write Simplified Spec
 
 Create `spec.md` with:
 - Summary (1 paragraph)
-- User story with acceptance criteria
+- User story with acceptance criteria (each criterion must be independently verifiable)
 - 3-5 requirements
 - Success criteria
+- Out of scope section (explicit exclusions prevent scope creep)
 
-### 5. Report Completion
+### 6. Report Completion
 
 Output branch name, spec file path, and next step: `2-plan`

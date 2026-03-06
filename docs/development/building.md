@@ -153,11 +153,11 @@ Create a `.vsix` file for distribution:
 npm run package
 ```
 
-**Output:** `spectacular-dashboard-1.6.4.vsix`
+**Output:** `spectacular-dashboard-1.6.6.vsix`
 
 **Install packaged extension:**
 ```bash
-code --install-extension spectacular-dashboard-1.6.4.vsix
+code --install-extension spectacular-dashboard-1.6.6.vsix
 ```
 
 ### Run Tests

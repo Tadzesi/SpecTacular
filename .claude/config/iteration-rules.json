@@ -1,0 +1,453 @@
+{
+  "version": "1.0.0",
+  "description": "Iteration engine rules for gap detection, convergence criteria, and adaptive strategies",
+
+  "iteration_rules": {
+    "max_iterations": 4,
+    "min_iterations": 1,
+    "allow_early_termination": true,
+    "allow_partial_convergence": true,
+    "iteration_timeout_seconds": 60
+  },
+
+  "convergence_criteria": {
+    "description": "All criteria must be met for full convergence",
+    "require_all": true,
+    "criteria": {
+      "min_confidence": {
+        "enabled": true,
+        "threshold": 0.80,
+        "calculation": "sum(all_confidence_scores) / count(findings)",
+        "description": "Average confidence across all findings must meet or exceed threshold"
+      },
+      "min_coverage": {
+        "enabled": true,
+        "threshold": 0.70,
+        "calculation": "files_analyzed / estimated_relevant_files",
+        "description": "Percentage of estimated relevant files that have been analyzed"
+      },
+      "max_unresolved_conflicts": {
+        "enabled": true,
+        "threshold": 2,
+        "calculation": "count(findings_where_agents_disagree)",
+        "description": "Maximum number of findings where agents provide conflicting information"
+      },
+      "require_all_critical_answered": {
+        "enabled": true,
+        "calculation": "count(critical_questions_answered) / count(critical_questions_total)",
+        "threshold": 1.0,
+        "description": "All questions marked as critical in original prompt must be answered"
+      }
+    },
+    "partial_convergence": {
+      "enabled": true,
+      "threshold": 0.75,
+      "description": "If 3 out of 4 criteria met, consider partially converged",
+      "require_critical_questions_answered": true
+    }
+  },
+
+  "gap_detection": {
+    "enabled": true,
+    "gap_types": {
+      "coverage_gap": {
+        "enabled": true,
+        "priority": "important",
+        "detection": {
+          "trigger": "coverage < min_coverage_threshold",
+          "threshold": 0.70
+        },
+        "analysis": {
+          "identify_missing_files": true,
+          "identify_missing_directories": true,
+          "identify_referenced_but_not_analyzed": true,
+          "identify_related_components": true
+        },
+        "action": "spawn_exploration_agent"
+      },
+      "confidence_gap": {
+        "enabled": true,
+        "priority": "important",
+        "detection": {
+          "trigger": "average_confidence < min_confidence_threshold",
+          "threshold": 0.80,
+          "also_detect_individual_low_confidence": true,
+          "individual_threshold": 0.65
+        },
+        "analysis": {
+          "identify_findings_lacking_evidence": true,
+          "identify_weak_citations": true,
+          "identify_inference_only_findings": true
+        },
+        "action": "spawn_validation_agent"
+      },
+      "conflicting_findings": {
+        "enabled": true,
+        "priority": "critical",
+        "detection": {
+          "trigger": "agents_disagree_on_same_topic",
+          "similarity_threshold": 0.70,
+          "description": "Cosine similarity < 0.70 indicates likely conflict"
+        },
+        "analysis": {
+          "identify_contradiction_root_cause": true,
+          "check_different_sources": true,
+          "check_different_contexts": true
+        },
+        "action": "spawn_verification_agent"
+      },
+      "missing_context": {
+        "enabled": true,
+        "priority": "important",
+        "detection": {
+          "trigger": "architectural_relationships_unclear",
+          "indicators": [
+            "component_interaction_unknown",
+            "data_flow_not_traced",
+            "integration_points_missing",
+            "dependency_graph_incomplete"
+          ]
+        },
+        "analysis": {
+          "identify_missing_flows": true,
+          "identify_missing_dependencies": true,
+          "identify_missing_integrations": true
+        },
+        "action": "spawn_targeted_agent"
+      },
+      "unanswered_critical_questions": {
+        "enabled": true,
+        "priority": "critical",
+        "detection": {
+          "trigger": "critical_questions_from_prompt_not_answered",
+          "question_types": [
+            "is_it_possible",
+            "how_does",
+            "what_handles",
+            "why_is",
+            "where_is"
+          ]
+        },
+        "analysis": {
+          "extract_questions_from_prompt": true,
+          "categorize_as_critical_or_informational": true,
+          "match_questions_to_findings": true
+        },
+        "action": "spawn_specialized_agent"
+      },
+      "pattern_uncertainty": {
+        "enabled": true,
+        "priority": "nice_to_have",
+        "detection": {
+          "trigger": "pattern_detected_but_unclear_or_inconsistent",
+          "confidence_threshold": 0.70
+        },
+        "analysis": {
+          "identify_pattern_variations": true,
+          "find_multiple_examples": true,
+          "determine_canonical_pattern": true
+        },
+        "action": "spawn_pattern_agent"
+      },
+      "security_concern": {
+        "enabled": true,
+        "priority": "critical",
+        "detection": {
+          "trigger": "security_related_but_not_fully_analyzed",
+          "keywords": [
+            "authentication",
+            "authorization",
+            "encryption",
+            "password",
+            "token",
+            "credential"
+          ]
+        },
+        "analysis": {
+          "identify_security_gaps": true,
+          "check_best_practices": true,
+          "identify_vulnerabilities": true
+        },
+        "action": "spawn_security_agent"
+      },
+      "performance_concern": {
+        "enabled": true,
+        "priority": "important",
+        "detection": {
+          "trigger": "performance_related_but_not_analyzed",
+          "keywords": [
+            "slow",
+            "bottleneck",
+            "optimization",
+            "performance",
+            "latency"
+          ]
+        },
+        "analysis": {
+          "identify_potential_bottlenecks": true,
+          "check_common_antipatterns": true,
+          "identify_optimization_opportunities": true
+        },
+        "action": "spawn_performance_agent"
+      }
+    }
+  },
+
+  "adaptive_strategies": {
+    "description": "Agent selection and prompt modification based on gap types",
+    "strategies": {
+      "coverage_gap": {
+        "agent": "ExploreAgent",
+        "model": "haiku",
+        "prompt_modifier_template": "Focus on analyzing ONLY these files: {missing_files}. Provide comprehensive analysis with patterns and connections to previously analyzed code. Do NOT re-analyze: {already_analyzed}.",
+        "timeout_seconds": 30
+      },
+      "confidence_gap_missing_evidence": {
+        "agent": "CitationAgent",
+        "model": "haiku",
+        "prompt_modifier_template": "For finding '{low_confidence_finding}', locate exact code implementation with file:line citations and code snippets. Provide direct evidence, not inference.",
+        "timeout_seconds": 20
+      },
+      "confidence_gap_pattern_unclear": {
+        "agent": "PatternAgent",
+        "model": "haiku",
+        "prompt_modifier_template": "Deep dive into '{uncertain_pattern}' pattern. Find 3+ concrete examples with similarities and variations. Determine canonical pattern with confidence.",
+        "timeout_seconds": 30
+      },
+      "conflicting_findings": {
+        "agent": "Plan",
+        "model": "sonnet",
+        "prompt_modifier_template": "Resolve conflict: Agent A found '{finding_a}' with evidence '{evidence_a}'. Agent B found '{finding_b}' with evidence '{evidence_b}'. Analyze all relevant sources and provide ground truth with comprehensive citations. Explain why the conflict occurred.",
+        "timeout_seconds": 60
+      },
+      "missing_architectural_context": {
+        "agent": "ExploreAgent",
+        "model": "haiku",
+        "prompt_modifier_template": "Trace how {component_a} integrates with {component_b}. Map the complete flow from {start_point} to {end_point} with file:line references for each step. Include data transformations and middleware/filters.",
+        "timeout_seconds": 30
+      },
+      "unanswered_critical_question": {
+        "agent": "specialized_based_on_question_type",
+        "model": "haiku_or_sonnet_based_on_complexity",
+        "prompt_modifier_template": "Answer this critical question: '{question}'. Provide detailed response with code evidence, citations, and examples. Context from previous iterations: {previous_findings}.",
+        "timeout_seconds": 30
+      },
+      "security_gap": {
+        "agent": "SecurityAgent",
+        "model": "sonnet",
+        "prompt_modifier_template": "Analyze security implications of '{uncertain_area}'. Check for vulnerabilities (SQL injection, XSS, auth bypass, data exposure). Verify best practices are followed. Provide security recommendations with severity levels.",
+        "timeout_seconds": 45
+      },
+      "performance_gap": {
+        "agent": "PerformanceAgent",
+        "model": "sonnet",
+        "prompt_modifier_template": "Analyze performance characteristics of '{uncertain_area}'. Identify bottlenecks (N+1 queries, inefficient loops, blocking operations). Check for caching opportunities. Provide optimization recommendations with impact estimates.",
+        "timeout_seconds": 45
+      },
+      "pattern_uncertainty": {
+        "agent": "PatternAgent",
+        "model": "haiku",
+        "prompt_modifier_template": "Clarify '{uncertain_pattern}' pattern. Find all implementations, identify variations, explain when each is used. Provide canonical example with explanation.",
+        "timeout_seconds": 30
+      }
+    }
+  },
+
+  "gap_prioritization": {
+    "enabled": true,
+    "priority_levels": {
+      "critical": {
+        "rank": 1,
+        "description": "Must be addressed for convergence",
+        "gap_types": [
+          "unanswered_critical_questions",
+          "conflicting_findings",
+          "security_concern"
+        ],
+        "always_address": true
+      },
+      "important": {
+        "rank": 2,
+        "description": "Should be addressed if iterations remain",
+        "gap_types": [
+          "coverage_gap",
+          "confidence_gap",
+          "missing_context",
+          "performance_concern"
+        ],
+        "address_if_iterations_remaining": 2
+      },
+      "nice_to_have": {
+        "rank": 3,
+        "description": "Address if time permits",
+        "gap_types": [
+          "pattern_uncertainty"
+        ],
+        "address_if_iterations_remaining": 3
+      }
+    },
+    "selection_logic": {
+      "if_iterations_remaining_ge_3": "address_critical_and_important",
+      "if_iterations_remaining_eq_2": "address_critical_and_high_value_important",
+      "if_iterations_remaining_eq_1": "address_critical_only",
+      "max_gaps_per_iteration": 3,
+      "rank_within_priority_by": "user_prompt_relevance"
+    }
+  },
+
+  "integration_rules": {
+    "finding_deduplication": {
+      "enabled": true,
+      "similarity_threshold": 0.85,
+      "action_on_duplicate": "skip",
+      "action_on_enhancement": "merge_and_increase_confidence"
+    },
+    "finding_merging": {
+      "enabled": true,
+      "merge_criteria": {
+        "same_topic": true,
+        "related_citations": true,
+        "complementary_evidence": true
+      },
+      "merge_strategy": "append_evidence_and_average_confidence"
+    },
+    "citation_cross_referencing": {
+      "enabled": true,
+      "link_related_citations": true,
+      "build_citation_graph": true
+    },
+    "confidence_recalculation": {
+      "enabled": true,
+      "factors": {
+        "multiple_agents_agree": 0.90,
+        "single_agent_strong_citation": 0.75,
+        "single_agent_weak_citation": 0.60,
+        "inference_without_citation": 0.40,
+        "verified_by_second_iteration": 0.85,
+        "conflicting_evidence": 0.50
+      }
+    }
+  },
+
+  "checkpoint_management": {
+    "enabled": true,
+    "save_after_each_iteration": true,
+    "checkpoint_contents": {
+      "iteration_number": true,
+      "findings_database": true,
+      "coverage_metrics": true,
+      "confidence_scores": true,
+      "gaps_identified": true,
+      "convergence_status": true,
+      "agent_history": true,
+      "timestamp": true
+    },
+    "restore_on_failure": true,
+    "cleanup_old_checkpoints": true,
+    "retention_hours": 24
+  },
+
+  "early_termination_rules": {
+    "enabled": true,
+    "high_confidence_exit": {
+      "enabled": true,
+      "confidence_threshold": 0.90,
+      "coverage_threshold": 0.85,
+      "require_both": true,
+      "message": "High confidence reached. Concluding research early."
+    },
+    "no_progress_exit": {
+      "enabled": true,
+      "trigger": "no_new_findings_for_2_iterations",
+      "message": "No new findings in recent iterations. Concluding research."
+    },
+    "all_questions_answered": {
+      "enabled": true,
+      "trigger": "all_critical_and_important_questions_answered",
+      "minimum_coverage": 0.65,
+      "message": "All questions answered. Concluding research."
+    }
+  },
+
+  "performance_tracking": {
+    "enabled": true,
+    "metrics": {
+      "per_iteration": {
+        "agents_spawned": true,
+        "files_analyzed_new": true,
+        "findings_discovered_new": true,
+        "citations_added": true,
+        "duration_seconds": true,
+        "coverage_gain": true,
+        "confidence_gain": true
+      },
+      "cumulative": {
+        "total_iterations": true,
+        "total_agents": true,
+        "total_files": true,
+        "total_findings": true,
+        "total_duration": true,
+        "convergence_achieved": true
+      }
+    },
+    "use_for": [
+      "performance_optimization",
+      "strategy_refinement",
+      "complexity_estimation_improvement"
+    ]
+  },
+
+  "error_handling": {
+    "agent_failure": {
+      "strategy": "mark_gap_unresolved_and_continue",
+      "log_error": true,
+      "attempt_fallback": false
+    },
+    "checkpoint_failure": {
+      "strategy": "warn_and_continue",
+      "risk": "cannot_restore_on_crash"
+    },
+    "invalid_gap_detection": {
+      "strategy": "force_broad_exploration_or_terminate",
+      "log_anomaly": true
+    },
+    "iteration_timeout": {
+      "strategy": "terminate_iteration_use_partial_results",
+      "mark_incomplete": true
+    }
+  },
+
+  "experimental_features": {
+    "enabled": false,
+    "features": {
+      "ml_gap_detection": {
+        "enabled": false,
+        "description": "Machine learning to predict gaps before iteration"
+      },
+      "predictive_agent_effectiveness": {
+        "enabled": false,
+        "description": "Predict which agent will be most effective for gap"
+      },
+      "dynamic_threshold_tuning": {
+        "enabled": false,
+        "description": "Adjust confidence/coverage thresholds based on domain"
+      },
+      "cross_research_learning": {
+        "enabled": false,
+        "description": "Learn iteration patterns from previous research sessions"
+      }
+    }
+  },
+
+  "metadata": {
+    "created": "2025-12-28",
+    "author": "Claude Code Enhancement Phase 1",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2025-12-28",
+        "changes": "Initial iteration rules configuration"
+      }
+    ]
+  }
+}

@@ -1,0 +1,453 @@
+{
+  "version": "1.0.0",
+  "description": "Complexity detection rules for hybrid prompt perfection",
+  "rules": [
+    {
+      "id": "multi_file_scope",
+      "name": "Multi-file Scope",
+      "description": "Prompt affects multiple files or directories",
+      "triggers": [
+        "multiple files",
+        "across files",
+        "in all",
+        "entire codebase",
+        "throughout the project",
+        "all components"
+      ],
+      "weight": 5,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "architecture_question",
+      "name": "Architecture Question",
+      "description": "User asks about system design or structure",
+      "triggers": [
+        "how does",
+        "how is",
+        "where is",
+        "what handles",
+        "explain the",
+        "understand how",
+        "show me where"
+      ],
+      "weight": 7,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "pattern_detection",
+      "name": "Pattern Detection Needed",
+      "description": "Need to follow existing conventions",
+      "triggers": [
+        "existing pattern",
+        "current convention",
+        "like other",
+        "similar to",
+        "follow the pattern",
+        "match existing",
+        "same style as"
+      ],
+      "weight": 6,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "feasibility_check",
+      "name": "Feasibility Validation",
+      "description": "Need to check if something is technically possible",
+      "triggers": [
+        "is it possible",
+        "can we",
+        "will this work",
+        "compatible with",
+        "does this support",
+        "can I integrate"
+      ],
+      "weight": 4,
+      "agent": "Explore",
+      "confidence": "medium"
+    },
+    {
+      "id": "implementation_planning",
+      "name": "Implementation Planning",
+      "description": "Complex implementation task",
+      "triggers": [
+        "implement",
+        "build",
+        "create feature",
+        "add functionality",
+        "develop",
+        "integrate"
+      ],
+      "weight": 3,
+      "agent": "Plan",
+      "confidence": "medium"
+    },
+    {
+      "id": "cross_cutting_concerns",
+      "name": "Cross-Cutting Concerns",
+      "description": "Affects multiple layers or concerns",
+      "triggers": [
+        "authentication",
+        "authorization",
+        "logging",
+        "error handling",
+        "caching",
+        "monitoring",
+        "security"
+      ],
+      "weight": 4,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "refactoring_task",
+      "name": "Refactoring Task",
+      "description": "Large-scale code restructuring",
+      "triggers": [
+        "refactor",
+        "restructure",
+        "reorganize",
+        "clean up",
+        "improve structure"
+      ],
+      "weight": 5,
+      "agent": "Explore",
+      "confidence": "high"
+    },
+    {
+      "id": "security_audit",
+      "name": "Security Audit Request",
+      "description": "Comprehensive security analysis needed",
+      "triggers": [
+        "security audit",
+        "vulnerability scan",
+        "security review",
+        "penetration test",
+        "security assessment",
+        "OWASP",
+        "security vulnerabilities",
+        "security risks"
+      ],
+      "weight": 10,
+      "agent": "Security",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "performance_investigation",
+      "name": "Performance Investigation",
+      "description": "Deep performance analysis required",
+      "triggers": [
+        "performance audit",
+        "performance investigation",
+        "bottleneck analysis",
+        "slow performance",
+        "optimize performance",
+        "performance issues",
+        "performance review"
+      ],
+      "weight": 8,
+      "agent": "Performance",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "architecture_analysis",
+      "name": "Architecture Analysis",
+      "description": "Comprehensive architecture understanding",
+      "triggers": [
+        "analyze architecture",
+        "architecture review",
+        "understand architecture",
+        "system design",
+        "architecture audit",
+        "architecture analysis"
+      ],
+      "weight": 7,
+      "agent": "Explore",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "pattern_discovery",
+      "name": "Pattern Discovery",
+      "description": "Discover and analyze code patterns",
+      "triggers": [
+        "discover patterns",
+        "analyze patterns",
+        "pattern analysis",
+        "convention analysis",
+        "consistency check",
+        "pattern review"
+      ],
+      "weight": 6,
+      "agent": "Pattern",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "codebase_exploration",
+      "name": "Codebase Exploration",
+      "description": "Deep codebase exploration and mapping",
+      "triggers": [
+        "explore codebase",
+        "map codebase",
+        "codebase analysis",
+        "understand codebase",
+        "codebase review",
+        "comprehensive analysis"
+      ],
+      "weight": 7,
+      "agent": "Explore",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "technical_debt_assessment",
+      "name": "Technical Debt Assessment",
+      "description": "Identify and assess technical debt",
+      "triggers": [
+        "technical debt",
+        "debt assessment",
+        "code quality review",
+        "assess quality",
+        "debt analysis"
+      ],
+      "weight": 8,
+      "agent": "Explore",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "compliance_review",
+      "name": "Compliance Review",
+      "description": "Regulatory or standards compliance check",
+      "triggers": [
+        "compliance review",
+        "regulatory compliance",
+        "standards compliance",
+        "GDPR",
+        "HIPAA",
+        "PCI DSS",
+        "compliance audit"
+      ],
+      "weight": 10,
+      "agent": "Security",
+      "confidence": "high",
+      "research_mode": true
+    },
+    {
+      "id": "multiple_focus_areas",
+      "name": "Multiple Focus Areas",
+      "description": "Research requires multiple specialized agents",
+      "triggers": [
+        "and",
+        "plus",
+        "also",
+        "including"
+      ],
+      "weight": 5,
+      "agent": "Multiple",
+      "confidence": "medium",
+      "research_mode": true,
+      "requires_context": true
+    }
+  ],
+  "thresholds": {
+    "simple": {
+      "min": 0,
+      "max": 4,
+      "description": "Simple prompt, inline validation sufficient",
+      "action": "inline",
+      "command": "prompt-hybrid"
+    },
+    "moderate": {
+      "min": 5,
+      "max": 9,
+      "description": "Moderate complexity, agent optional",
+      "action": "suggest_agent",
+      "command": "prompt-hybrid"
+    },
+    "complex": {
+      "min": 10,
+      "max": 19,
+      "description": "Complex prompt, agent recommended",
+      "action": "spawn_agent",
+      "command": "prompt-hybrid"
+    },
+    "research_narrow": {
+      "min": 20,
+      "max": 29,
+      "description": "Research mode - narrow strategy (2 agents, 1-2 iterations)",
+      "action": "research_mode",
+      "command": "prompt-research",
+      "strategy": "narrow"
+    },
+    "research_broad": {
+      "min": 30,
+      "max": 49,
+      "description": "Research mode - broad strategy (3-4 agents, 2-3 iterations)",
+      "action": "research_mode",
+      "command": "prompt-research",
+      "strategy": "broad"
+    },
+    "research_comprehensive": {
+      "min": 50,
+      "max": 999,
+      "description": "Research mode - comprehensive strategy (5 agents, 3-4 iterations)",
+      "action": "research_mode",
+      "command": "prompt-research",
+      "strategy": "comprehensive"
+    }
+  },
+  "agent_config": {
+    "explore": {
+      "model": "haiku",
+      "timeout": 30000,
+      "description": "Fast codebase exploration"
+    },
+    "plan": {
+      "model": "sonnet",
+      "timeout": 60000,
+      "description": "Implementation planning"
+    }
+  },
+  "user_factors": {
+    "description": "User-based and context-based factors that modify complexity score",
+    "enabled": true,
+    "risk_multipliers": {
+      "security_critical": {
+        "multiplier": 1.5,
+        "description": "Task involves security-sensitive areas",
+        "keywords": [
+          "authentication",
+          "authorization",
+          "password",
+          "token",
+          "security",
+          "payment",
+          "credit card",
+          "sensitive data",
+          "encryption"
+        ]
+      },
+      "high_impact": {
+        "multiplier": 1.3,
+        "description": "Changes affect critical or high-traffic systems",
+        "keywords": [
+          "production",
+          "database migration",
+          "schema change",
+          "breaking change",
+          "api change",
+          "drop table",
+          "delete data"
+        ]
+      },
+      "multi_team": {
+        "multiplier": 1.2,
+        "description": "Changes affect multiple teams or services",
+        "keywords": [
+          "microservices",
+          "multiple services",
+          "cross-team",
+          "shared library",
+          "breaking api"
+        ]
+      },
+      "external_dependency": {
+        "multiplier": 1.1,
+        "description": "Depends on external systems or third-party services",
+        "keywords": [
+          "third-party",
+          "external api",
+          "integration",
+          "webhook",
+          "api client"
+        ]
+      }
+    },
+    "familiarity_discounts": {
+      "repeated_pattern": {
+        "discount": 0.8,
+        "description": "User has done similar task recently",
+        "detection": "Check session history for similar tasks within last 5 sessions"
+      },
+      "team_expertise": {
+        "discount": 0.9,
+        "description": "Project has strong patterns in this area",
+        "detection": "Project has 10+ similar implementations"
+      }
+    },
+    "project_maturity": {
+      "description": "Adjust complexity based on project maturity",
+      "startup_phase": {
+        "age_months": 6,
+        "multiplier": 0.9,
+        "rationale": "Early projects prioritize speed over perfection"
+      },
+      "growth_phase": {
+        "age_months_min": 6,
+        "age_months_max": 24,
+        "multiplier": 1.0,
+        "rationale": "Growing projects balance speed and quality"
+      },
+      "mature_phase": {
+        "age_months": 24,
+        "multiplier": 1.2,
+        "rationale": "Mature projects require careful compatibility considerations"
+      }
+    }
+  },
+  "risk_assessment": {
+    "description": "Risk-based complexity adjustment for predictive intelligence",
+    "enabled": true,
+    "high_risk_keywords": {
+      "data_loss_risk": [
+        "drop table",
+        "delete all",
+        "truncate",
+        "remove data",
+        "clear database"
+      ],
+      "security_risk": [
+        "disable security",
+        "skip validation",
+        "allow all",
+        "public access",
+        "no authentication"
+      ],
+      "breaking_change_risk": [
+        "breaking change",
+        "incompatible",
+        "remove endpoint",
+        "change api"
+      ],
+      "performance_risk": [
+        "no cache",
+        "synchronous",
+        "blocking",
+        "full table scan"
+      ]
+    },
+    "risk_scoring": {
+      "critical_risk": {
+        "score_addition": 10,
+        "triggers": ["data_loss_risk", "security_risk"],
+        "recommendation": "Use /prompt-research for comprehensive analysis"
+      },
+      "high_risk": {
+        "score_addition": 5,
+        "triggers": ["breaking_change_risk"],
+        "recommendation": "Plan carefully, consider impact analysis"
+      },
+      "medium_risk": {
+        "score_addition": 3,
+        "triggers": ["performance_risk"],
+        "recommendation": "Consider performance implications"
+      }
+    }
+  }
+}

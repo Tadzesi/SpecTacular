@@ -1,0 +1,408 @@
+{
+  "version": "1.0.0",
+  "description": "Specialized agent role definitions for multi-agent research system",
+
+  "agent_roles": {
+    "ExploreAgent": {
+      "name": "Codebase Explorer",
+      "description": "Primary codebase discovery specialist - finds files, maps architecture, traces dependencies",
+      "model": "haiku",
+      "timeout_seconds": 30,
+      "expertise": [
+        "file_discovery",
+        "architecture_mapping",
+        "dependency_analysis",
+        "pattern_recognition",
+        "context_gathering"
+      ],
+      "triggers": {
+        "always_include": true,
+        "keywords": ["find", "locate", "where is", "how does", "what handles"],
+        "complexity_min": 10
+      },
+      "tools": {
+        "allowed": ["Glob", "Grep", "Read", "Bash"],
+        "primary": ["Glob", "Grep", "Read"],
+        "parallel_execution": true,
+        "parallel_tools": ["Glob", "Grep"]
+      },
+      "analysis_focus": {
+        "file_discovery": {
+          "use_glob_patterns": true,
+          "use_grep_search": true,
+          "prioritize_by_relevance": true
+        },
+        "architecture_mapping": {
+          "trace_component_relationships": true,
+          "map_dependency_graph": true,
+          "identify_layers": true
+        },
+        "pattern_recognition": {
+          "detect_naming_conventions": true,
+          "identify_file_organization": true,
+          "recognize_architectural_patterns": true
+        }
+      },
+      "performance": {
+        "max_files_per_analysis": 50,
+        "progressive_exploration": true,
+        "cache_file_lists": true
+      },
+      "output_format": {
+        "findings_structure": "categorized_by_type",
+        "include_gaps": true,
+        "recommend_next_steps": true
+      }
+    },
+
+    "CitationAgent": {
+      "name": "Source Attribution Specialist",
+      "description": "Tracks and attributes every finding to specific source locations with file:line citations",
+      "model": "haiku",
+      "timeout_seconds": 20,
+      "expertise": [
+        "source_mapping",
+        "evidence_collection",
+        "citation_formatting",
+        "citation_indexing",
+        "confidence_scoring"
+      ],
+      "triggers": {
+        "always_include": true,
+        "spawn_for_confidence_gaps": true,
+        "spawn_for_verification": true
+      },
+      "tools": {
+        "allowed": ["Grep", "Read"],
+        "primary": ["Read"],
+        "parallel_execution": false
+      },
+      "citation_capabilities": {
+        "file_line_precision": true,
+        "code_snippet_extraction": true,
+        "context_lines": 5,
+        "max_snippet_length": 15,
+        "syntax_highlighting": true,
+        "cross_referencing": true
+      },
+      "confidence_scoring": {
+        "direct_evidence": 0.90,
+        "supporting_evidence": 0.75,
+        "inference": 0.50,
+        "multiple_sources_bonus": 0.10
+      },
+      "output_format": {
+        "inline_citations": true,
+        "reference_section": true,
+        "file_line_format": "absolute_path:line_numbers",
+        "navigable_links": true
+      },
+      "storage": {
+        "citation_index_file": ".claude/memory/citation-index.md",
+        "auto_update_index": true
+      }
+    },
+
+    "SecurityAgent": {
+      "name": "Security Auditor",
+      "description": "Security vulnerability detection and best practices validation specialist",
+      "model": "sonnet",
+      "timeout_seconds": 45,
+      "expertise": [
+        "vulnerability_detection",
+        "authentication_analysis",
+        "authorization_review",
+        "data_protection",
+        "owasp_top_10",
+        "security_best_practices"
+      ],
+      "triggers": {
+        "keywords": [
+          "security",
+          "authentication",
+          "authorization",
+          "encryption",
+          "vulnerability",
+          "payment",
+          "sensitive",
+          "credential",
+          "password",
+          "token"
+        ],
+        "complexity_min": 15,
+        "critical_operations": true
+      },
+      "tools": {
+        "allowed": ["Grep", "Read", "Bash"],
+        "primary": ["Grep", "Read"],
+        "parallel_execution": true
+      },
+      "analysis_patterns": {
+        "owasp_top_10": [
+          "broken_access_control",
+          "cryptographic_failures",
+          "injection",
+          "insecure_design",
+          "security_misconfiguration",
+          "vulnerable_components",
+          "authentication_failures",
+          "integrity_failures",
+          "logging_failures",
+          "ssrf"
+        ],
+        "authentication_checks": [
+          "password_hashing",
+          "token_management",
+          "session_security",
+          "mfa_support"
+        ],
+        "authorization_checks": [
+          "role_based_access",
+          "privilege_escalation",
+          "horizontal_privilege",
+          "vertical_privilege"
+        ],
+        "data_protection_checks": [
+          "encryption_at_rest",
+          "encryption_in_transit",
+          "sensitive_data_handling",
+          "secrets_management"
+        ]
+      },
+      "vulnerability_detection": {
+        "sql_injection": {
+          "enabled": true,
+          "severity": "critical",
+          "patterns": ["string concatenation in SQL", "raw SQL without parameters"]
+        },
+        "xss": {
+          "enabled": true,
+          "severity": "high",
+          "patterns": ["innerHTML usage", "unescaped user input"]
+        },
+        "hardcoded_secrets": {
+          "enabled": true,
+          "severity": "critical",
+          "patterns": ["password =", "apiKey =", "secret ="]
+        }
+      },
+      "output_format": {
+        "severity_levels": ["critical", "high", "medium", "low", "informational"],
+        "include_cvss_scores": true,
+        "prioritize_findings": true,
+        "compliance_checklist": true
+      }
+    },
+
+    "PerformanceAgent": {
+      "name": "Performance Analyzer",
+      "description": "Performance bottleneck detection and optimization analysis specialist",
+      "model": "sonnet",
+      "timeout_seconds": 45,
+      "expertise": [
+        "bottleneck_detection",
+        "query_optimization",
+        "caching_analysis",
+        "resource_usage",
+        "scalability_review",
+        "async_patterns"
+      ],
+      "triggers": {
+        "keywords": [
+          "performance",
+          "slow",
+          "optimization",
+          "bottleneck",
+          "scalability",
+          "latency",
+          "throughput",
+          "caching"
+        ],
+        "complexity_min": 12
+      },
+      "tools": {
+        "allowed": ["Grep", "Read"],
+        "primary": ["Grep", "Read"],
+        "parallel_execution": true
+      },
+      "analysis_focus": {
+        "database_performance": {
+          "n_plus_one_detection": true,
+          "missing_indexes": true,
+          "inefficient_queries": true,
+          "query_patterns": ["SELECT *", "nested loops with queries"]
+        },
+        "caching_opportunities": {
+          "identify_cacheable_data": true,
+          "validate_cache_usage": true,
+          "cache_invalidation_review": true
+        },
+        "async_patterns": {
+          "detect_blocking_calls": true,
+          "patterns": [".Result", ".Wait()", "synchronous I/O"],
+          "validate_async_usage": true
+        },
+        "resource_management": {
+          "memory_leak_detection": true,
+          "connection_pooling_review": true,
+          "disposable_patterns": true
+        }
+      },
+      "performance_metrics": {
+        "estimate_improvement": true,
+        "severity_by_impact": {
+          "critical": "50x+ performance impact",
+          "high": "10-50x performance impact",
+          "medium": "2-10x performance impact",
+          "low": "<2x performance impact"
+        }
+      },
+      "output_format": {
+        "severity_levels": ["critical", "high", "medium", "low"],
+        "include_estimates": true,
+        "prioritize_by_impact": true,
+        "optimization_recommendations": true
+      }
+    },
+
+    "PatternAgent": {
+      "name": "Convention Detector",
+      "description": "Code pattern and convention detection specialist for consistency analysis",
+      "model": "haiku",
+      "timeout_seconds": 30,
+      "expertise": [
+        "naming_conventions",
+        "file_organization",
+        "architectural_patterns",
+        "code_style",
+        "consistency_validation"
+      ],
+      "triggers": {
+        "keywords": [
+          "pattern",
+          "convention",
+          "like other",
+          "match existing",
+          "consistent",
+          "standard",
+          "similar to"
+        ],
+        "complexity_min": 10,
+        "auto_include_for_strategy": ["broad_research", "comprehensive_research"]
+      },
+      "tools": {
+        "allowed": ["Glob", "Grep", "Read"],
+        "primary": ["Glob", "Read"],
+        "parallel_execution": true
+      },
+      "pattern_types": {
+        "naming_conventions": {
+          "interfaces": "I{Name}",
+          "classes": "{Entity}{Purpose}",
+          "methods": "{Verb}{Noun}Async for async",
+          "variables": "camelCase local, _camelCase private"
+        },
+        "file_organization": {
+          "analyze_directory_structure": true,
+          "detect_placement_rules": true,
+          "validate_one_class_per_file": true
+        },
+        "architectural_patterns": {
+          "repository_pattern": true,
+          "service_layer": true,
+          "dependency_injection": true,
+          "factory_pattern": true,
+          "singleton_pattern": true
+        },
+        "code_style": {
+          "error_handling_patterns": true,
+          "validation_patterns": true,
+          "logging_patterns": true
+        }
+      },
+      "analysis_method": {
+        "sample_size": "3-5 examples per pattern",
+        "consistency_threshold": 0.80,
+        "report_outliers": true
+      },
+      "output_format": {
+        "consistency_scores": true,
+        "provide_examples": true,
+        "recommend_corrections": true,
+        "patterns_for_new_code": true
+      }
+    }
+  },
+
+  "orchestration_rules": {
+    "lead_agent": {
+      "model": "sonnet",
+      "timeout_seconds": 90,
+      "coordinates": "all_worker_agents",
+      "aggregates_results": true
+    },
+    "parallel_execution": {
+      "enabled": true,
+      "max_parallel_agents": 3,
+      "sequential_fallback": true
+    },
+    "agent_selection": {
+      "always_include": ["ExploreAgent", "CitationAgent"],
+      "conditional_include_based_on": "keywords_and_complexity"
+    }
+  },
+
+  "agent_integration": {
+    "citation_integration": {
+      "all_agents_provide_findings": true,
+      "citation_agent_adds_sources": true,
+      "cross_referencing": true
+    },
+    "iteration_support": {
+      "agents_receive_previous_context": true,
+      "targeted_refinement": true,
+      "avoid_duplicate_analysis": true
+    }
+  },
+
+  "performance_settings": {
+    "parallel_tool_usage": {
+      "enabled": true,
+      "tools": ["Glob", "Grep"],
+      "max_parallel_tools": 3
+    },
+    "caching": {
+      "cache_file_lists": true,
+      "cache_common_files": true,
+      "cache_duration_seconds": 3600
+    }
+  },
+
+  "error_handling": {
+    "agent_timeout": {
+      "action": "return_partial_results",
+      "mark_incomplete": true
+    },
+    "agent_failure": {
+      "action": "continue_with_other_agents",
+      "log_error": true,
+      "report_gap": true
+    },
+    "tool_failure": {
+      "action": "skip_and_continue",
+      "log_warning": true
+    }
+  },
+
+  "metadata": {
+    "created": "2025-12-28",
+    "author": "Claude Code Enhancement Phase 2",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2025-12-28",
+        "changes": "Initial agent role definitions for 5 specialized agents"
+      }
+    ]
+  }
+}

@@ -122,13 +122,40 @@ Brief description of what this task accomplishes.
 Any implementation notes or considerations.
 ```
 
+### 3.5. AI Analysis: Optimal Task Breakdown
+
+Before generating the files, actively analyze:
+
+- **Read existing codebase** — scan files referenced in the spec and any analogous existing
+  implementations. What patterns already exist that new tasks should follow?
+- **Dependency ordering** — which tasks block others? Build the critical path explicitly.
+- **Risk identification** — flag the highest-risk task and explain why.
+- **Task sizing** — each task must be completable and fully verifiable in one session.
+  Split any task that seems too large; merge trivially sequential steps.
+- **Best practice recommendation** — for the detected tech stack, state the industry-standard
+  approach before generating tasks.
+
+Output a brief analysis block before creating files:
+```
+TASK BREAKDOWN ANALYSIS
+Detected stack: [from plan.md]
+Total tasks: N
+Critical path: 01 → 03 → 05 (reason)
+Highest risk: task-NN (reason)
+Approach: [1-2 sentence recommendation]
+```
+
 ### Task Guidelines
 
-- Each task should be **atomic** (completable in one session)
-- Tasks should be **ordered** by dependency
+- Each task must be **atomic** — completable and fully verifiable in one session
+- Tasks must be **ordered** by dependency (critical path explicit)
 - Number tasks with 2-digit prefix (01, 02, 03...)
 - Include **setup**, **implementation**, **testing**, and **validation** phases
-- Use clear, actionable language in task titles
+- Acceptance criteria must be **outcome-based** not process-based:
+  - BAD: "implement the function" (process — did you do the work?)
+  - GOOD: "the endpoint returns 200 with correct payload" (outcome — observable result)
+  - Each criterion must be independently verifiable by AI without running the project
+  - At least one criterion per task must be a build/test/runtime check where applicable
 
 ## Markdown Formatting
 

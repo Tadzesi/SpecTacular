@@ -30,7 +30,7 @@ This PowerShell script:
 
 ```bash
 spectacular --version
-# Output: 1.6.4
+# Output: 1.7.0
 ```
 
 ### Manual Installation
@@ -57,7 +57,7 @@ The SpecTacular Dashboard extension provides rich markdown preview and editing.
 
 ### Install from Release (Recommended)
 
-1. Download the latest VSIX: [spectacular-dashboard-1.6.4.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.4/spectacular-dashboard-1.6.4.vsix)
+1. Download the latest VSIX: [spectacular-dashboard-1.6.6.vsix](https://github.com/Tadzesi/SpecTacular/releases/download/v1.6.6/spectacular-dashboard-1.6.6.vsix)
 
 2. **Install via VS Code:**
    - Open VS Code
@@ -68,7 +68,7 @@ The SpecTacular Dashboard extension provides rich markdown preview and editing.
 
 3. **Or via command line:**
    ```bash
-   code --install-extension spectacular-dashboard-1.6.4.vsix
+   code --install-extension spectacular-dashboard-1.6.6.vsix
    ```
 
 ### Build from Source
@@ -87,7 +87,7 @@ npm run compile
 npm run package
 
 # Install
-code --install-extension spectacular-dashboard-1.6.4.vsix
+code --install-extension spectacular-dashboard-1.6.6.vsix
 ```
 
 ## Step 3: Initialize Your Project

@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-03-06
+
+### Added
+
+- **CLAUDE.md** — New project guidance file for Claude Code with build commands, architecture overview, key conventions, and message protocol reference
+- **Pipeline Redesign** — Per-task PHASE A/B/C/D validate gate in `4-implement`: prepare → implement → validate each criterion explicitly → progress report
+- **AI Analysis Step** — Added AI deep analysis to `2-plan` and `3-tasks` commands for codebase pattern detection
+- **Spec Compliance Check** — `5-validate` verifies implementation matches original spec requirements
+- **AI Feature Review** — `5-validate` includes code quality assessment and improvement recommendations
+- **Outcome-based Acceptance Criteria** — `3-tasks` enforces independently verifiable results
+- **Codebase Analysis** — `1-spec` now actively analyzes existing code before writing spec
+
+### Fixed
+
+- Corrected 17 stale version references across `docs/` folder
+- Extension architecture diagram corrected with missing components (`TaskStatusService.ts`, `VersionCheckService.ts`, `vscodeApi.ts`, etc.)
+- Constitution `TodoWrite` reference updated to `TaskCreate/TaskUpdate tools`
+
+### Changed
+
+- CLI version bumped to 1.7.0
+- Pipeline commands updated in both `.claude/commands/` and `.cursor/rules/`
+
+## [1.6.6] - 2025-12-22
+
+### Fixed
+
+- **Nested List Rendering** — Fixed ordered and unordered nested list rendering in the markdown preview dashboard
+
+## [1.6.5] - 2025-12-22
+
+### Fixed
+
+- **Markdown List Rendering** — Installed `@tailwindcss/typography` plugin for proper markdown typography:
+  - `prose` and `prose-invert` classes now function correctly
+  - Numbered lists render with proper indentation and visual hierarchy
+  - Nested lists display with appropriate sub-numbering styles
+
+## [1.6.4] - 2025-12-14
+
+### Removed
+
+- **Dashboard CLI Command** — Removed `spectacular dashboard` command; dashboard functionality fully migrated to VS Code extension
+
+## [1.6.3] - 2025-12-14
+
+### Fixed
+
+- **Markdown Nested List Rendering** — CSS workaround for list display issues (superseded by v1.6.5)
+
+### Changed
+
+- **Template Markdown Formatting** — Updated CLI templates to use hybrid nested list syntax for better VS Code preview compatibility
+
 ## [1.6.1] - 2025-12-13
 
 ### Added
@@ -217,6 +271,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Release Date | Major Changes |
 |---------|--------------|---------------|
+| 1.7.0 | 2026-03-06 | Pipeline redesign, CLAUDE.md, documentation fixes |
+| 1.6.6 | 2025-12-22 | Fix nested list rendering |
+| 1.6.5 | 2025-12-22 | Tailwind typography plugin for proper list rendering |
+| 1.6.4 | 2025-12-14 | Removed dashboard CLI command |
+| 1.6.3 | 2025-12-14 | CSS list fix, template formatting update |
 | 1.6.1 | 2025-12-13 | Architecture documentation |
 | 1.6.0 | 2025-12-13 | WYSIWYG editor, auto task status |
 | 1.4.0 | 2025-12-09 | Removed Electron dashboard |

@@ -1,0 +1,355 @@
+{
+  "version": "1.0.0",
+  "description": "External memory system configuration for persistent knowledge across sessions",
+
+  "external_memory": {
+    "enabled": true,
+    "storage_directory": ".claude/memory",
+    "cross_session_retention": true,
+    "git_tracking": true,
+    "backup_on_update": true,
+    "compression": {
+      "enabled": false,
+      "threshold_mb": 5
+    }
+  },
+
+  "knowledge_graph": {
+    "enabled": true,
+    "storage_file": "project-knowledge.md",
+    "update_frequency": "per_research_command",
+    "merge_strategy": "append_new_nonconflicting",
+    "conflict_handling": "flag_for_manual_resolution",
+    "auto_summarize_when_large": true,
+    "summarization_threshold_mb": 10,
+    "preserve_original_on_summarize": true,
+    "sections": {
+      "architecture_overview": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "merge_and_refine"
+      },
+      "core_components": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "append_new"
+      },
+      "patterns_conventions": {
+        "enabled": true,
+        "priority": "medium",
+        "update_strategy": "merge_and_refine"
+      },
+      "security_model": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "merge_and_validate",
+        "requires_agent": "SecurityAgent"
+      },
+      "performance_characteristics": {
+        "enabled": true,
+        "priority": "medium",
+        "update_strategy": "merge_and_validate",
+        "requires_agent": "PerformanceAgent"
+      },
+      "research_history": {
+        "enabled": true,
+        "priority": "low",
+        "update_strategy": "append_only",
+        "max_entries": 100
+      }
+    }
+  },
+
+  "architectural_context": {
+    "enabled": true,
+    "storage_file": "architectural-context.md",
+    "update_frequency": "per_research_command",
+    "merge_strategy": "refine_understanding",
+    "conflict_handling": "prefer_latest_with_higher_confidence",
+    "auto_summarize_when_large": true,
+    "summarization_threshold_mb": 10,
+    "sections": {
+      "system_architecture": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "refine_and_deepen"
+      },
+      "component_relationships": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "expand_and_refine",
+        "requires_agent": "ExploreAgent"
+      },
+      "design_patterns": {
+        "enabled": true,
+        "priority": "medium",
+        "update_strategy": "append_new",
+        "requires_agent": "PatternAgent"
+      },
+      "design_decisions": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "append_with_rationale"
+      },
+      "security_architecture": {
+        "enabled": true,
+        "priority": "high",
+        "update_strategy": "validate_and_update",
+        "requires_agent": "SecurityAgent"
+      },
+      "performance_architecture": {
+        "enabled": true,
+        "priority": "medium",
+        "update_strategy": "validate_and_update",
+        "requires_agent": "PerformanceAgent"
+      },
+      "technical_debt": {
+        "enabled": true,
+        "priority": "medium",
+        "update_strategy": "track_and_prioritize"
+      }
+    }
+  },
+
+  "citation_index": {
+    "enabled": true,
+    "storage_file": "citation-index.md",
+    "update_frequency": "per_research_command",
+    "merge_strategy": "append_and_deduplicate",
+    "auto_revalidate": true,
+    "revalidation_frequency_hours": 24,
+    "retention_days": 90,
+    "archive_expired": true,
+    "archive_directory": ".claude/memory/archive",
+    "validation": {
+      "verify_file_exists": true,
+      "verify_line_numbers": true,
+      "verify_file_hash": true,
+      "verify_git_branch": true,
+      "auto_fix_line_shifts": true,
+      "max_line_shift": 50
+    },
+    "cleanup": {
+      "enabled": true,
+      "frequency": "weekly",
+      "remove_duplicates": true,
+      "consolidate_related": true,
+      "archive_old_citations": true
+    }
+  },
+
+  "context_limits": {
+    "max_memory_size_mb": 10,
+    "max_knowledge_graph_size_mb": 5,
+    "max_architectural_context_size_mb": 3,
+    "max_citation_index_size_mb": 2,
+    "auto_summarize_when_large": true,
+    "warning_threshold_mb": 8,
+    "error_threshold_mb": 15
+  },
+
+  "update_strategy": {
+    "mode": "incremental",
+    "backup_before_update": true,
+    "backup_directory": ".claude/memory/backups",
+    "max_backups": 10,
+    "validate_after_update": true,
+    "rollback_on_error": true
+  },
+
+  "merge_rules": {
+    "conflict_resolution": {
+      "strategy": "confidence_based",
+      "prefer_higher_confidence": true,
+      "confidence_threshold_difference": 0.10,
+      "manual_resolution_required_if": "confidence_similar"
+    },
+    "deduplication": {
+      "enabled": true,
+      "similarity_threshold": 0.85,
+      "merge_similar_findings": true,
+      "preserve_all_citations": true
+    },
+    "append_rules": {
+      "check_for_duplicates": true,
+      "check_for_conflicts": true,
+      "check_for_updates": true,
+      "prefer_newer_information": false,
+      "prefer_higher_confidence": true
+    }
+  },
+
+  "integration": {
+    "lead_agent": {
+      "enabled": true,
+      "read_memory_before_planning": true,
+      "memory_files": [
+        "project-knowledge.md",
+        "architectural-context.md"
+      ],
+      "use_for_strategy_selection": true,
+      "use_for_agent_selection": true
+    },
+    "result_aggregator": {
+      "enabled": true,
+      "update_memory_after_research": true,
+      "memory_files": [
+        "project-knowledge.md",
+        "architectural-context.md",
+        "citation-index.md"
+      ],
+      "validate_updates": true
+    },
+    "citation_agent": {
+      "enabled": true,
+      "update_citation_index": true,
+      "cross_reference_knowledge_graph": true,
+      "validate_citations": true
+    },
+    "iteration_engine": {
+      "enabled": true,
+      "check_memory_for_answers": true,
+      "avoid_redundant_research": true,
+      "focus_on_gaps": true
+    }
+  },
+
+  "performance": {
+    "lazy_loading": {
+      "enabled": true,
+      "load_on_demand": true,
+      "cache_loaded_sections": true,
+      "cache_duration_seconds": 1800
+    },
+    "incremental_updates": {
+      "enabled": true,
+      "update_only_changed_sections": true,
+      "batch_updates": false
+    },
+    "file_locking": {
+      "enabled": true,
+      "lock_on_write": true,
+      "timeout_seconds": 30
+    }
+  },
+
+  "versioning": {
+    "enabled": false,
+    "version_control": "git",
+    "commit_on_update": false,
+    "commit_message_template": "Update external memory: {command} - {topic}",
+    "tag_major_updates": false
+  },
+
+  "privacy_security": {
+    "exclude_sensitive_data": {
+      "enabled": true,
+      "patterns": [
+        "password",
+        "api_key",
+        "secret",
+        "token",
+        "credential"
+      ]
+    },
+    "sanitize_file_paths": {
+      "enabled": false,
+      "use_relative_paths": false
+    },
+    "encrypt_at_rest": {
+      "enabled": false,
+      "encryption_algorithm": "AES-256"
+    }
+  },
+
+  "monitoring": {
+    "track_memory_usage": {
+      "enabled": true,
+      "log_size_changes": true,
+      "alert_on_threshold": true
+    },
+    "track_update_frequency": {
+      "enabled": true,
+      "log_updates": true
+    },
+    "track_merge_conflicts": {
+      "enabled": true,
+      "log_conflicts": true,
+      "alert_on_frequent_conflicts": true
+    }
+  },
+
+  "maintenance": {
+    "auto_cleanup": {
+      "enabled": true,
+      "frequency": "weekly",
+      "remove_old_backups": true,
+      "remove_expired_citations": true,
+      "consolidate_duplicate_knowledge": false
+    },
+    "validation": {
+      "enabled": true,
+      "frequency": "daily",
+      "validate_file_integrity": true,
+      "validate_cross_references": true,
+      "validate_citation_accuracy": true
+    },
+    "optimization": {
+      "enabled": true,
+      "frequency": "monthly",
+      "defragment_files": false,
+      "rebuild_indices": false,
+      "optimize_file_size": true
+    }
+  },
+
+  "experimental_features": {
+    "semantic_search": {
+      "enabled": false,
+      "description": "Search memory using semantic understanding",
+      "requires": "embedding_model"
+    },
+    "knowledge_graph_visualization": {
+      "enabled": false,
+      "description": "Generate visual representation of knowledge graph",
+      "output_format": "mermaid"
+    },
+    "auto_question_answering": {
+      "enabled": false,
+      "description": "Answer questions directly from memory without research",
+      "confidence_threshold": 0.90
+    },
+    "predictive_research": {
+      "enabled": false,
+      "description": "Predict what user might research next based on patterns",
+      "requires": "learning_system"
+    }
+  },
+
+  "migration": {
+    "from_sessions_md": {
+      "enabled": true,
+      "preserve_session_history": true,
+      "extract_architectural_insights": true,
+      "extract_patterns": true,
+      "consolidate_knowledge": true
+    },
+    "from_prompt_patterns_md": {
+      "enabled": true,
+      "preserve_patterns": true,
+      "link_to_knowledge_graph": true
+    }
+  },
+
+  "metadata": {
+    "created": "2025-12-28",
+    "author": "Claude Code Enhancement Phase 3",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2025-12-28",
+        "changes": "Initial external memory configuration for multi-agent system"
+      }
+    ]
+  }
+}

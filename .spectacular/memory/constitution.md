@@ -7,7 +7,7 @@
 Every task must be verifiably complete before marking done:
 - Build must succeed without errors
 - Tests must pass (if tests exist)
-- Task status synced in both tasks.md AND TodoWrite
+- Task status synced in tasks.md AND via TaskCreate/TaskUpdate tools
 
 ### II. Simple Steps Over Complex Workflows
 

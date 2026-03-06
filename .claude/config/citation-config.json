@@ -1,0 +1,250 @@
+{
+  "version": "1.0.0",
+  "description": "Citation system configuration for source attribution and evidence tracking",
+
+  "citation_style": {
+    "format": "inline_with_references",
+    "inline_marker": "[{id}]",
+    "reference_section_title": "Citations & References",
+    "include_reference_section": true,
+    "file_line_format": "absolute_path:line_numbers",
+    "navigable_links": true
+  },
+
+  "snippet_extraction": {
+    "enabled": true,
+    "context_lines_before": 5,
+    "context_lines_after": 5,
+    "max_snippet_length_lines": 15,
+    "min_snippet_length_lines": 3,
+    "syntax_highlighting": true,
+    "include_line_numbers": true,
+    "trim_whitespace": false,
+    "preserve_indentation": true,
+    "fallback_if_too_large": "show_truncated_with_ellipsis"
+  },
+
+  "confidence_scoring": {
+    "enabled": true,
+    "score_range": {
+      "min": 0.0,
+      "max": 1.0
+    },
+    "evidence_types": {
+      "direct_evidence": {
+        "base_score": 0.90,
+        "description": "Finding directly visible in code at exact location"
+      },
+      "supporting_evidence": {
+        "base_score": 0.75,
+        "description": "Related code that supports the finding"
+      },
+      "indirect_evidence": {
+        "base_score": 0.60,
+        "description": "Pattern or convention inferred from code"
+      },
+      "inference": {
+        "base_score": 0.50,
+        "description": "Logical deduction from codebase structure"
+      },
+      "assumption": {
+        "base_score": 0.40,
+        "description": "Reasonable assumption based on context"
+      }
+    },
+    "confidence_boosts": {
+      "multiple_sources": 0.10,
+      "multiple_agents_agree": 0.10,
+      "explicit_comment": 0.05,
+      "recent_modification": 0.05
+    },
+    "confidence_penalties": {
+      "conflicting_evidence": -0.15,
+      "outdated_code": -0.10,
+      "partial_match": -0.05
+    },
+    "labels": {
+      "very_high": {"min": 0.90, "label": "Very High", "emoji": "🟢"},
+      "high": {"min": 0.75, "label": "High", "emoji": "🟢"},
+      "medium": {"min": 0.60, "label": "Medium", "emoji": "🟡"},
+      "low": {"min": 0.40, "label": "Low", "emoji": "🟠"},
+      "very_low": {"min": 0.0, "label": "Very Low", "emoji": "🔴"}
+    }
+  },
+
+  "source_tracking": {
+    "enabled": true,
+    "track_file_path": true,
+    "track_line_numbers": true,
+    "track_git_branch": true,
+    "track_git_commit": false,
+    "track_file_hash": true,
+    "track_timestamp": true,
+    "track_agent_source": true,
+    "invalidate_on_file_change": true,
+    "invalidate_on_branch_change": true
+  },
+
+  "citation_index": {
+    "enabled": true,
+    "storage_file": ".claude/memory/citation-index.md",
+    "auto_update_index": true,
+    "update_frequency": "per_research_command",
+    "max_citations_per_finding": 5,
+    "deduplicate_citations": true,
+    "group_by": "finding_category",
+    "include_metadata": true,
+    "persist_across_sessions": true,
+    "retention_days": 90
+  },
+
+  "cross_referencing": {
+    "enabled": true,
+    "link_related_findings": true,
+    "link_to_knowledge_graph": true,
+    "link_to_architectural_context": true,
+    "max_cross_references_per_citation": 3,
+    "bidirectional_linking": true
+  },
+
+  "output_format": {
+    "inline_citations": {
+      "enabled": true,
+      "style": "numeric",
+      "format": "[{id}]",
+      "show_confidence_inline": false
+    },
+    "reference_section": {
+      "enabled": true,
+      "include_file_path": true,
+      "include_line_numbers": true,
+      "include_code_snippet": true,
+      "include_confidence_score": true,
+      "include_evidence_type": true,
+      "include_timestamp": false,
+      "sort_by": "citation_order",
+      "group_by_file": false
+    },
+    "snippet_format": {
+      "language_tag": "auto_detect",
+      "show_filename_header": true,
+      "show_line_number_prefix": true,
+      "indent_snippet": true,
+      "highlight_matched_lines": false
+    }
+  },
+
+  "validation": {
+    "verify_file_exists": true,
+    "verify_line_numbers_valid": true,
+    "warn_on_missing_files": true,
+    "warn_on_outdated_citations": true,
+    "auto_fix_line_shifts": false,
+    "max_validation_age_hours": 24
+  },
+
+  "performance": {
+    "cache_file_reads": true,
+    "cache_duration_seconds": 300,
+    "max_concurrent_file_reads": 5,
+    "lazy_load_snippets": false,
+    "preload_frequently_cited_files": true,
+    "max_snippet_cache_size_mb": 10
+  },
+
+  "filtering": {
+    "exclude_patterns": [
+      "**/node_modules/**",
+      "**/bin/**",
+      "**/obj/**",
+      "**/.git/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/*.min.js",
+      "**/*.min.css"
+    ],
+    "exclude_file_types": [
+      ".exe",
+      ".dll",
+      ".so",
+      ".dylib",
+      ".bin"
+    ],
+    "max_file_size_kb": 5000
+  },
+
+  "special_handling": {
+    "generated_files": {
+      "detect": true,
+      "markers": ["<auto-generated>", "This file is auto-generated", "DO NOT EDIT"],
+      "confidence_penalty": -0.20,
+      "warn_user": true
+    },
+    "deprecated_code": {
+      "detect": true,
+      "markers": ["@deprecated", "[Obsolete]", "// deprecated"],
+      "confidence_penalty": -0.10,
+      "warn_user": true
+    },
+    "experimental_code": {
+      "detect": true,
+      "markers": ["@experimental", "// experimental", "WIP"],
+      "confidence_penalty": -0.05,
+      "warn_user": false
+    }
+  },
+
+  "error_handling": {
+    "on_file_not_found": "warn_and_continue",
+    "on_invalid_line_numbers": "warn_and_adjust",
+    "on_snippet_extraction_failure": "show_error_message",
+    "on_encoding_error": "try_alternative_encodings",
+    "fallback_encoding": "utf-8",
+    "max_retries": 3
+  },
+
+  "integration": {
+    "knowledge_graph": {
+      "enabled": true,
+      "link_citations_to_knowledge": true,
+      "update_knowledge_from_citations": true
+    },
+    "result_aggregator": {
+      "enabled": true,
+      "provide_citations_to_aggregator": true,
+      "validate_citation_consistency": true
+    },
+    "iteration_engine": {
+      "enabled": true,
+      "preserve_citations_across_iterations": true,
+      "merge_duplicate_citations": true
+    }
+  },
+
+  "experimental_features": {
+    "semantic_code_search": {
+      "enabled": false,
+      "description": "Use AI to understand code semantics for better citation matching"
+    },
+    "auto_citation_suggestions": {
+      "enabled": false,
+      "description": "Suggest additional citations based on related code"
+    },
+    "citation_quality_scoring": {
+      "enabled": false,
+      "description": "Score citation quality based on relevance and precision"
+    }
+  },
+
+  "metadata": {
+    "created": "2025-12-28",
+    "author": "Claude Code Enhancement Phase 2",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2025-12-28",
+        "changes": "Initial citation configuration for multi-agent system"
+      }
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "AI Fluency Framework Configuration - Based on Anthropic's 4Ds Model",
+  "version": "1.0",
+  "lastUpdated": "2026-01-20",
+  "reference": "https://www.anthropic.com/ai-fluency",
+
+  "framework": {
+    "name": "AI Fluency",
+    "description": "The ability to work with AI systems in ways that are effective, efficient, ethical, and safe",
+    "core_competencies": ["Delegation", "Description", "Discernment", "Diligence"]
+  },
+
+  "delegation": {
+    "enabled": true,
+    "components": {
+      "problem_awareness": {
+        "description": "Clearly understanding goals and work nature before involving AI",
+        "check_items": ["goal_clarity", "scope_definition", "success_criteria"]
+      },
+      "platform_awareness": {
+        "description": "Understanding AI capabilities and limitations",
+        "ai_strengths": [
+          "code_analysis",
+          "pattern_detection",
+          "text_generation",
+          "data_processing",
+          "codebase_exploration"
+        ],
+        "human_required": [
+          "business_decisions",
+          "security_approvals",
+          "policy_decisions",
+          "irreversible_actions",
+          "sensitive_data_handling"
+        ]
+      },
+      "task_delegation": {
+        "description": "Thoughtfully distributing work between humans and AI",
+        "modes": {
+          "ai_autonomous": "Tasks AI completes independently",
+          "ai_with_review": "Tasks AI does with human verification",
+          "collaborative": "Tasks done together iteratively",
+          "human_only": "Tasks requiring human judgment"
+        }
+      }
+    }
+  },
+
+  "description": {
+    "enabled": true,
+    "components": {
+      "product_description": {
+        "description": "Defining output format, audience, and style",
+        "criteria": ["goal", "context", "scope", "requirements", "constraints", "expected_result"]
+      },
+      "process_description": {
+        "description": "Defining how AI approaches the request",
+        "criteria": ["approach", "methodology", "step_by_step_instructions"]
+      },
+      "performance_description": {
+        "description": "Defining AI behavior during collaboration",
+        "criteria": ["interaction_style", "communication_tone"],
+        "options": {
+          "interaction_style": ["concise", "detailed", "challenging", "supportive", "autonomous", "collaborative"],
+          "communication_tone": ["technical", "casual", "formal", "conversational"]
+        }
+      }
+    }
+  },
+
+  "discernment": {
+    "enabled": true,
+    "components": {
+      "product_discernment": {
+        "description": "Evaluating quality of AI output",
+        "criteria": ["accuracy", "appropriateness", "coherence", "relevance"]
+      },
+      "process_discernment": {
+        "description": "Evaluating AI reasoning process",
+        "criteria": ["logical_errors", "attention_lapses", "inappropriate_reasoning"]
+      },
+      "performance_discernment": {
+        "description": "Evaluating AI communication style",
+        "criteria": ["effectiveness", "clarity", "helpfulness"]
+      }
+    },
+    "include_hints_in_output": true
+  },
+
+  "diligence": {
+    "enabled": true,
+    "components": {
+      "creation_diligence": {
+        "description": "Being thoughtful about AI system usage",
+        "considerations": ["appropriate_tool", "interaction_quality", "ethical_use"]
+      },
+      "transparency_diligence": {
+        "description": "Being honest about AI's role in work",
+        "requirements": ["disclose_ai_assistance", "track_ai_generated_content"]
+      },
+      "deployment_diligence": {
+        "description": "Taking responsibility for AI outputs",
+        "requirements": ["verify_outputs", "test_before_deployment", "review_recommendations"]
+      }
+    },
+    "track_in_session_end": true
+  },
+
+  "interaction_modes": {
+    "automation": {
+      "description": "AI performs specific tasks based on specific human instructions",
+      "indicators": ["fix", "add", "change", "update", "delete", "create"],
+      "behavior": "Execute directly with minimal questions"
+    },
+    "augmentation": {
+      "description": "Humans and AI collaborate as thinking partners",
+      "indicators": ["help", "understand", "approach", "figure out", "decide", "compare"],
+      "behavior": "Engage in dialogue, offer options, iterate"
+    },
+    "agency": {
+      "description": "AI works independently on behalf of humans",
+      "indicators": ["research", "explore", "find all", "analyze", "investigate", "discover"],
+      "behavior": "Work independently, spawn agents, report back"
+    }
+  },
+
+  "terminology": {
+    "llm": "Large Language Model - Generative AI trained on vast text data",
+    "hallucination": "AI confidently stating plausible but incorrect information",
+    "context_window": "Amount of information AI can consider at one time",
+    "temperature": "Setting controlling randomness of AI responses",
+    "rag": "Retrieval Augmented Generation - connecting AI to external knowledge",
+    "chain_of_thought": "Encouraging AI to work through problems step by step",
+    "few_shot": "Teaching AI by showing examples of desired input-output pattern",
+    "prompt_engineering": "Designing effective prompts for AI systems"
+  }
+}

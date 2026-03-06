@@ -39,6 +39,11 @@ Execute:
 .spectacular/scripts/powershell/validate-implementation.ps1 -Json
 ```
 
+### 2.5. Pre-Validation: Read All Artifacts
+
+Before running the script, load `spec.md`, `tasks.md`, and all files in `tasks/`.
+This gives the full picture for the AI compliance check and feature review below.
+
 ### 3. Validation Checks
 
 The script performs these checks:
@@ -63,22 +68,64 @@ The script performs these checks:
 - Working directory should be clean
 - Or changes should be staged/committed
 
+#### Check 5: Spec Compliance (AI Check)
+- Re-read `spec.md` acceptance criteria
+- For each acceptance criterion in the spec, read the relevant changed files and verify
+  the implementation satisfies it
+- Flag any criterion that is implemented incorrectly or incompletely
+- This is independent of task-level criteria — spec criteria are the contract with the user
+
 ### 4. Handle Failures
 
 If any check fails:
-1. **Report the failure** with details
-2. **Identify the fix** needed
-3. **Do NOT mark as complete** until fixed
+1. **Report exactly which check failed** with full diagnostic detail
+2. **Read the relevant files** — diagnose root cause, do not guess
+3. **State the specific fix needed**
+4. **Do NOT mark as complete**
+5. Return to `/spectacular.4-implement` for any failing task if needed
 
-### 5. Report Results
+### 5. AI Feature Review
 
-Output validation summary:
-- Tasks: PASS/FAIL (X/Y complete)
-- Build: PASS/FAIL
-- Tests: PASS/FAIL
-- Overall: READY / NOT READY
+Once all checks pass, perform an independent quality review:
+
+**What was built:**
+- Summarize what each task delivered in plain language
+- List all files created or significantly modified
+
+**Quality assessment:**
+- Are there any code smells or design issues introduced?
+- Does the implementation follow existing project patterns?
+- Are there edge cases not covered by the acceptance criteria?
+
+**Recommendations:**
+- What should be done next? (follow-up tasks, tech debt to track, potential improvements)
+- Are there any non-blocking concerns worth noting?
+
+### 6. Report Results
+
+```
+VALIDATION SUMMARY
+Feature: [name] | Branch: [branch]
+
+Check 1 - Tasks:         PASS  (N/N complete)
+Check 2 - Build:         PASS
+Check 3 - Tests:         PASS  (N tests, 0 failures)
+Check 4 - Git:           PASS / SKIPPED
+Check 5 - Spec:          PASS  (all acceptance criteria satisfied)
+
+Overall: READY TO MERGE
+
+AI REVIEW
+What was built: [summary]
+Quality: [assessment]
+Recommendations:
+  - [item 1]
+  - [item 2]
+
+Next: merge branch, update spec status, or continue with next feature.
+```
 
 ## Non-Negotiable
 
 From the project constitution:
-> **Task Completion is Non-Negotiable** - Build must pass, tests must pass
+> **Task Completion is Non-Negotiable** - Build must pass, tests must pass, spec criteria must be satisfied

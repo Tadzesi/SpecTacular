@@ -36,28 +36,48 @@ Run:
 .spectacular/scripts/powershell/setup-plan.ps1 -Json
 ```
 
-### 4. Write Implementation Plan
+### 4. AI Deep Analysis (Before Writing Plan)
+
+Before writing the plan, actively investigate:
+- **Read existing similar implementations** in the codebase — how does analogous functionality work?
+- **Identify reusable code** — what can be extended vs. rewritten?
+- **Find the minimal change set** — what is the smallest correct implementation?
+- **Evaluate alternatives** — are there 2-3 viable approaches? State the tradeoffs and recommend one.
+- **Check for breaking changes** — will this affect existing functionality?
+
+Output a recommendation block:
+```
+PLANNING ANALYSIS
+Similar existing code: [files/patterns]
+Recommended approach: [chosen option and why]
+Alternatives considered: [briefly]
+Breaking change risk: [yes/no + detail]
+Minimal change set: [key files only]
+```
+
+### 5. Write Implementation Plan
 
 Create `plan.md` with:
 
 #### Tech Stack Analysis
-- Identify relevant technologies from the project
-- List frameworks, libraries, and tools needed
+- Technologies, frameworks, libraries needed (only what's actually required)
+- Dependencies to add (if any) — justify each one
 
 #### Project Structure
-- Map affected directories and files
-- Identify new files to create
+- Exact files to create (with paths)
+- Exact files to modify (with reason)
+- Files to NOT touch (explicit boundary)
 
 #### Implementation Approach
-- High-level strategy
-- Key design decisions
-- Integration points
+- Chosen strategy (from analysis above)
+- Key design decisions with rationale
+- Integration points and interfaces
 
 #### Risk Assessment
-- Technical challenges
-- Dependencies
-- Mitigation strategies
+- Technical challenges ranked by severity
+- Dependencies and their constraints
+- Mitigation strategy for each risk
 
-### 5. Report Completion
+### 6. Report Completion
 
 Output plan file path and next step: `3-tasks`

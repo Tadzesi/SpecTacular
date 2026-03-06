@@ -158,7 +158,7 @@ The generated `project.json` contains:
   "techStack": ["Node.js", "TypeScript", "React"],
   "language": "en",
   "tool": "both",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "initialized": "2024-12-22T10:30:00Z"
 }
 ```
@@ -287,7 +287,7 @@ spectacular --version
 ### Output
 
 ```
-SpecTacular CLI v1.6.4
+SpecTacular CLI v1.7.0
 .NET 8.0
 Copyright © 2024 SpecTacular Contributors
 ```
@@ -321,7 +321,7 @@ spectacular --help
 
 Output:
 ```
-SpecTacular CLI v1.6.4
+SpecTacular CLI v1.7.0
 
 Description:
   Specification-driven development toolkit

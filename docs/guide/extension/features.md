@@ -263,7 +263,7 @@ The dashboard automatically matches VS Code theme:
 │ ℹ️  Update Available            │
 │                                 │
 │ SpecTacular v1.7.0 is available │
-│ You have: v1.6.4                │
+│ You have: v1.6.6                │
 │                                 │
 │ [View Release]  [Dismiss]       │
 └─────────────────────────────────┘
@@ -273,7 +273,7 @@ The dashboard automatically matches VS Code theme:
 
 Displays in dashboard header:
 ```
-v1.6.4  ← Current version
+v1.6.6  ← Current version
 v1.7.0 Available ⬆️  ← When update exists
 ```
 

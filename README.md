@@ -90,7 +90,7 @@ npm run compile
 npm run package
 
 # Install the generated VSIX
-code --install-extension spectacular-dashboard-1.6.4.vsix
+code --install-extension spectacular-dashboard-1.6.6.vsix
 ```
 
 ### Step 3: Initialize Your Project

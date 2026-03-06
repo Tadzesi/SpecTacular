@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "description": "Agent result caching configuration for hybrid prompt system",
+  "cache_settings": {
+    "enabled": true,
+    "cache_directory": ".claude/cache/agent-results",
+    "max_cache_age_hours": 24,
+    "max_cache_size_mb": 50,
+    "cache_strategy": "content_hash"
+  },
+  "cache_key_components": {
+    "include_prompt": true,
+    "include_file_hashes": true,
+    "include_git_branch": true,
+    "include_agent_template": true,
+    "file_extensions_to_track": [
+      ".cs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".json",
+      ".md",
+      ".sql",
+      ".csproj",
+      ".sln"
+    ]
+  },
+  "invalidation_triggers": {
+    "file_modifications": true,
+    "branch_changes": true,
+    "dependency_updates": true,
+    "manual_clear": true
+  },
+  "cache_compression": {
+    "enabled": true,
+    "algorithm": "gzip"
+  },
+  "cache_metadata": {
+    "store_timestamp": true,
+    "store_agent_model": true,
+    "store_complexity_score": true,
+    "store_files_analyzed": true
+  }
+}

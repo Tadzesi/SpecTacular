@@ -496,18 +496,18 @@ Trigger multi-agent verification:
 
 ### Clear Cache
 
-Delete cached results:
+Delete cached results (run from project root):
 
 ```powershell
-Remove-Item -Recurse C:\Projects\development\SpecTacular\.claude\cache\agent-results\*
+Remove-Item -Recurse .\.claude\cache\agent-results\*
 ```
 
 ### View Learning Statistics
 
-Check pattern database:
+Check pattern database (run from project root):
 
 ```powershell
-Get-Content C:\Projects\development\SpecTacular\.claude\memory\prompt-patterns.md
+Get-Content .\.claude\memory\prompt-patterns.md
 ```
 
 ---
