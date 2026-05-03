@@ -15,7 +15,7 @@
         .\install.ps1 -Local
 
     Usage (remote):
-        irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex
+        irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/master/spectacular-cli/installer/install.ps1 | iex
 
 .PARAMETER InstallDir
     Installation directory. Defaults to ~/.spectacular/bin
@@ -34,7 +34,7 @@
     .\install.ps1 -Local
 
     # Install latest version from GitHub
-    irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex
+    irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/master/spectacular-cli/installer/install.ps1 | iex
 
     # Install specific version
     $env:SPECTACULAR_VERSION = "1.4.0"; irm https://raw.githubusercontent.com/Tadzesi/SpecTacular/main/spectacular-cli/installer/install.ps1 | iex
