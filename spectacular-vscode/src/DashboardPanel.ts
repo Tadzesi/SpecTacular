@@ -12,6 +12,7 @@ export class DashboardPanel {
   private readonly _extensionUri: vscode.Uri;
   private _rootPath: string | undefined;
   private _fileWatcher: vscode.FileSystemWatcher | undefined;
+  private _debounceTimer: NodeJS.Timeout | undefined;
   private _disposables: vscode.Disposable[] = [];
 
   public static createOrShow(
@@ -149,15 +150,21 @@ export class DashboardPanel {
         break;
 
       case 'getFileTree':
-        await this._handleGetFileTree(message.rootPath as string);
+        if (typeof message.rootPath === 'string') {
+          await this._handleGetFileTree(message.rootPath);
+        }
         break;
 
       case 'readFile':
-        await this._handleReadFile(message.path as string);
+        if (typeof message.path === 'string') {
+          await this._handleReadFile(message.path);
+        }
         break;
 
       case 'startWatching':
-        this._startWatching(message.rootPath as string);
+        if (typeof message.rootPath === 'string') {
+          this._startWatching(message.rootPath);
+        }
         break;
 
       case 'stopWatching':
@@ -197,11 +204,15 @@ export class DashboardPanel {
         break;
 
       case 'saveFile':
-        await this._handleSaveFile(message.path as string, message.content as string);
+        if (typeof message.path === 'string' && typeof message.content === 'string') {
+          await this._handleSaveFile(message.path, message.content);
+        }
         break;
 
       case 'saveAllFiles':
-        await this._handleSaveAllFiles(message.files as Array<{ path: string; content: string }>);
+        if (Array.isArray(message.files)) {
+          await this._handleSaveAllFiles(message.files as Array<{ path: string; content: string }>);
+        }
         break;
     }
   }
@@ -213,7 +224,7 @@ export class DashboardPanel {
     } catch (error) {
       this._postMessage({
         type: 'error',
-        data: { message: `Failed to load file tree: ${error}` }
+        data: { message: `Failed to load file tree: ${errMsg(error)}` }
       });
     }
   }
@@ -228,7 +239,7 @@ export class DashboardPanel {
     } catch (error) {
       this._postMessage({
         type: 'error',
-        data: { message: `Failed to read file: ${error}` }
+        data: { message: `Failed to read file: ${errMsg(error)}` }
       });
     }
   }
@@ -245,11 +256,12 @@ export class DashboardPanel {
       // Show a brief notification
       vscode.window.setStatusBarMessage(`Saved: ${path.basename(filePath)}`, 2000);
     } catch (error) {
+      const msg = errMsg(error);
       this._postMessage({
         type: 'fileSaveError',
-        data: { path: filePath, message: `Failed to save file: ${error}` }
+        data: { path: filePath, message: `Failed to save file: ${msg}` }
       });
-      vscode.window.showErrorMessage(`Failed to save ${path.basename(filePath)}: ${error}`);
+      vscode.window.showErrorMessage(`Failed to save ${path.basename(filePath)}: ${msg}`);
     }
   }
 
@@ -314,13 +326,11 @@ export class DashboardPanel {
     const pattern = new vscode.RelativePattern(rootPath, '**/*.md');
     this._fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
 
-    let debounceTimer: NodeJS.Timeout | undefined;
-
     const notifyChange = (type: string, uri: vscode.Uri) => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      if (this._debounceTimer) {
+        clearTimeout(this._debounceTimer);
       }
-      debounceTimer = setTimeout(() => {
+      this._debounceTimer = setTimeout(() => {
         this._postMessage({
           type: 'fileChange',
           data: {
@@ -340,6 +350,10 @@ export class DashboardPanel {
   }
 
   private _stopWatching() {
+    if (this._debounceTimer) {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = undefined;
+    }
     if (this._fileWatcher) {
       this._fileWatcher.dispose();
       this._fileWatcher = undefined;
@@ -445,6 +459,10 @@ export class DashboardPanel {
       }
     }
   }
+}
+
+function errMsg(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function getNonce(): string {

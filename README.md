@@ -214,6 +214,38 @@ specs/
 │   └── ...
 ```
 
+## Spec File YAML Frontmatter
+
+All spec and task files support YAML frontmatter for metadata and status tracking. Frontmatter must be the first thing in the file, between `---` delimiters.
+
+```markdown
+---
+type: spec          # spec | plan | task | feature
+status: pending     # pending | in-progress | done | blocked | skipped | complete
+priority: high      # high | medium | low
+created: 2025-01-15
+parent: spec        # relative link to parent document (without .md)
+next: plan          # relative link to next document in pipeline
+tags: [auth, api]
+phase: 1            # pipeline phase number
+---
+```
+
+| Field | Required | Values | Purpose |
+|-------|----------|--------|---------|
+| `type` | Yes | `spec`, `plan`, `task`, `feature` | Document type in pipeline |
+| `status` | Yes | `pending`, `in-progress`, `done`, `blocked`, `skipped`, `complete` | Current state (auto-updated for tasks) |
+| `priority` | No | `high`, `medium`, `low` | Feature or task urgency |
+| `created` | No | ISO date (`YYYY-MM-DD`) | Creation date |
+| `parent` | No | Filename without `.md` | Link to parent spec or plan |
+| `next` | No | Filename without `.md` | Link to next document in pipeline |
+| `tags` | No | YAML list | Categorization labels |
+| `phase` | No | Integer | Pipeline step (1-5) |
+
+**Auto-status**: Files inside any `tasks/` subfolder have their `status` field automatically updated to `done` when all `- [x]` acceptance criteria checkboxes are checked.
+
+---
+
 ## Specification Documents
 
 The pipeline generates structured markdown documents that work together:
